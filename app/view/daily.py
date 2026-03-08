@@ -1019,7 +1019,7 @@ class Daily(QFrame, BaseInterface):
                 self, '_is_non_chinese_ui', False) else meta.get(
                     "zh_name", task_id)
             self.logger.info(
-                self._ui_text(f"开始单独执行任务: {task_name}",
+                self._ui_text(f"开始单独重跑任务: {task_name}",
                               f"Force running task: {task_name}"))
 
             tasks_to_run = [task_id]
@@ -1382,7 +1382,7 @@ class Daily(QFrame, BaseInterface):
 
     def after_finish(self):
         if getattr(self, '_is_running_solo_flag', False):
-            self.logger.info(self._ui_text("单独执行完毕，已返回空闲状态...", "Solo execution completed, returned to idle state..."))
+            self.logger.info(self._ui_text("单独重跑完毕，已返回空闲状态...", "Solo execution completed, returned to idle state..."))
             return
 
         self._auto_adjust_after_use_action()

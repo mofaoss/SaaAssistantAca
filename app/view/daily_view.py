@@ -279,7 +279,7 @@ class TaskItemWidget(QWidget):
         self.solo_play_btns = FIF.SYNC
         self.btn = ToolButton(self)
         self.btn.setIcon(self.solo_play_btns)
-        self.btn.setToolTip("单独执行" if not is_non_chinese_ui else "Run only")
+        self.btn.setToolTip("单独重跑" if not is_non_chinese_ui else "Run only")
         self.btn.setFixedSize(28, 28)
 
         btn_font = self.btn.font()
@@ -323,7 +323,7 @@ class TaskItemWidget(QWidget):
                 self.checkbox.setEnabled(True)
 
             self.btn.setIcon(self.solo_play_btns)
-            self.btn.setToolTip("单独执行" if not self._is_non_chinese_ui else "Run only")
+            self.btn.setToolTip("单独重跑" if not self._is_non_chinese_ui else "Run only")
 
             colors = {
                 'running_queue': "#FF8C00",
