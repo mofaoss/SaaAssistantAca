@@ -3,8 +3,8 @@ from __future__ import annotations
 from PySide6.QtCore import Qt
 from qfluentwidgets import BodyLabel, InfoBar, InfoBarPosition, ProgressBar
 
+from app.framework.ui.shared.text import ui_text
 from app.features.utils.network import calculate_time_difference, get_date_from_api
-from app.features.utils.ui import ui_text
 
 
 class EventTipsUseCase:
@@ -93,3 +93,30 @@ class EventTipsUseCase:
             ui.gridLayout_tips.addWidget(body_label, row, 0, 1, 1)
             ui.gridLayout_tips.addWidget(progress_bar, row, 1, 1, 1)
 
+
+class EventTipsActions:
+    """Host-facing adapter for tips refresh. Keeps host page free of business method bodies."""
+
+    def __init__(self, usecase: EventTipsUseCase):
+        self._usecase = usecase
+        self._ui = None
+        self._logger = None
+        self._host = None
+
+    def bind(self, *, ui, logger, host):
+        self._ui = ui
+        self._logger = logger
+        self._host = host
+
+    def refresh_tips(self, url=None):
+        if self._ui is None or self._logger is None or self._host is None:
+            return
+        try:
+            self._usecase.refresh_tips_panel(
+                ui=self._ui,
+                logger=self._logger,
+                host=self._host,
+                url=url,
+            )
+        except Exception as e:
+            self._logger.error(ui_text(f"更新控件出错：{e}", f"Error occurred while updating controls: {e}"))

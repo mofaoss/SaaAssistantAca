@@ -1,20 +1,5 @@
-from app.framework.infra.config.app_config import is_non_chinese_ui_language
+from app.framework.ui.shared.text import ui_text
+from app.framework.ui.shared.widget_tree import get_all_children
 
-
-# 在文件最末尾添加该函数
-def ui_text(zh_text: str, en_text: str) -> str:
-    """
-    全局多语言适配工具函数
-    """
-    if is_non_chinese_ui_language():
-        return en_text
-    return zh_text
-
-
-def get_all_children(widget):
-    children = []
-    for child in widget.children():
-        children.append(child)
-        children.extend(get_all_children(child))
-    return children
+__all__ = ["ui_text", "get_all_children"]
 

@@ -1,7 +1,7 @@
 import time
 
 from app.framework.infra.automation.timer import Timer
-from app.features.utils.ui import ui_text
+from app.framework.ui.shared.text import ui_text
 
 
 def back_to_home(auto, logger, timeout_seconds=10):

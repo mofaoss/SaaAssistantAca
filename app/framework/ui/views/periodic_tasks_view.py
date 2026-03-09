@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from PySide6.QtCore import QSize, Qt, Signal
 from PySide6.QtWidgets import (
-    QAbstractSpinBox,
     QAbstractItemView,
     QGridLayout,
     QHBoxLayout,
@@ -21,20 +20,16 @@ from qfluentwidgets import (
     LineEdit,
     ListWidget,
     PopUpAniStackedWidget,
-    PrimaryPushButton,
     PushButton,
     ScrollArea,
     SimpleCardWidget,
-    SpinBox,
     StrongBodyLabel,
     TitleLabel,
     ToolButton,
-    TextEdit,
     EditableComboBox,
     isDarkTheme,
 )
 from app.framework.application.modules import HostContext, get_periodic_module_specs
-from app.features.scheduling.periodic_ui_texts import apply_periodic_module_texts
 
 
 class TaskListView(ListWidget):
@@ -656,10 +651,11 @@ class SharedSchedulingPanel(QWidget):
 
 class PeriodicTasksView(ScrollArea):
 
-    def __init__(self, parent=None, is_non_chinese_ui=False):
+    def __init__(self, parent=None, is_non_chinese_ui=False, module_text_applier=None):
         super().__init__(parent)
         self.setObjectName("daily")
         self.is_non_chinese_ui = is_non_chinese_ui
+        self._module_text_applier = module_text_applier
 
         self.setWidgetResizable(True)
         self.setStyleSheet(
@@ -825,8 +821,8 @@ class PeriodicTasksView(ScrollArea):
         self.scrollAreaWidgetContents = self.page_shop.scrollAreaWidgetContents
         self.gridLayout = self.page_shop.gridLayout
         self.StrongBodyLabel = self.page_shop.StrongBodyLabel
-        self.widget = self.page_shop.widget
-        self.widget_2 = self.page_shop.widget_2
+        self.select_person = self.page_shop.select_person
+        self.select_weapon = self.page_shop.select_weapon
         for i in range(3, 16):
             name = f"CheckBox_buy_{i}"
             setattr(self, name, getattr(self.page_shop, name))
@@ -951,8 +947,9 @@ class PeriodicTasksView(ScrollArea):
         self.hint_label.setText(self._ui_text("拖动调整顺序", "Drag to sort"))
         self.TitleLabel_3.setText(self._ui_text("日程提醒", "Event Reminder"))
 
-        apply_periodic_module_texts(
-            self,
-            is_non_chinese_ui=self.is_non_chinese_ui,
-            ui_text_fn=self._ui_text,
-        )
+        if callable(self._module_text_applier):
+            self._module_text_applier(
+                self,
+                is_non_chinese_ui=self.is_non_chinese_ui,
+                ui_text_fn=self._ui_text,
+            )

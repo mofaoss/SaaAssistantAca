@@ -4,7 +4,7 @@ from typing import Callable, Optional
 import win32gui
 
 from app.framework.infra.events.signal_bus import signalBus
-from app.features.utils.ui import ui_text
+from app.framework.ui.shared.text import ui_text
 
 
 logger = logging.getLogger(__name__)

@@ -7,6 +7,9 @@ from typing import Optional
 class TaskDomain(str, Enum):
     DAILY = "daily"
     ADDITIONAL = "additional"
+    # Preferred semantic aliases.
+    PERIODIC = "daily"
+    ON_DEMAND = "additional"
 
 
 @dataclass(frozen=True)

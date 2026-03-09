@@ -13,4 +13,4 @@ class Icon(FluentIconBase, Enum):
     SETTINGS_FILLED = "SettingsFilled"
 
     def path(self, theme=Theme.AUTO):
-        return f":/app/framework/ui/resources/images/icons/{self.value}_{getIconColor(theme)}.svg"
+        return f":/app/framework/ui/resources/icons/{self.value}_{getIconColor(theme)}.svg"

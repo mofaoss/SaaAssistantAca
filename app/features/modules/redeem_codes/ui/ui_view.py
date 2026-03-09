@@ -1,5 +1,5 @@
 from app.framework.ui.widgets.custom_message_box import CustomMessageBox
-from app.features.utils.ui import ui_text
+from app.framework.ui.shared.text import ui_text
 
 
 class RedeemCodesView:

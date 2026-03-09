@@ -8,9 +8,9 @@ import logging
 import threading
 import time
 from pathlib import Path
-from PySide6.QtCore import QSize, QTimer, QThread, Qt, QUrl, QPoint
-from PySide6.QtGui import QIcon, QImage, QPixmap, QMovie, QDesktopServices, QAction
-from PySide6.QtWidgets import QApplication, QFrame, QLabel, QSystemTrayIcon, QMenu
+from PySide6.QtCore import QSize, QTimer, QThread, Qt, QPoint
+from PySide6.QtGui import QIcon, QImage, QPixmap, QAction
+from PySide6.QtWidgets import QApplication, QFrame, QSystemTrayIcon, QMenu
 from qfluentwidgets import FluentIcon as FIF, SystemThemeListener, MessageBox, InfoBar, InfoBarPosition
 from qfluentwidgets import NavigationItemPosition, FluentWindow, setThemeColor
 
@@ -29,9 +29,12 @@ from app.framework.application.startup.interface_plan import (
     build_deferred_interface_keys,
     build_initial_interface_keys,
 )
-from app.features.modules.enter_game.usecase.enter_game_usecase import launch_game_with_guard
+from app.framework.application.modules import configure_module_spec_providers
 from .periodic_base import BaseInterface
-from app.features.utils.updater import get_local_version, get_best_update_candidate
+from app.framework.infra.update.updater import (
+    get_best_update_candidate,
+    get_local_version,
+)
 from app.framework.ui.widgets.custom_message_box import CustomMessageBox
 from app.framework.ui.resources import resource_qrc  # don't delete
 
@@ -111,6 +114,7 @@ class MainWindow(FluentWindow, BaseInterface):
         self.hotkey_timer.timeout.connect(self._check_global_hotkey)
         self.hotkey_timer.start(100)
 
+        self._configure_module_registry()
         self.initWindow()
         self.initSystemTray()  # 初始化系统托盘
         setup_global_exception_hook()
@@ -124,15 +128,15 @@ class MainWindow(FluentWindow, BaseInterface):
 
     @staticmethod
     def _resolve_app_icon() -> QIcon:
-        qrc_path = ":/app/framework/ui/resources/images/logo.png"
+        qrc_path = ":/app/framework/ui/resources/logo/logo.png"
         icon = QIcon(qrc_path)
         if not icon.isNull():
             return icon
 
         base_dir = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[3]))
         file_candidates = [
-            base_dir / "app" / "framework" / "ui" / "resources" / "images" / "logo.png",
-            base_dir / "app" / "framework" / "ui" / "resources" / "images" / "logo.ico",
+            base_dir / "app" / "framework" / "ui" / "resources" / "logo" / "logo.png",
+            base_dir / "app" / "framework" / "ui" / "resources" / "logo" / "logo.ico",
         ]
         for candidate in file_candidates:
             if candidate.exists():
@@ -205,7 +209,7 @@ class MainWindow(FluentWindow, BaseInterface):
         if current_widget == self.homeInterface:
             return "home"
         if current_widget == self.additionalInterface:
-            return "additional"
+            return "on_demand"
         return "other"
 
     def _on_global_hotkey_pressed(self):
@@ -221,7 +225,7 @@ class MainWindow(FluentWindow, BaseInterface):
         if action == HotkeyAction.START_DAILY:
             self.homeInterface.on_start_button_click()
             return
-        if action == HotkeyAction.START_ADDITIONAL:
+        if action == HotkeyAction.START_ON_DEMAND:
             self.additionalInterface.start_current_visible_task()
 
     def _check_global_hotkey(self):
@@ -259,6 +263,20 @@ class MainWindow(FluentWindow, BaseInterface):
         )
         return [lambda key=key: self._create_interface_by_key(key) for key in keys]
 
+    @staticmethod
+    def _configure_module_registry():
+        from app.features.modules.module_specs import (
+            get_on_demand_module_specs as _get_feature_on_demand_specs,
+        )
+        from app.features.modules.module_specs import (
+            get_periodic_module_specs as _get_feature_periodic_specs,
+        )
+
+        configure_module_spec_providers(
+            periodic_provider=_get_feature_periodic_specs,
+            on_demand_provider=lambda: _get_feature_on_demand_specs(include_passive=True),
+        )
+
     def _create_display_interface(self):
         from .display import DisplayInterface
         self.displayInterface = DisplayInterface(self)
@@ -266,12 +284,59 @@ class MainWindow(FluentWindow, BaseInterface):
 
     def _create_home_interface(self):
         from .periodic_tasks_page import PeriodicTasksPage
-        self.homeInterface = PeriodicTasksPage('Periodic Tasks', self)
+        from app.features.modules.collect_supplies.usecase.collect_supplies_actions import (
+            CollectSuppliesActions,
+        )
+        from app.features.modules.enter_game.usecase.enter_game_actions import (
+            EnterGameActions,
+            SnowbreakGameEnvironment,
+        )
+        from app.features.modules.event_tips.usecase.event_tips_usecase import (
+            EventTipsActions,
+            EventTipsUseCase,
+        )
+        from app.features.modules.redeem_codes.ui.ui_view import RedeemCodesView
+        from app.features.modules.redeem_codes.usecase.redeem_codes_usecase import (
+            RedeemCodesUseCase,
+        )
+        from app.features.modules.shopping.usecase.shopping_usecase import (
+            ShoppingSelectionUseCase,
+        )
+        from app.features.scheduling.periodic_ui_texts import apply_periodic_module_texts
+        from app.features.scheduling.task_profile import get_periodic_task_profile
+        from app.features.utils.home_navigation import back_to_home
+        from app.features.utils.network import start_cloudflare_update
+
+        self.homeInterface = PeriodicTasksPage(
+            'Periodic Tasks',
+            self,
+            game_environment=SnowbreakGameEnvironment(self._is_non_chinese_ui),
+            home_sync=back_to_home,
+            task_profile_provider=get_periodic_task_profile,
+            create_shopping_selection_usecase=lambda is_non_chinese_ui: ShoppingSelectionUseCase(is_non_chinese_ui),
+            create_enter_game_actions=lambda game_environment: EnterGameActions(game_environment),
+            create_collect_supplies_actions=lambda settings_usecase: CollectSuppliesActions(
+                redeem_codes_usecase=RedeemCodesUseCase(settings_usecase),
+                redeem_codes_view=RedeemCodesView(),
+            ),
+            create_event_tips_actions=lambda settings_usecase, is_non_chinese_ui, ui_text_fn: EventTipsActions(
+                EventTipsUseCase(
+                    settings_usecase,
+                    is_non_chinese_ui=is_non_chinese_ui,
+                    ui_text_fn=ui_text_fn,
+                )
+            ),
+            startup_update_hook=start_cloudflare_update,
+            module_text_applier=apply_periodic_module_texts,
+        )
         self._localize_widget_if_needed(self.homeInterface)
         self._sync_task_workspace_sidebar()
 
     def _create_additional_interface(self):
         from .on_demand_tasks_page import OnDemandTasksPage
+        from app.features.modules.trigger.usecase.auto_f_usecase import AutoFModule
+        from app.features.modules.trigger.usecase.nita_auto_e_usecase import NitaAutoEModule
+        from app.framework.core.task_engine.threads import ModuleTaskThread
         shared_log_browser = None
         if self.homeInterface is not None and hasattr(self.homeInterface, "textBrowser_log"):
             shared_log_browser = self.homeInterface.textBrowser_log
@@ -279,6 +344,9 @@ class MainWindow(FluentWindow, BaseInterface):
             'On Demand Tasks',
             self,
             shared_log_browser=shared_log_browser,
+            auto_f_module_cls=AutoFModule,
+            auto_e_module_cls=NitaAutoEModule,
+            module_thread_cls=ModuleTaskThread,
         )
         self._localize_widget_if_needed(self.additionalInterface)
         self._sync_task_workspace_sidebar()
@@ -502,16 +570,6 @@ class MainWindow(FluentWindow, BaseInterface):
             return False
         return self.navigationInterface.width() > SIDEBAR_EXPAND_THRESHOLD
 
-    def open_game_directly(self):
-        """直接启动游戏"""
-        try:
-            result = launch_game_with_guard(logger=logger)
-            if not result.get("ok"):
-                logger.error(result.get("error", "启动游戏失败"))
-
-        except Exception as e:
-            logger.error(f"出现报错: {e}")
-
     def connectSignalToSlot(self):
         signalBus.micaEnableChanged.connect(self.setMicaEffectEnabled)
         signalBus.switchToSampleCard.connect(self.switchToSample)
@@ -696,7 +754,7 @@ class MainWindow(FluentWindow, BaseInterface):
             elif hasattr(self.additionalInterface, "ui") and hasattr(self.additionalInterface.ui, "textBrowser_shared_log"):
                 shared_log_browser = self.additionalInterface.ui.textBrowser_shared_log
             if shared_log_browser is not None:
-                log_configs.append((str(LOG_DIR / "additional"), shared_log_browser, "additional"))
+                log_configs.append((str(LOG_DIR / "on_demand"), shared_log_browser, "on_demand"))
 
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 

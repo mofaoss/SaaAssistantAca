@@ -5,8 +5,8 @@ import win32con
 
 from app.framework.infra.config.app_config import config
 from app.framework.infra.events.signal_bus import signalBus
-from app.features.utils.ui import ui_text
-from app.features.utils.windows import is_exist_snowbreak
+from app.framework.ui.shared.text import ui_text
+from app.features.modules.enter_game.usecase.game_window_probe import is_snowbreak_running
 
 class CloseGameModule:
     def __init__(self, auto, logger):
@@ -17,7 +17,7 @@ class CloseGameModule:
         # 1. 退出游戏
         if config.CheckBox_close_game.value:
             self.logger.info(ui_text("正在退出游戏...", "Exiting game..."))
-            hwnd = is_exist_snowbreak()
+            hwnd = is_snowbreak_running()
             if hwnd:
                 win32gui.SendMessage(hwnd, win32con.WM_CLOSE, 0, 0)
                 time.sleep(2)

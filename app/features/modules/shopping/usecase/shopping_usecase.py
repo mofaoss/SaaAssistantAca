@@ -9,7 +9,6 @@ from app.features.modules.shopping.item_constants import (
     get_shop_item_zh_name_to_display_name_map,
     get_weapon_text_to_key_map,
 )
-from app.framework.ui.widgets.tree import TreeFrame_person, TreeFrame_weapon
 from app.framework.infra.automation.timer import Timer
 from app.features.utils.home_navigation import back_to_home
 
@@ -219,27 +218,19 @@ class ShoppingSelectionUseCase:
     def __init__(self, is_non_chinese_ui: bool):
         self._is_non_chinese_ui = bool(is_non_chinese_ui)
 
-    def create_selectors(self, parent):
-        select_person = TreeFrame_person(
-            parent=parent,
-            enableCheck=True,
-            is_non_chinese_ui=self._is_non_chinese_ui,
-        )
-        select_weapon = TreeFrame_weapon(
-            parent=parent,
-            enableCheck=True,
-            is_non_chinese_ui=self._is_non_chinese_ui,
-        )
+    @staticmethod
+    def _resolve_selectors(root_widget):
+        select_person = getattr(root_widget, "select_person", None)
+        select_weapon = getattr(root_widget, "select_weapon", None)
         return select_person, select_weapon
 
-    def get_text_to_key_maps(self):
-        return (
-            get_person_text_to_key_map(self._is_non_chinese_ui),
-            get_weapon_text_to_key_map(self._is_non_chinese_ui),
-        )
+    def load_item_config(self, *, settings_usecase, root_widget):
+        select_person, select_weapon = self._resolve_selectors(root_widget)
+        if select_person is None or select_weapon is None:
+            return
 
-    @staticmethod
-    def load_item_config(settings_usecase, select_person, select_weapon, person_text_to_key, weapon_text_to_key):
+        person_text_to_key = get_person_text_to_key_map(self._is_non_chinese_ui)
+        weapon_text_to_key = get_weapon_text_to_key_map(self._is_non_chinese_ui)
         settings_usecase.apply_tree_selection(
             tree=select_person.tree,
             text_to_key=person_text_to_key,
@@ -249,10 +240,29 @@ class ShoppingSelectionUseCase:
             text_to_key=weapon_text_to_key,
         )
 
+    def connect_selector_bindings(self, *, root_widget, settings_usecase):
+        select_person, select_weapon = self._resolve_selectors(root_widget)
+        if select_person is not None and hasattr(select_person, "itemStateChanged"):
+            select_person.itemStateChanged.connect(
+                lambda index, check_state: self.save_person_item(
+                    settings_usecase=settings_usecase,
+                    index=index,
+                    check_state=check_state,
+                )
+            )
+        if select_weapon is not None and hasattr(select_weapon, "itemStateChanged"):
+            select_weapon.itemStateChanged.connect(
+                lambda index, check_state: self.save_weapon_item(
+                    settings_usecase=settings_usecase,
+                    index=index,
+                    check_state=check_state,
+                )
+            )
+
     @staticmethod
-    def save_person_item(settings_usecase, index: int, check_state: int):
+    def save_person_item(*, settings_usecase, index: int, check_state: int):
         settings_usecase.persist_indexed_item("item_person_", index, check_state)
 
     @staticmethod
-    def save_weapon_item(settings_usecase, index: int, check_state: int):
+    def save_weapon_item(*, settings_usecase, index: int, check_state: int):
         settings_usecase.persist_indexed_item("item_weapon_", index, check_state)

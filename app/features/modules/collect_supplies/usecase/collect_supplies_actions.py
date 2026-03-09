@@ -1,19 +1,32 @@
 from __future__ import annotations
 
+from typing import Protocol
+
 from PySide6.QtCore import Qt
 from qfluentwidgets import InfoBar, InfoBarPosition
 
-from app.features.modules.redeem_codes.ui.ui_view import RedeemCodesView
-from app.features.modules.redeem_codes.usecase.redeem_codes_usecase import RedeemCodesUseCase
-from app.features.utils.ui import ui_text
+from app.framework.ui.shared.text import ui_text
+
+
+class RedeemCodesUseCasePort(Protocol):
+    def reset_codes(self, text_edit) -> str:
+        ...
+
+    def import_codes(self, raw_codes: str, text_edit) -> None:
+        ...
+
+
+class RedeemCodesViewPort(Protocol):
+    def prompt_import_codes(self, parent):
+        ...
 
 
 class CollectSuppliesActions:
     """Collect-supplies module actions (redeem-code related)."""
 
-    def __init__(self, settings_usecase):
-        self.redeem_codes_usecase = RedeemCodesUseCase(settings_usecase)
-        self.redeem_codes_view = RedeemCodesView()
+    def __init__(self, *, redeem_codes_usecase: RedeemCodesUseCasePort, redeem_codes_view: RedeemCodesViewPort):
+        self.redeem_codes_usecase = redeem_codes_usecase
+        self.redeem_codes_view = redeem_codes_view
 
     def on_reset_codes_click(self, host, text_edit):
         content = self.redeem_codes_usecase.reset_codes(text_edit)
@@ -32,4 +45,3 @@ class CollectSuppliesActions:
         if raw_codes is None:
             return
         self.redeem_codes_usecase.import_codes(raw_codes, text_edit)
-

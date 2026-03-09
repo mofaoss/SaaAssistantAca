@@ -8,24 +8,30 @@ from qfluentwidgets import SpinBox, CheckBox, ComboBox, LineEdit, Slider, InfoBa
 from app.framework.infra.config.app_config import config
 from app.framework.infra.events.signal_bus import signalBus
 from app.framework.ui.shared.style_sheet import StyleSheet
-from app.features.utils.ui import get_all_children
-
-from app.features.modules.trigger.usecase.auto_f_usecase import AutoFModule
-from app.features.modules.trigger.usecase.nita_auto_e_usecase import NitaAutoEModule
+from app.framework.ui.shared.widget_tree import get_all_children
 
 from app.framework.ui.views.on_demand_tasks_view import OnDemandTasksView
 from .periodic_base import BaseInterface
-from app.features.modules.fishing.ui.subtask import SubTask
 from app.framework.infra.logging.gui_logger import setup_ui_logger
 from app.framework.core.event_bus.global_task_bus import global_task_bus
 from app.framework.application.modules import HostContext, get_on_demand_module_specs
 from app.framework.application.periodic.on_demand_runner import OnDemandRunner
+from app.framework.core.task_engine.threads import ModuleTaskThread
 
 
 class OnDemandTasksPage(QFrame, BaseInterface):
     """On-demand task host: a single-run specialization over periodic scheduling primitives."""
 
-    def __init__(self, text: str, parent=None, *, shared_log_browser=None):
+    def __init__(
+        self,
+        text: str,
+        parent=None,
+        *,
+        shared_log_browser=None,
+        auto_f_module_cls=None,
+        auto_e_module_cls=None,
+        module_thread_cls=ModuleTaskThread,
+    ):
         super().__init__(parent)
         BaseInterface.__init__(self)
         self.ui = OnDemandTasksView(self)
@@ -43,6 +49,9 @@ class OnDemandTasksPage(QFrame, BaseInterface):
         self._page_name_to_task_id = {}
         self._mount_module_pages()
         self._build_task_metadata()
+        self.auto_f_module_cls = auto_f_module_cls
+        self.auto_e_module_cls = auto_e_module_cls
+        self.module_thread_cls = module_thread_cls
 
         # 触发器（自动辅助）独立管理，不受互斥限制
         self.f_thread = None
@@ -203,7 +212,7 @@ class OnDemandTasksPage(QFrame, BaseInterface):
                 self._get_task_metadata().get(task_id, {}).get("module_class")
             ),
             get_logger=lambda task_id: self.task_loggers.get(task_id, self.logger),
-            build_thread=lambda module_class, logger: SubTask(module_class, logger_instance=logger),
+            build_thread=lambda module_class, logger: self.module_thread_cls(module_class, logger_instance=logger),
             on_thread_state_changed=self._sync_all_ui_state,
         )
 
@@ -232,9 +241,9 @@ class OnDemandTasksPage(QFrame, BaseInterface):
         if is_running and running_task_id is not None:
             zh = meta_dict[running_task_id]["zh_name"]
             en = meta_dict[running_task_id]["en_name"]
-            self.task_coordinator.publish_state(True, zh, en, "additional")
+            self.task_coordinator.publish_state(True, zh, en, "on_demand")
         else:
-            self.task_coordinator.publish_state(False, "", "", "additional")
+            self.task_coordinator.publish_state(False, "", "", "on_demand")
             self.on_demand_runner.clear()
 
     def start_current_visible_task(self):
@@ -249,7 +258,7 @@ class OnDemandTasksPage(QFrame, BaseInterface):
             self._handle_universal_start_stop(task_id)
 
     def _on_global_state_changed(self, is_running: bool, zh_name: str, en_name: str, source: str):
-        if source == "additional":
+        if source in {"on_demand", "additional"}:
             return
         self.is_global_running = is_running
         meta_dict = self._get_task_metadata()
@@ -402,8 +411,19 @@ class OnDemandTasksPage(QFrame, BaseInterface):
 
     def on_f_toggled(self, isChecked: bool):
         if isChecked:
+            if self.auto_f_module_cls is None:
+                InfoBar.warning(
+                    self._ui_text("自动按F", "Auto F"),
+                    self._ui_text("功能未注册", "Feature not registered"),
+                    isClosable=True,
+                    duration=2000,
+                    parent=self,
+                )
+                if hasattr(self, "page_trigger"):
+                    self.page_trigger.SwitchButton_f.setChecked(False)
+                return
             trigger_logger = self.shared_logger
-            self.f_thread = SubTask(AutoFModule, logger_instance=trigger_logger)
+            self.f_thread = self.module_thread_cls(self.auto_f_module_cls, logger_instance=trigger_logger)
             self.f_thread.is_running.connect(self.turn_off_f_switch)
             self.f_thread.start()
         else:
@@ -413,8 +433,19 @@ class OnDemandTasksPage(QFrame, BaseInterface):
 
     def on_e_toggled(self, isChecked: bool):
         if isChecked:
+            if self.auto_e_module_cls is None:
+                InfoBar.warning(
+                    self._ui_text("妮塔自动E", "Nita Auto E"),
+                    self._ui_text("功能未注册", "Feature not registered"),
+                    isClosable=True,
+                    duration=2000,
+                    parent=self,
+                )
+                if hasattr(self, "page_trigger"):
+                    self.page_trigger.SwitchButton_e.setChecked(False)
+                return
             trigger_logger = self.shared_logger
-            self.nita_e_thread = SubTask(NitaAutoEModule, logger_instance=trigger_logger)
+            self.nita_e_thread = self.module_thread_cls(self.auto_e_module_cls, logger_instance=trigger_logger)
             self.nita_e_thread.is_running.connect(self.turn_off_e_switch)
             self.nita_e_thread.start()
         else:

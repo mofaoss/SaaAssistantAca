@@ -11,7 +11,7 @@ from qfluentwidgets import InfoBar, InfoBarPosition
 
 from app.framework.infra.config.app_config import config
 from app.framework.infra.config.data_models import ApiResponse, parse_config_update_data
-from app.features.utils.ui import ui_text
+from app.framework.ui.shared.text import ui_text
 
 
 DEFAULT_USER_AGENT = (
@@ -217,7 +217,7 @@ class CloudflareUpdateThread(QThread):
 def start_cloudflare_update(parent):
     """
     启动 Cloudflare 更新线程，并绑定回调到当前模块中的处理函数
-    :param parent: Daily 实例，用于访问 logger, get_tips 和作为 InfoBar 的父组件
+    :param parent: 页面实例，用于访问 logger、refresh_tips 回调和作为 InfoBar 的父组件
     """
     parent.cloudflare_thread = CloudflareUpdateThread()
     parent.cloudflare_thread.update_finished.connect(
@@ -227,11 +227,29 @@ def start_cloudflare_update(parent):
     parent.cloudflare_thread.start()
 
 
+def _refresh_tips(parent, *, url=None):
+    refresh_fn = getattr(parent, "refresh_tips", None)
+    if callable(refresh_fn):
+        if url is None:
+            refresh_fn()
+        else:
+            refresh_fn(url=url)
+        return
+
+    # Backward compatibility for legacy hosts.
+    legacy_fn = getattr(parent, "get_tips", None)
+    if callable(legacy_fn):
+        if url is None:
+            legacy_fn()
+        else:
+            legacy_fn(url=url)
+
+
 def handle_cloudflare_success(data, parent):
     try:
         if 'data' not in data:
             parent.logger.error(ui_text('通过cloudflare在线更新出错: 返回数据格式不正确', 'Error occurred while updating through Cloudflare: Incorrect data format returned'))
-            parent.get_tips()
+            _refresh_tips(parent)
             return
 
         online_data = data["data"]
@@ -241,7 +259,7 @@ def handle_cloudflare_success(data, parent):
         for field in required_fields:
             if field not in online_data:
                 parent.logger.error(ui_text(f'通过cloudflare在线更新出错: 缺少必要字段 {field}', f'Error occurred while updating through Cloudflare: Missing required field {field} in updateData'))
-                parent.get_tips()
+                _refresh_tips(parent)
                 return
 
         if 'updateData' in online_data:
@@ -249,7 +267,7 @@ def handle_cloudflare_success(data, parent):
                 if field not in online_data['updateData']:
                     parent.logger.error(
                         ui_text(f'通过cloudflare在线更新出错: updateData缺少必要字段 {field}', f'Error occurred while updating through Cloudflare: Missing required field {field} in updateData'))
-                    parent.get_tips()
+                    _refresh_tips(parent)
                     return
 
         try:
@@ -261,7 +279,7 @@ def handle_cloudflare_success(data, parent):
             handle_update_logic_fallback(data, online_data, parent)
     except Exception as e:
         parent.logger.error(ui_text(f'处理Cloudflare数据时出错: {str(e)}', f'Error occurred while processing Cloudflare data: {str(e)}'))
-        parent.get_tips()
+        _refresh_tips(parent)
 
 
 def handle_update_logic(raw_data: Dict[str, Any], online_data: Dict[str, Any], response: ApiResponse, parent):
@@ -273,7 +291,7 @@ def handle_update_logic(raw_data: Dict[str, Any], online_data: Dict[str, Any], r
             parent.logger.info(ui_text(f'获取到更新信息：{online_data}', f'Obtained update information: {online_data}'))
 
         url = f"https://www.cbjq.com/api.php?op=search_api&action=get_article_detail&catid={response.data.updateData.linkCatId}&id={response.data.updateData.linkId}"
-        parent.get_tips(url=url)
+        _refresh_tips(parent, url=url)
         InfoBar.success(title=ui_text('获取更新成功', 'Update Successful'),
                         content=ui_text("检测到新的 兑换码 活动信息", "New redeem code event information detected"),
                         orient=Qt.Orientation.Horizontal,
@@ -308,7 +326,7 @@ def handle_update_logic(raw_data: Dict[str, Any], online_data: Dict[str, Any], r
                 config.set(config.task_name,
                            response.data.updateData.questName)
                 url = f"https://www.cbjq.com/api.php?op=search_api&action=get_article_detail&catid={response.data.updateData.linkCatId}&id={response.data.updateData.linkId}"
-                parent.get_tips(url=url)
+                _refresh_tips(parent, url=url)
                 InfoBar.success(title=ui_text('获取更新成功', 'Update Successful'),
                                 content=ui_text(f"检测到新的{content}", f"New {content} detected"),
                                 orient=Qt.Orientation.Horizontal,
@@ -317,9 +335,9 @@ def handle_update_logic(raw_data: Dict[str, Any], online_data: Dict[str, Any], r
                                 duration=10000,
                                 parent=parent)
             else:
-                parent.get_tips()
+                _refresh_tips(parent)
         else:
-            parent.get_tips()
+            _refresh_tips(parent)
 
 
 def handle_update_logic_fallback(data, online_data, parent):
@@ -330,7 +348,7 @@ def handle_update_logic_fallback(data, online_data, parent):
         catId = online_data["updateData"]["linkCatId"]
         linkId = online_data["updateData"]["linkId"]
         url = f"https://www.cbjq.com/api.php?op=search_api&action=get_article_detail&catid={catId}&id={linkId}"
-        parent.get_tips(url=url)
+        _refresh_tips(parent, url=url)
         InfoBar.success(title=ui_text('获取更新成功', 'Update Successful'),
                         content=ui_text("检测到新的 兑换码 活动信息", "New redeem code event information detected"),
                         orient=Qt.Orientation.Horizontal,
@@ -346,20 +364,20 @@ def handle_update_logic_fallback(data, online_data, parent):
             catId = online_data["updateData"]["linkCatId"]
             linkId = online_data["updateData"]["linkId"]
             url = f"https://www.cbjq.com/api.php?op=search_api&action=get_article_detail&catid={catId}&id={linkId}"
-            parent.get_tips(url=url)
+            _refresh_tips(parent, url=url)
             return
 
         local_data = config.update_data.value["data"]
         if online_data != local_data:
             # 简化版 fallback 逻辑，不再详细比对，直接提示更新
             # 实际场景中 fallback 很少触发，这里为了代码简洁略去部分重复逻辑
-            parent.get_tips()
+            _refresh_tips(parent)
         else:
-            parent.get_tips()
+            _refresh_tips(parent)
 
 
 def handle_cloudflare_error(error_msg, parent):
     parent.logger.error(f'通过cloudflare在线更新出错: {error_msg}')
-    parent.get_tips()
+    _refresh_tips(parent)
 
 

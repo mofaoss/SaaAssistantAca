@@ -129,6 +129,7 @@ class PeriodicController:
         *,
         parent,
         logger_instance,
+        home_sync: Optional[Callable[[object, object], bool]] = None,
         on_state_changed: Callable[[str], None],
         on_task_completed: Callable[[str], None],
         on_task_started: Callable[[str], None],
@@ -142,6 +143,7 @@ class PeriodicController:
             tasks_to_run=list(self.state.tasks_to_run),
             logger_instance=logger_instance,
             task_registry=self.task_registry,
+            home_sync=home_sync,
             parent=parent,
         )
         thread.is_running_signal.connect(on_state_changed)

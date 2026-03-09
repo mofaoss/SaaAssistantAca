@@ -12,7 +12,7 @@ from qfluentwidgets import SegmentedWidget, SimpleCardWidget, TitleLabel
 class OnDemandTasksView(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setObjectName("additional_features")
+        self.setObjectName("on_demand_tasks")
 
         self.gridLayout = QGridLayout(self)
         self.gridLayout.setContentsMargins(10, 10, 10, 10)

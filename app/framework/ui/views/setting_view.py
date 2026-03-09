@@ -3,36 +3,43 @@ import logging
 import os.path
 import subprocess
 import sys
-import html
-from functools import partial
 
 from PySide6.QtCore import Qt, QUrl, QThread, Signal
 from PySide6.QtGui import QDesktopServices, QFont, QPixmap
 from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QApplication, QSizePolicy
-from qfluentwidgets import FluentIcon as FIF
-from qfluentwidgets import InfoBar
-from qfluentwidgets import SettingCardGroup as CardGroup
-from qfluentwidgets import (SwitchSettingCard, ScrollArea,
-                            ComboBoxSettingCard, ExpandLayout, setTheme, setFont, MessageBox, ProgressBar,
-                            LargeTitleLabel, SubtitleLabel, BodyLabel, PushButton, HyperlinkButton,
-                            PushButton, FluentIcon as FIF
-                            )
+from qfluentwidgets import (
+    BodyLabel,
+    ComboBoxSettingCard,
+    ExpandLayout,
+    FluentIcon as FIF,
+    HyperlinkButton,
+    InfoBar,
+    LargeTitleLabel,
+    MessageBox,
+    ProgressBar,
+    PushButton,
+    ScrollArea,
+    SettingCardGroup as CardGroup,
+    SubtitleLabel,
+    SwitchSettingCard,
+    setFont,
+    setTheme,
+)
 
 from app.framework.infra.config.app_config import config, isWin11, is_non_chinese_ui_language
-from app.framework.infra.config.setting import QQ, REPO_URL
+from app.framework.infra.config.setting import REPO_URL
 from app.framework.infra.events.signal_bus import signalBus
-from app.framework.ui.shared.style_sheet import StyleSheet
-from .periodic_base import BaseInterface
-from app.features.utils.updater import (
+from app.framework.infra.update.updater import (
+    UpdateDownloadThread,
+    get_app_root,
+    get_best_update_candidate,
     get_local_version,
     resolve_batch_dir,
-    get_best_update_candidate,
-    get_binary_path,
-    get_app_root,
 )
+from app.framework.ui.shared.style_sheet import StyleSheet
+from .periodic_base import BaseInterface
 from app.framework.ui.widgets.slider_setting_card import SliderSettingCard
 from app.framework.ui.widgets.text_edit_card import TextEditCard
-from app.features.utils.updater import UpdateDownloadThread, get_best_update_candidate, get_local_version
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +86,7 @@ class AboutHeaderWidget(QWidget, BaseInterface):
 
         self.logoLabel = QLabel(self)
         self.logoLabel.setFixedSize(80, 80)
-        pixmap = QPixmap("app/framework/ui/resources/images/sun.png")
+        pixmap = QPixmap(":/app/framework/ui/resources/logo/sun.png")
         if not pixmap.isNull():
             self.logoLabel.setPixmap(pixmap.scaled(80, 80, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
         else:

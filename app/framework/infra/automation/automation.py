@@ -13,13 +13,13 @@ from app.framework.infra.config.app_config import config
 from app.framework.infra.vision.image import ImageUtils
 from app.framework.infra.vision.matcher import matcher
 from app.framework.infra.events.signal_bus import signalBus
-from app.features.utils.text_normalizer import normalize_chinese_text
-from app.features.utils.randoms import random_rectangle_point
-from app.features.utils.windows import get_hwnd
+from app.framework.infra.automation.text_normalizer import normalize_chinese_text
+from app.framework.infra.automation.randoms import random_rectangle_point
+from app.framework.infra.system.windows import get_hwnd
 from app.framework.infra.automation.input import Input
 from app.framework.infra.automation.screenshot import Screenshot
-from app.features.modules.ocr import ocr
-from app.features.utils.ui import ui_text
+from app.framework.infra.vision.ocr_service import run_ocr
+from app.framework.ui.shared.text import ui_text
 
 
 def atoms(func):
@@ -250,9 +250,9 @@ class Automation:
                 if self.current_screenshot is None:
                     self.ocr_result = []
                     return
-                self.ocr_result = ocr.run(self.current_screenshot, extract, is_log=is_log)
+                self.ocr_result = run_ocr(self.current_screenshot, extract, is_log=is_log)
             else:
-                self.ocr_result = ocr.run(image, extract, is_log=is_log)
+                self.ocr_result = run_ocr(image, extract, is_log=is_log)
             if not self.ocr_result:
                 self.ocr_result = []
         except Exception as e:

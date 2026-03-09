@@ -5,10 +5,10 @@ import gc
 
 from app.framework.infra.config.app_config import config
 from app.framework.infra.vision.image import ImageUtils
+from app.framework.ui.shared.text import ui_text
 from app.features.utils.text_normalizer import normalize_chinese_text
 from app.framework.infra.system.cpu import cpu_support_avx2
 from app.features.modules.onnxocr.onnx_paddleocr import ONNXPaddleOcr
-from app.features.utils.ui import ui_text
 
 
 class OCR:

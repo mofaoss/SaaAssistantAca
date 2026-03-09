@@ -1,12 +1,12 @@
 # coding:utf-8
 import sys
+from typing import Callable
 
 from PySide6.QtCore import QThread, Signal
 
 from app.framework.infra.config.app_config import config, is_non_chinese_ui_language
 from app.framework.core.task_engine.runtime_session import RuntimeAutomationSession
-from app.features.utils.home_navigation import back_to_home
-from app.features.utils.ui import ui_text
+from app.framework.ui.shared.text import ui_text
 
 
 class TaskQueueThread(QThread):
@@ -19,11 +19,20 @@ class TaskQueueThread(QThread):
     task_failed_signal = Signal(str)
     show_tray_message_signal = Signal(str, str)
 
-    def __init__(self, tasks_to_run: list, logger_instance, task_registry: dict, parent=None):
+    def __init__(
+        self,
+        tasks_to_run: list,
+        logger_instance,
+        task_registry: dict,
+        *,
+        home_sync: Callable[[object, object], bool] | None = None,
+        parent=None,
+    ):
         super().__init__(parent)
         self.tasks_to_run = tasks_to_run
         self.logger = logger_instance
         self.task_registry = task_registry
+        self.home_sync = home_sync or (lambda _auto, _logger: True)
         self.session = RuntimeAutomationSession(self.logger)
         self._is_running = True
         self._interrupted_reason = None
@@ -65,7 +74,7 @@ class TaskQueueThread(QThread):
                 requires_home_sync = bool(meta.get("requires_home_sync", True))
                 if requires_home_sync:
                     self.logger.info(ui_text(f"正在准备 {task_name}，尝试返回主界面...", f"Preparing {task_name}, returning to home..."))
-                    if not back_to_home(auto, self.logger):
+                    if not self.home_sync(auto, self.logger):
                         self.logger.error(ui_text(f"[{task_name}] 开始前返回主界面失败，跳过该任务", f"[{task_name}] Failed to return to home before start, skipping."))
                         task_success = False
 
@@ -77,7 +86,7 @@ class TaskQueueThread(QThread):
                     if requires_home_sync and self._is_running:
                         msg = ui_text(f"{task_name} 执行完毕，正在返回主界面...", f"{task_name} finished, returning to home...")
                         self.logger.info(msg)
-                        back_to_home(auto, self.logger)
+                        self.home_sync(auto, self.logger)
 
                 if self._is_running:
                     if task_success:

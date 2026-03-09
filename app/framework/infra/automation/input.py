@@ -11,7 +11,7 @@ import win32gui  # 不能删
 
 from app.framework.infra.config.app_config import config
 from app.framework.infra.automation.window_tracker import WindowTracker
-from app.features.utils.ui import ui_text
+from app.framework.ui.shared.text import ui_text
 
 logger = logging.getLogger(__name__)
 
