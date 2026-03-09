@@ -7,10 +7,10 @@ from qfluentwidgets import (BodyLabel, CheckBox, ComboBox, LineEdit, PixmapLabel
                             StrongBodyLabel, TitleLabel)
 from app.framework.infra.config.app_config import config
 from app.framework.infra.events.signal_bus import signalBus
-from app.framework.ui.views.base_feature_interface import BaseFeatureInterface
+from app.framework.ui.views.on_demand_task_base import OnDemandTaskBase
 from app.features.modules.fishing.ui.subtask import AdjustColor
 
-class FishingInterface(BaseFeatureInterface):
+class FishingInterface(OnDemandTaskBase):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("page_fishing")

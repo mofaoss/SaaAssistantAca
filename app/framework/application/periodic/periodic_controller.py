@@ -3,7 +3,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
-from app.framework.application.daily.orchestration import normalize_tasks_for_launch
+from app.framework.application.periodic.periodic_orchestration import normalize_tasks_for_launch
 from app.framework.core.task_engine.threads import TaskQueueThread
 
 
@@ -23,7 +23,7 @@ class ThreadTransition:
 
 
 @dataclass
-class DailyControllerState:
+class PeriodicControllerState:
     is_running: bool = False
     is_launch_pending: bool = False
     is_global_running: bool = False
@@ -35,13 +35,13 @@ class DailyControllerState:
     is_scheduled_run: bool = False
 
 
-class DailyController:
-    """Application layer controller for Daily execution state and thread lifecycle."""
+class PeriodicController:
+    """Application layer controller for periodic execution state and thread lifecycle."""
 
     def __init__(self, task_registry: Dict[str, dict], primary_task_id: str):
         self.task_registry = task_registry
         self.primary_task_id = primary_task_id
-        self.state = DailyControllerState()
+        self.state = PeriodicControllerState()
         self._start_thread: Optional[TaskQueueThread] = None
 
     @property

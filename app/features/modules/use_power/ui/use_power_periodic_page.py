@@ -1,10 +1,10 @@
 from PySide6.QtWidgets import QHBoxLayout
 from qfluentwidgets import BodyLabel, CheckBox, ComboBox, StrongBodyLabel
 
-from app.framework.ui.views.daily_base_page import BaseDailyPage
+from app.framework.ui.views.periodic_page_base import PeriodicPageBase
 
 
-class UsePowerPage(BaseDailyPage):
+class UsePowerPage(PeriodicPageBase):
     def __init__(self, parent=None):
         super().__init__("page_2", parent=parent)
 

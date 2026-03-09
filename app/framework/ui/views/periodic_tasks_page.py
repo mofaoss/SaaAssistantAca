@@ -27,14 +27,14 @@ from app.framework.ui.widgets.tree import TreeFrame_person, TreeFrame_weapon
 from app.features.modules.shopping.item_constants import get_person_text_to_key_map, get_weapon_text_to_key_map
 from app.framework.core.task_engine.scheduler import Scheduler
 from app.framework.infra.logging.gui_logger import setup_ui_logger
-from app.framework.application.daily.controller import DailyController
-from app.framework.application.daily.settings_usecase import DailySettingsUseCase
-from app.framework.application.daily.ui_binding_usecase import DailyUiBindingUseCase
+from app.framework.application.periodic.periodic_controller import PeriodicController
+from app.framework.application.periodic.periodic_settings_usecase import PeriodicSettingsUseCase
+from app.framework.application.periodic.periodic_ui_binding_usecase import PeriodicUiBindingUseCase
 from app.framework.application.tasks.daily_policy import PRIMARY_TASK_ID
 from app.framework.core.event_bus.global_task_bus import global_task_bus
 from app.framework.application.tasks.task_registry import DAILY_TASK_REGISTRY
-from app.framework.application.scheduling.periodic_scheduler import PeriodicScheduler
-from app.framework.application.daily.orchestration import (
+from app.framework.application.periodic.periodic_dispatcher import PeriodicDispatcher
+from app.framework.application.periodic.periodic_orchestration import (
     build_active_schedule_lines,
     collect_checked_task_ids_for_rule,
     collect_checked_tasks,
@@ -44,7 +44,7 @@ from app.framework.application.daily.orchestration import (
 )
 
 # 导入视图与基类
-from app.framework.ui.views.daily_view import DailyView, TaskItemWidget
+from app.framework.ui.views.periodic_tasks_view import PeriodicTasksView, TaskItemWidget
 from .base_interface import BaseInterface
 
 logger = logging.getLogger(__name__)
@@ -66,7 +66,7 @@ def no_select(widget):
 # ==========================================
 # Controller 层
 # ==========================================
-class Daily(QFrame, BaseInterface):
+class PeriodicTasksPage(QFrame, BaseInterface):
 
     def __init__(self, text: str, parent=None):
         super().__init__(parent)
@@ -91,7 +91,7 @@ class Daily(QFrame, BaseInterface):
         self.person_text_to_key = get_person_text_to_key_map(self._is_non_chinese_ui)
         self.weapon_text_to_key = get_weapon_text_to_key_map(self._is_non_chinese_ui)
 
-        self.ui = DailyView(self, is_non_chinese_ui=self._is_non_chinese_ui)
+        self.ui = PeriodicTasksView(self, is_non_chinese_ui=self._is_non_chinese_ui)
         root_layout = QVBoxLayout(self)
         root_layout.setContentsMargins(0, 0, 0, 0)
         root_layout.setSpacing(0)
@@ -100,12 +100,12 @@ class Daily(QFrame, BaseInterface):
         self.parent = parent
 
         self.scheduler = Scheduler(self)
-        self.daily_controller = DailyController(
+        self.periodic_controller = PeriodicController(
             task_registry=TASK_REGISTRY,
             primary_task_id=PRIMARY_TASK_ID,
         )
-        self.settings_usecase = DailySettingsUseCase()
-        self.ui_binding_usecase = DailyUiBindingUseCase()
+        self.settings_usecase = PeriodicSettingsUseCase()
+        self.ui_binding_usecase = PeriodicUiBindingUseCase()
         self.redeem_codes_usecase = RedeemCodesUseCase(self.settings_usecase)
         self.redeem_codes_view = RedeemCodesView()
 
@@ -135,7 +135,7 @@ class Daily(QFrame, BaseInterface):
         self._connect_to_slot()
 
         self.logger = setup_ui_logger("logger_daily", self.ui.textBrowser_log)
-        self.periodic_scheduler = PeriodicScheduler(self.logger, self._ui_text)
+        self.periodic_dispatcher = PeriodicDispatcher(self.logger, self._ui_text)
 
         self.check_game_window_timer = QTimer()
         self.check_game_window_timer.timeout.connect(self.check_game_open)
@@ -171,93 +171,93 @@ class Daily(QFrame, BaseInterface):
 
     @property
     def is_running(self) -> bool:
-        return self.daily_controller.state.is_running
+        return self.periodic_controller.state.is_running
 
     @is_running.setter
     def is_running(self, value: bool):
-        self.daily_controller.state.is_running = bool(value)
+        self.periodic_controller.state.is_running = bool(value)
 
     @property
     def is_launch_pending(self) -> bool:
-        return self.daily_controller.state.is_launch_pending
+        return self.periodic_controller.state.is_launch_pending
 
     @is_launch_pending.setter
     def is_launch_pending(self, value: bool):
-        self.daily_controller.state.is_launch_pending = bool(value)
+        self.periodic_controller.state.is_launch_pending = bool(value)
 
     @property
     def is_global_running(self) -> bool:
-        return self.daily_controller.state.is_global_running
+        return self.periodic_controller.state.is_global_running
 
     @is_global_running.setter
     def is_global_running(self, value: bool):
-        self.daily_controller.state.is_global_running = bool(value)
+        self.periodic_controller.state.is_global_running = bool(value)
 
     @property
     def _waiting_for_external_to_finish(self) -> bool:
-        return self.daily_controller.state.waiting_for_external_to_finish
+        return self.periodic_controller.state.waiting_for_external_to_finish
 
     @_waiting_for_external_to_finish.setter
     def _waiting_for_external_to_finish(self, value: bool):
-        self.daily_controller.state.waiting_for_external_to_finish = bool(value)
+        self.periodic_controller.state.waiting_for_external_to_finish = bool(value)
 
     @property
     def tasks_to_run(self) -> List[str]:
-        return self.daily_controller.state.tasks_to_run
+        return self.periodic_controller.state.tasks_to_run
 
     @tasks_to_run.setter
     def tasks_to_run(self, value: List[str]):
-        self.daily_controller.state.tasks_to_run = list(value or [])
+        self.periodic_controller.state.tasks_to_run = list(value or [])
 
     @property
     def launch_process(self):
-        return self.daily_controller.state.launch_process
+        return self.periodic_controller.state.launch_process
 
     @launch_process.setter
     def launch_process(self, value):
-        self.daily_controller.state.launch_process = value
+        self.periodic_controller.state.launch_process = value
 
     @property
     def launch_deadline(self) -> float:
-        return self.daily_controller.state.launch_deadline
+        return self.periodic_controller.state.launch_deadline
 
     @launch_deadline.setter
     def launch_deadline(self, value: float):
-        self.daily_controller.state.launch_deadline = float(value or 0.0)
+        self.periodic_controller.state.launch_deadline = float(value or 0.0)
 
     @property
     def _is_running_solo_flag(self) -> bool:
-        return self.daily_controller.state.is_running_solo
+        return self.periodic_controller.state.is_running_solo
 
     @_is_running_solo_flag.setter
     def _is_running_solo_flag(self, value: bool):
-        self.daily_controller.state.is_running_solo = bool(value)
+        self.periodic_controller.state.is_running_solo = bool(value)
 
     @property
     def _is_scheduled_run_flag(self) -> bool:
-        return self.daily_controller.state.is_scheduled_run
+        return self.periodic_controller.state.is_scheduled_run
 
     @_is_scheduled_run_flag.setter
     def _is_scheduled_run_flag(self, value: bool):
-        self.daily_controller.state.is_scheduled_run = bool(value)
+        self.periodic_controller.state.is_scheduled_run = bool(value)
 
     @property
     def start_thread(self):
-        return self.daily_controller.start_thread
+        return self.periodic_controller.start_thread
 
     @start_thread.setter
     def start_thread(self, value):
-        self.daily_controller.start_thread = value
+        self.periodic_controller.start_thread = value
 
     def _on_scheduled_tasks_due(self, new_tasks_found: List[str]):
-        self.periodic_scheduler.handle_due_tasks(
+        self.periodic_dispatcher.handle_due_tasks(
             new_tasks_found,
             is_launch_pending=getattr(self, "is_launch_pending", False),
             is_self_running=getattr(self, "is_running", False),
             is_external_running=getattr(self, "is_global_running", False),
-            queue_tasks=self.daily_controller.queue_tasks,
+            queue_tasks=self.periodic_controller.queue_tasks,
             mark_task_queued=self._mark_task_queued,
-            mark_waiting_for_external_finish=self.daily_controller.mark_waiting_for_external_finish,
+            mark_waiting_for_external_finish=self.periodic_controller.mark_waiting_for_external_finish,
             run_now=self._run_scheduled_tasks_now,
         )
 
@@ -287,7 +287,7 @@ class Daily(QFrame, BaseInterface):
         self.ui.ComboBox_power_day.setEnabled(
             self.ui.CheckBox_is_use_power.isChecked())
 
-        StyleSheet.HOME_INTERFACE.apply(self)
+        StyleSheet.PERIODIC_TASKS_INTERFACE.apply(self)
         self.ui.ScrollArea.enableTransparentBackground()
         self.ui.ScrollArea_tips.enableTransparentBackground()
 
@@ -517,7 +517,7 @@ class Daily(QFrame, BaseInterface):
                 return
 
             self.launch_process = result.get("process")
-            self.daily_controller.mark_launch_started(self.launch_process, timeout_seconds=90)
+            self.periodic_controller.mark_launch_started(self.launch_process, timeout_seconds=90)
             self.check_game_window_timer.start(500)
             self._set_launch_pending_state(True)
         except Exception as e:
@@ -529,7 +529,7 @@ class Daily(QFrame, BaseInterface):
 
     def _clear_launch_watch_state(self):
         self.check_game_window_timer.stop()
-        self.daily_controller.clear_launch_watch_state()
+        self.periodic_controller.clear_launch_watch_state()
 
     def _stop_running_guard(self):
         self.running_game_guard_timer.stop()
@@ -592,7 +592,7 @@ class Daily(QFrame, BaseInterface):
         if source == "daily": return # 忽略自己发出的信号
 
         # 记录是否有外部任务在运行
-        self.daily_controller.set_global_running(is_running)
+        self.periodic_controller.set_global_running(is_running)
 
         if is_running:
             self.set_checkbox_enable(False)
@@ -603,7 +603,7 @@ class Daily(QFrame, BaseInterface):
             self.ui.PushButton_start.setText(self._ui_text("立即执行 (F8)", "Execute Now (F8)"))
 
             # 【新增：排队唤醒机制】如果外部任务结束了，并且我们有积压的排队任务在等，立刻唤醒执行！
-            pending_tasks = self.daily_controller.consume_pending_queue_on_external_release()
+            pending_tasks = self.periodic_controller.consume_pending_queue_on_external_release()
             if pending_tasks:
                 self.logger.info(ui_text("外部任务已结束，正在唤醒积压的日常排队任务...",
                                          "External task finished, waking up queued daily tasks..."))
@@ -656,7 +656,7 @@ class Daily(QFrame, BaseInterface):
         self._auto_adjust_after_use_action()
 
     def _set_launch_pending_state(self, pending: bool):
-        self.daily_controller.update_launch_pending(pending)
+        self.periodic_controller.update_launch_pending(pending)
         if self.is_launch_pending:
             self.set_checkbox_enable(False)
             self.ui.PushButton_start.setText(self._ui_text("停止 (F8)", "Stop (F8)"))
@@ -682,7 +682,7 @@ class Daily(QFrame, BaseInterface):
         or proceed directly with the automation thread.
         """
         game_opened = is_exist_snowbreak()
-        plan = self.daily_controller.build_run_plan(
+        plan = self.periodic_controller.build_run_plan(
             task_ids=tasks_to_run,
             game_opened=bool(game_opened),
             auto_open_game_enabled=self.settings_usecase.is_auto_open_game_enabled(),
@@ -704,7 +704,7 @@ class Daily(QFrame, BaseInterface):
 
     def handle_start(self, str_flag):
         try:
-            transition = self.daily_controller.apply_thread_flag(str_flag)
+            transition = self.periodic_controller.apply_thread_flag(str_flag)
 
             if transition.started:
                 self._set_launch_pending_state(False)
@@ -755,7 +755,7 @@ class Daily(QFrame, BaseInterface):
                 self._clear_launch_watch_state()
                 self._set_launch_pending_state(False)
 
-            self.daily_controller.stop_running_thread(
+            self.periodic_controller.stop_running_thread(
                 reason=self._ui_text('用户点击了手动终止按钮', 'User clicked stop button')
             )
         else:
@@ -909,7 +909,7 @@ class Daily(QFrame, BaseInterface):
     def check_game_open(self):
         try:
             hwnd = self._is_game_window_open()
-            launch_state = self.daily_controller.check_launch_tick(game_window_open=bool(hwnd))
+            launch_state = self.periodic_controller.check_launch_tick(game_window_open=bool(hwnd))
 
             if launch_state == "detected":
                 self._clear_launch_watch_state()
@@ -978,7 +978,7 @@ class Daily(QFrame, BaseInterface):
         if tasks_to_run:
             if not self.is_running:
                 self.tasks_to_run = list(tasks_to_run)
-                self.start_thread = self.daily_controller.create_and_start_thread(
+                self.start_thread = self.periodic_controller.create_and_start_thread(
                     parent=self,
                     logger_instance=self.logger,
                     on_state_changed=self.handle_start,
@@ -988,7 +988,7 @@ class Daily(QFrame, BaseInterface):
                     on_show_tray_message=self._show_tray_message,
                 )
             else:
-                self.daily_controller.stop_running_thread()
+                self.periodic_controller.stop_running_thread()
         else:
             InfoBar.error(title=self._ui_text('无任务', 'No task'),
                           content=self._ui_text(
@@ -1023,12 +1023,12 @@ class Daily(QFrame, BaseInterface):
                 self._stop_running_guard()
                 return
 
-            if not self.daily_controller.should_stop_for_window_closed(bool(self._is_game_window_open())):
+            if not self.periodic_controller.should_stop_for_window_closed(bool(self._is_game_window_open())):
                 return
 
             self._stop_running_guard()
             self.logger.warning(self._ui_text('检测到游戏窗口已关闭，正在停止当前自动任务', 'Game window closed, stopping current automatic task'))
-            self.daily_controller.stop_running_thread(
+            self.periodic_controller.stop_running_thread(
                 reason=self._ui_text('用户中断：游戏窗口已关闭', 'Interrupted by user: game window closed')
             )
         except Exception as e:
@@ -1051,7 +1051,7 @@ class Daily(QFrame, BaseInterface):
             return
 
         if self.is_running:
-            self.daily_controller.stop_running_thread(reason="User Stop")
+            self.periodic_controller.stop_running_thread(reason="User Stop")
             return
 
         tasks_to_run = collect_checked_tasks(

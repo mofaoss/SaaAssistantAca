@@ -1,5 +1,5 @@
-from app.framework.ui.views.daily import Daily
+from app.framework.ui.views.periodic_tasks_page import PeriodicTasksPage
 
 
-class PeriodicTasks(Daily):
+class PeriodicTasks(PeriodicTasksPage):
     """Semantic alias for periodic task host page."""

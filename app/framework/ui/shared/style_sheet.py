@@ -16,8 +16,8 @@ class StyleSheet(StyleSheetBase, Enum):
     SETTING_INTERFACE = "setting_interface"
     VIEW_INTERFACE = "view_interface"
     DISPLAY_INTERFACE = "display_interface"
-    HOME_INTERFACE = "home_interface"
-    ADDITIONAL_FEATURES_INTERFACE = "additional_features_interface"
+    PERIODIC_TASKS_INTERFACE = "periodic_tasks_interface"
+    ON_DEMAND_TASKS_INTERFACE = "on_demand_tasks_interface"
     HELP_INTERFACE = "help_interface"
     OCR_TABLE = "ocr_table"
 

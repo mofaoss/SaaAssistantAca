@@ -13,7 +13,7 @@ from app.features.utils.ui import get_all_children
 from app.features.modules.trigger.usecase.auto_f_usecase import AutoFModule
 from app.features.modules.trigger.usecase.nita_auto_e_usecase import NitaAutoEModule
 
-from app.framework.ui.views.additional_features_view import AdditionalFeaturesView
+from app.framework.ui.views.on_demand_tasks_view import OnDemandTasksView
 from .base_interface import BaseInterface
 from app.features.modules.fishing.ui.subtask import SubTask
 from app.framework.infra.logging.gui_logger import setup_ui_logger
@@ -22,12 +22,12 @@ from app.framework.application.modules import HostContext, get_on_demand_module_
 from app.framework.application.scheduling.on_demand_runner import OnDemandRunner
 
 
-class Additional(QFrame, BaseInterface):
+class OnDemandTasksPage(QFrame, BaseInterface):
 
     def __init__(self, text: str, parent=None):
         super().__init__(parent)
         BaseInterface.__init__(self)
-        self.ui = AdditionalFeaturesView(self)
+        self.ui = OnDemandTasksView(self)
         root_layout = QVBoxLayout(self)
         root_layout.setContentsMargins(0, 0, 0, 0)
         root_layout.setSpacing(0)
@@ -70,7 +70,7 @@ class Additional(QFrame, BaseInterface):
             first_page = self.stackedWidget.widget(0)
             self.SegmentedWidget.setCurrentItem(first_page.objectName())
             self.stackedWidget.setCurrentWidget(first_page)
-        StyleSheet.ADDITIONAL_FEATURES_INTERFACE.apply(self)
+        StyleSheet.ON_DEMAND_TASKS_INTERFACE.apply(self)
 
     def __getattr__(self, item):
         ui = self.__dict__.get('ui')

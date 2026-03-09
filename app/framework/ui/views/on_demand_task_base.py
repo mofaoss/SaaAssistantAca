@@ -1,7 +1,9 @@
 from PySide6.QtWidgets import QWidget
+
 from .base_interface import BaseInterface
 
-class BaseFeatureInterface(QWidget, BaseInterface):
+
+class OnDemandTaskBase(QWidget, BaseInterface):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         BaseInterface.__init__(self)

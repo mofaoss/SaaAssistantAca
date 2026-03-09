@@ -9,8 +9,8 @@ from qfluentwidgets import CheckBox, ComboBox, LineEdit, SpinBox
 from app.framework.infra.config.app_config import config
 
 
-class DailySettingsUseCase:
-    """Typed boundary for daily settings read/write and preset persistence."""
+class PeriodicSettingsUseCase:
+    """Typed boundary for periodic settings read/write and preset persistence."""
 
     @staticmethod
     def should_check_update_on_startup() -> bool:
@@ -150,12 +150,12 @@ class DailySettingsUseCase:
 
     @staticmethod
     def get_enabled_tasks_for_preset(preset_name: str) -> List[str]:
-        presets = DailySettingsUseCase.load_presets()
+        presets = PeriodicSettingsUseCase.load_presets()
         return list(presets.get(preset_name, []))
 
     @staticmethod
     def save_preset(preset_name: str, enabled_tasks: List[str]) -> bool:
-        presets = DailySettingsUseCase.load_presets()
+        presets = PeriodicSettingsUseCase.load_presets()
         is_new = preset_name not in presets
         presets[preset_name] = list(enabled_tasks)
         config.set(config.task_presets, presets)
@@ -163,7 +163,7 @@ class DailySettingsUseCase:
 
     @staticmethod
     def delete_preset(preset_name: str) -> Tuple[bool, str]:
-        presets = DailySettingsUseCase.load_presets()
+        presets = PeriodicSettingsUseCase.load_presets()
         if preset_name not in presets:
             return False, "not_found"
         if len(presets) <= 1:

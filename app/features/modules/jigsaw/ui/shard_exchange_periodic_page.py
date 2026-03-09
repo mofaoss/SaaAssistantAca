@@ -1,10 +1,10 @@
 from PySide6.QtCore import Qt
 from qfluentwidgets import BodyLabel, CheckBox
 
-from app.framework.ui.views.daily_base_page import BaseDailyPage
+from app.framework.ui.views.periodic_page_base import PeriodicPageBase
 
 
-class ShardExchangePage(BaseDailyPage):
+class ShardExchangePage(PeriodicPageBase):
     def __init__(self, parent=None):
         super().__init__("page_shard_exchange", parent=parent)
 

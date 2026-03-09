@@ -8,10 +8,10 @@ from qfluentwidgets import (
     TextEdit,
 )
 
-from app.framework.ui.views.daily_base_page import BaseDailyPage
+from app.framework.ui.views.periodic_page_base import PeriodicPageBase
 
 
-class CollectSuppliesPage(BaseDailyPage):
+class CollectSuppliesPage(PeriodicPageBase):
     def __init__(self, parent=None):
         super().__init__("page_3", parent=parent)
 

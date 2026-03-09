@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Callable, Iterable
 
 
-class PeriodicScheduler:
+class PeriodicDispatcher:
     """Application-level periodic dispatch policy for Daily host."""
 
     def __init__(self, logger, ui_text_fn: Callable[[str, str], str]):

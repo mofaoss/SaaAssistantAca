@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QStackedWidget, QVBoxLayout, QWidget, QTextBrowser
 from qfluentwidgets import SegmentedWidget, SimpleCardWidget, TitleLabel
 
-class AdditionalFeaturesView(QWidget):
+class OnDemandTasksView(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("additional_features")

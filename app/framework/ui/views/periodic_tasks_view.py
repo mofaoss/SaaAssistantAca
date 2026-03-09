@@ -34,23 +34,23 @@ from qfluentwidgets import (
     isDarkTheme,
 )
 from app.framework.application.tasks.daily_policy import PRIMARY_TASK_ID, MANDATORY_DAILY_TASK_IDS
-from app.features.modules.chasm.ui.chasm_daily_page import ChasmPage
-from app.features.modules.close_game.ui.close_game_daily_page import CloseGamePage
-from app.features.modules.collect_supplies.ui.collect_supplies_daily_page import (
+from app.features.modules.chasm.ui.chasm_periodic_page import ChasmPage
+from app.features.modules.close_game.ui.close_game_periodic_page import CloseGamePage
+from app.features.modules.collect_supplies.ui.collect_supplies_periodic_page import (
     CollectSuppliesPage,
 )
-from app.features.modules.enter_game.ui.enter_game_daily_page import EnterGamePage
-from app.features.modules.get_reward.ui.reward_daily_page import RewardPage
-from app.features.modules.jigsaw.ui.shard_exchange_daily_page import (
+from app.features.modules.enter_game.ui.enter_game_periodic_page import EnterGamePage
+from app.features.modules.get_reward.ui.reward_periodic_page import RewardPage
+from app.features.modules.jigsaw.ui.shard_exchange_periodic_page import (
     ShardExchangePage,
 )
-from app.features.modules.operation_action.ui.operation_daily_page import OperationPage
-from app.features.modules.person.ui.person_daily_page import PersonPage
-from app.features.modules.shopping.ui.shop_daily_page import ShopPage
-from app.features.modules.upgrade.ui.weapon_upgrade_daily_page import (
+from app.features.modules.operation_action.ui.operation_periodic_page import OperationPage
+from app.features.modules.person.ui.person_periodic_page import PersonPage
+from app.features.modules.shopping.ui.shop_periodic_page import ShopPage
+from app.features.modules.upgrade.ui.weapon_upgrade_periodic_page import (
     WeaponUpgradePage,
 )
-from app.features.modules.use_power.ui.use_power_daily_page import UsePowerPage
+from app.features.modules.use_power.ui.use_power_periodic_page import UsePowerPage
 
 
 class TaskListView(ListWidget):
@@ -671,7 +671,7 @@ class SharedSchedulingPanel(QWidget):
         self.config_changed.emit(self.task_id, new_cfg)
 
 
-class DailyView(ScrollArea):
+class PeriodicTasksView(ScrollArea):
 
     def __init__(self, parent=None, is_non_chinese_ui=False):
         super().__init__(parent)

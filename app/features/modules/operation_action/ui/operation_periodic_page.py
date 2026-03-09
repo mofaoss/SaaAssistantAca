@@ -2,10 +2,10 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout
 from qfluentwidgets import BodyLabel, ComboBox, SpinBox
 
-from app.framework.ui.views.daily_base_page import BaseDailyPage
+from app.framework.ui.views.periodic_page_base import PeriodicPageBase
 
 
-class OperationPage(BaseDailyPage):
+class OperationPage(PeriodicPageBase):
     def __init__(self, parent=None):
         super().__init__("page_operation", parent=parent)
 

@@ -7,8 +7,8 @@ from qfluentwidgets import CheckBox, ComboBox, LineEdit, SpinBox
 from app.features.utils.ui import get_all_children
 
 
-class DailyUiBindingUseCase:
-    """Encapsulate UI signal wiring for daily config persistence."""
+class PeriodicUiBindingUseCase:
+    """Encapsulate UI signal wiring for periodic config persistence."""
 
     @staticmethod
     def connect_config_bindings(

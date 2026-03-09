@@ -2,9 +2,9 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 from qfluentwidgets import (BodyLabel, ComboBox, PushButton, SimpleCardWidget, SpinBox, TitleLabel)
 from app.framework.infra.config.app_config import config
-from app.framework.ui.views.base_feature_interface import BaseFeatureInterface
+from app.framework.ui.views.on_demand_task_base import OnDemandTaskBase
 
-class OperationInterface(BaseFeatureInterface):
+class OperationInterface(OnDemandTaskBase):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("page_action")
