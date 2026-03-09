@@ -1,11 +1,10 @@
 # coding:utf-8
 import copy
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Set
 
 from PySide6.QtCore import QObject, QTimer, Signal
 
-from app.framework.application.tasks.task_policy import MANDATORY_PERIODIC_TASK_IDS, PRIMARY_TASK_ID
 from app.framework.infra.config.app_config import config
 from app.framework.core.config.daily_sequence import normalize_daily_task_sequence
 from app.framework.core.config.migration import migrate_daily_sequence_schema
@@ -17,8 +16,16 @@ class Scheduler(QObject):
     tasks_due = Signal(list)
     sequence_updated = Signal(list)
 
-    def __init__(self, parent=None):
+    def __init__(
+        self,
+        parent=None,
+        *,
+        primary_task_id: str,
+        mandatory_task_ids: Set[str],
+    ):
         super().__init__(parent)
+        self.primary_task_id = primary_task_id
+        self.mandatory_task_ids = set(mandatory_task_ids or set())
         self._task_sequence_cache = []
         self._init_and_normalize_sequence()
 
@@ -38,8 +45,8 @@ class Scheduler(QObject):
         self._task_sequence_cache = normalize_daily_task_sequence(
             sequence=sequence,
             defaults=defaults,
-            mandatory_task_ids=MANDATORY_PERIODIC_TASK_IDS,
-            primary_task_id=PRIMARY_TASK_ID,
+            mandatory_task_ids=self.mandatory_task_ids,
+            primary_task_id=self.primary_task_id,
         )
         self.save_task_sequence(self._task_sequence_cache, silent=True)
 
@@ -113,13 +120,12 @@ class Scheduler(QObject):
         if new_tasks_found:
             self.tasks_due.emit(new_tasks_found)
 
-    @staticmethod
-    def normalize_task_sequence(sequence: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def normalize_task_sequence(self, sequence: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         defaults = copy.deepcopy(config.daily_task_sequence.defaultValue)
         return normalize_daily_task_sequence(
             sequence=sequence,
             defaults=defaults,
-            mandatory_task_ids=MANDATORY_PERIODIC_TASK_IDS,
-            primary_task_id=PRIMARY_TASK_ID,
+            mandatory_task_ids=self.mandatory_task_ids,
+            primary_task_id=self.primary_task_id,
         )
 

@@ -10,29 +10,25 @@ import win32con
 import win32gui
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QFrame, QWidget, QFileDialog, QVBoxLayout, QSystemTrayIcon, QApplication
-from qfluentwidgets import FluentIcon as FIF, InfoBar, InfoBarPosition, CheckBox, BodyLabel, ProgressBar, FlyoutView, Flyout
+from PySide6.QtWidgets import QFrame, QWidget, QVBoxLayout, QSystemTrayIcon, QApplication
+from qfluentwidgets import FluentIcon as FIF, InfoBar, InfoBarPosition, CheckBox
 
 from app.framework.infra.config.app_config import is_non_chinese_ui_language
 from app.framework.infra.events.signal_bus import signalBus
 from app.framework.ui.shared.style_sheet import StyleSheet
-from app.features.utils.network import get_date_from_api, calculate_time_difference
 from app.features.utils.ui import ui_text
-from app.features.utils.windows import is_exist_snowbreak
 
-from app.features.modules.enter_game.usecase.enter_game_usecase import launch_game_with_guard
-from app.features.modules.redeem_codes.ui.ui_view import RedeemCodesView
-from app.features.modules.redeem_codes.usecase.redeem_codes_usecase import RedeemCodesUseCase
-from app.framework.ui.widgets.tree import TreeFrame_person, TreeFrame_weapon
+from app.features.modules.collect_supplies.usecase.collect_supplies_actions import CollectSuppliesActions
+from app.features.modules.enter_game.usecase.enter_game_actions import EnterGameActions
+from app.features.modules.event_tips.usecase.event_tips_usecase import EventTipsUseCase
 from app.features.modules.shopping.item_constants import get_person_text_to_key_map, get_weapon_text_to_key_map
+from app.features.modules.shopping.usecase.shopping_usecase import ShoppingSelectionUseCase
 from app.framework.core.task_engine.scheduler import Scheduler
 from app.framework.infra.logging.gui_logger import setup_ui_logger
 from app.framework.application.periodic.periodic_controller import PeriodicController
 from app.framework.application.periodic.periodic_settings_usecase import PeriodicSettingsUseCase
 from app.framework.application.periodic.periodic_ui_binding_usecase import PeriodicUiBindingUseCase
-from app.framework.application.tasks.task_policy import PRIMARY_TASK_ID
 from app.framework.core.event_bus.global_task_bus import global_task_bus
-from app.framework.application.tasks.task_registry import DAILY_TASK_REGISTRY
 from app.framework.application.periodic.periodic_dispatcher import PeriodicDispatcher
 from app.framework.application.periodic.on_demand_runner import SingleTaskToggle
 from app.framework.application.periodic.periodic_orchestration import (
@@ -43,6 +39,7 @@ from app.framework.application.periodic.periodic_orchestration import (
     upsert_rule_to_tasks,
     withdraw_rule_from_tasks,
 )
+from app.features.scheduling.task_profile import get_periodic_task_profile
 
 # 导入视图与基类
 from app.framework.ui.views.periodic_tasks_view import PeriodicTasksView, TaskItemWidget
@@ -50,18 +47,16 @@ from .periodic_base import BaseInterface
 
 logger = logging.getLogger(__name__)
 
-TASK_REGISTRY = DAILY_TASK_REGISTRY
-PRIMARY_OPTION_KEY = TASK_REGISTRY.get(PRIMARY_TASK_ID, {}).get("option_key", "CheckBox_entry_1")
 task_coordinator = global_task_bus
 
 def select_all(widget):
     for checkbox in widget.findChildren(CheckBox):
         checkbox.setChecked(True)
 
-def no_select(widget):
+def no_select(widget, primary_option_key: str):
     for checkbox in widget.findChildren(CheckBox):
         # 保护机制：主任务对应 checkbox 绝不执行取消勾选
-        if checkbox.objectName() != PRIMARY_OPTION_KEY:
+        if checkbox.objectName() != primary_option_key:
             checkbox.setChecked(False)
 
 # ==========================================
@@ -75,20 +70,13 @@ class PeriodicTasksPage(QFrame, BaseInterface):
         BaseInterface.__init__(self)
 
         self._is_non_chinese_ui = is_non_chinese_ui_language()
+        self.task_profile = get_periodic_task_profile()
+        self.task_registry = self.task_profile.task_registry
+        self.primary_task_id = self.task_profile.primary_task_id
+        self.mandatory_task_ids = set(self.task_profile.mandatory_task_ids)
+        self.primary_option_key = self.task_profile.primary_option_key
 
-        self.setting_name_list = [
-            self._ui_text('登录', 'Login'),
-            self._ui_text('福利', 'Supplies'),
-            self._ui_text('商店', 'Shop'),
-            self._ui_text('体力', 'Stamina'),
-            self._ui_text('碎片', 'Shards'),
-            self._ui_text('拟境', 'Neural Sim'),
-            self._ui_text('奖励', 'Claim Rewards'),
-            self._ui_text('常规训练', 'Operation'),
-            self._ui_text('武器培养', 'Weapon'),
-            self._ui_text('信源碎片', 'Shard Exchange'),
-            self._ui_text('执行退出', 'Execute Exit'),
-        ]
+        self.setting_name_list = self._build_setting_name_list()
 
         self.person_text_to_key = get_person_text_to_key_map(self._is_non_chinese_ui)
         self.weapon_text_to_key = get_weapon_text_to_key_map(self._is_non_chinese_ui)
@@ -101,29 +89,34 @@ class PeriodicTasksPage(QFrame, BaseInterface):
         self.setObjectName(text.replace(' ', '-'))
         self.parent = parent
 
-        self.scheduler = Scheduler(self)
+        self.scheduler = Scheduler(
+            self,
+            primary_task_id=self.primary_task_id,
+            mandatory_task_ids=self.mandatory_task_ids,
+        )
         self.periodic_controller = PeriodicController(
-            task_registry=TASK_REGISTRY,
-            primary_task_id=PRIMARY_TASK_ID,
+            task_registry=self.task_registry,
+            primary_task_id=self.primary_task_id,
         )
         self.settings_usecase = PeriodicSettingsUseCase()
         self.ui_binding_usecase = PeriodicUiBindingUseCase()
-        self.redeem_codes_usecase = RedeemCodesUseCase(self.settings_usecase)
-        self.redeem_codes_view = RedeemCodesView()
+        self.enter_game_actions = EnterGameActions(self._is_non_chinese_ui)
+        self.collect_supplies_actions = CollectSuppliesActions(self.settings_usecase)
+        self.shopping_selection_usecase = ShoppingSelectionUseCase(self._is_non_chinese_ui)
+        self.event_tips_usecase = EventTipsUseCase(
+            self.settings_usecase,
+            is_non_chinese_ui=self._is_non_chinese_ui,
+            ui_text_fn=self._ui_text,
+        )
 
         self.task_widget_map: Dict[str, TaskItemWidget] = {}
         self._init_task_list_widgets()
 
         self.is_running = False
 
-        self.select_person = TreeFrame_person(
-            parent=self.ui.ScrollArea,
-            enableCheck=True,
-            is_non_chinese_ui=self._is_non_chinese_ui)
-        self.select_weapon = TreeFrame_weapon(
-            parent=self.ui.ScrollArea,
-            enableCheck=True,
-            is_non_chinese_ui=self._is_non_chinese_ui)
+        self.select_person, self.select_weapon = self.shopping_selection_usecase.create_selectors(
+            parent=self.ui.ScrollArea
+        )
 
         self.game_hwnd = None
         self.start_thread = None
@@ -182,6 +175,20 @@ class PeriodicTasksPage(QFrame, BaseInterface):
         self.ui.gridLayout_2.addWidget(target_cards[0], 0, 2, 1, 1)
         self.ui.gridLayout_2.addWidget(target_cards[1], 1, 2, 1, 1)
         self._shared_sidebar_detached = False
+
+    def _build_setting_name_list(self) -> list[str]:
+        ordered_metas = sorted(
+            (
+                meta
+                for meta in self.task_registry.values()
+                if meta.get("ui_page_index") is not None
+            ),
+            key=lambda item: item.get("ui_page_index", 0),
+        )
+        return [
+            self._ui_text(meta.get("zh_name", ""), meta.get("en_name", ""))
+            for meta in ordered_metas
+        ]
 
     def _on_init_sync(self):
         self._load_presets()
@@ -327,7 +334,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
         sequence = self.scheduler.get_task_sequence()
         schedule_logs = build_active_schedule_lines(
             sequence=sequence,
-            task_registry=TASK_REGISTRY,
+            task_registry=self.task_registry,
             is_non_chinese_ui=self._is_non_chinese_ui,
         )
 
@@ -373,7 +380,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
 
         for task_cfg in sequence:
             task_id = task_cfg.get("id")
-            meta = TASK_REGISTRY.get(task_id)
+            meta = self.task_registry.get(task_id)
             if not meta:
                 continue
 
@@ -384,6 +391,8 @@ class PeriodicTasksPage(QFrame, BaseInterface):
                 is_enabled=bool(task_cfg.get("enabled", True)),
                 is_non_chinese_ui=self._is_non_chinese_ui,
                 parent=self.ui.taskListWidget,
+                is_mandatory=bool(meta.get("is_mandatory", False)),
+                is_force_first=bool(meta.get("force_first", False)),
             )
 
             # 初始化时传入任务的调度状态
@@ -413,7 +422,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
         sequence = self.scheduler.get_task_sequence()
         for task_cfg in sequence:
             task_id = task_cfg.get("id")
-            if task_id in TASK_REGISTRY:
+            if task_id in self.task_registry:
                 self._on_task_settings_clicked(task_id)
                 break
 
@@ -430,11 +439,11 @@ class PeriodicTasksPage(QFrame, BaseInterface):
         self.scheduler.save_task_sequence(final_ordered)
 
         # If a task other than primary task is dragged to the top, refresh the UI to correct its position.
-        if task_id_order and task_id_order[0] != PRIMARY_TASK_ID:
+        if task_id_order and task_id_order[0] != self.primary_task_id:
             self._init_task_list_widgets()
 
     def _on_task_settings_clicked(self, task_id: str):
-        meta = TASK_REGISTRY.get(task_id)
+        meta = self.task_registry.get(task_id)
         if not meta:
             return
 
@@ -458,13 +467,12 @@ class PeriodicTasksPage(QFrame, BaseInterface):
         self._load_item_config()
 
     def _load_item_config(self):
-        self.settings_usecase.apply_tree_selection(
-            tree=self.select_person.tree,
-            text_to_key=self.person_text_to_key,
-        )
-        self.settings_usecase.apply_tree_selection(
-            tree=self.select_weapon.tree,
-            text_to_key=self.weapon_text_to_key,
+        self.shopping_selection_usecase.load_item_config(
+            settings_usecase=self.settings_usecase,
+            select_person=self.select_person,
+            select_weapon=self.select_weapon,
+            person_text_to_key=self.person_text_to_key,
+            weapon_text_to_key=self.weapon_text_to_key,
         )
 
     def _connect_to_save_changed(self):
@@ -481,47 +489,32 @@ class PeriodicTasksPage(QFrame, BaseInterface):
         self.game_hwnd = hwnd
 
     def on_path_tutorial_click(self):
-        tutorial_title = "How to find the game path" if self._is_non_chinese_ui else "如何查找对应游戏路径"
-        tutorial_content = (
-            'No matter which server/channel you play, first select your server in Settings.\n'
-            'For global server, choose a path like "E:\\SteamLibrary\\steamapps\\common\\SNOWBREAK".\n'
-            'For CN/Bilibili server, open the Snowbreak launcher and find launcher settings.\n'
-            'Then choose the game installation path shown there.'
-            if self._is_non_chinese_ui else
-            '不管你是哪个渠道服的玩家，第一步都应该先去设置里选服\n国际服选完服之后选择类似"E:\\SteamLibrary\\steamapps\\common\\SNOWBREAK"的路径\n官服和b服的玩家打开尘白启动器，新版或者旧版启动器都找到启动器里对应的设置\n在下面的路径选择中找到并选择刚才你看到的路径'
+        self.enter_game_actions.show_path_tutorial(
+            host=self,
+            anchor_widget=self.ui.PrimaryPushButton_path_tutorial,
         )
-        view = FlyoutView(title=tutorial_title,
-                          content=tutorial_content,
-                          image="asset/path_tutorial.png",
-                          isClosable=True)
-        view.widgetLayout.insertSpacing(1, 5)
-        view.widgetLayout.addSpacing(5)
-        w = Flyout.make(view, self.ui.PrimaryPushButton_path_tutorial, self)
-        view.closed.connect(w.close)
 
     def on_select_directory_click(self):
-        folder = QFileDialog.getExistingDirectory(self, '选择游戏文件夹', "./")
+        folder = self.enter_game_actions.select_game_directory(
+            parent=self,
+            current_directory=self.ui.LineEdit_game_directory.text(),
+        )
         if not folder or self.settings_usecase.is_same_game_directory(folder):
             return
         self.ui.LineEdit_game_directory.setText(folder)
         self.ui.LineEdit_game_directory.editingFinished.emit()
 
     def on_reset_codes_click(self):
-        content = self.redeem_codes_usecase.reset_codes(self.ui.TextEdit_import_codes)
-
-        InfoBar.success(title=ui_text('重置成功', 'Reset Successful'),
-                        content=ui_text(f"已重置 导入展示 {content}", f"Successfully reset import and display {content}"),
-                        orient=Qt.Orientation.Horizontal,
-                        isClosable=True,
-                        position=InfoBarPosition.TOP_RIGHT,
-                        duration=2000,
-                        parent=self)
+        self.collect_supplies_actions.on_reset_codes_click(
+            host=self,
+            text_edit=self.ui.TextEdit_import_codes,
+        )
 
     def on_import_codes_click(self):
-        raw_codes = self.redeem_codes_view.prompt_import_codes(self)
-        if raw_codes is None:
-            return
-        self.redeem_codes_usecase.import_codes(raw_codes, self.ui.TextEdit_import_codes)
+        self.collect_supplies_actions.on_import_codes_click(
+            host=self,
+            text_edit=self.ui.TextEdit_import_codes,
+        )
 
     def change_auto_open(self, state):
         status = '已开启' if state == 2 else '已关闭'
@@ -536,7 +529,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
 
     def open_game_directly(self):
         try:
-            result = launch_game_with_guard(logger=self.logger)
+            result = self.enter_game_actions.launch_game(logger=self.logger)
             if not result.get("ok"):
                 self.logger.error(result.get("error", "启动游戏失败"))
                 self._set_launch_pending_state(False)
@@ -551,7 +544,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
             self._set_launch_pending_state(False)
 
     def _is_game_window_open(self):
-        return is_exist_snowbreak()
+        return self.enter_game_actions.is_game_window_open()
 
     def _clear_launch_watch_state(self):
         self.check_game_window_timer.stop()
@@ -567,7 +560,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
         self.ui.PushButton_select_all.clicked.connect(
             lambda: select_all(self.ui.SimpleCardWidget_option))
         self.ui.PushButton_no_select.clicked.connect(
-            lambda: no_select(self.ui.SimpleCardWidget_option))
+            lambda: no_select(self.ui.SimpleCardWidget_option, self.primary_option_key))
         self.ui.PushButton_select_directory.clicked.connect(
             self.on_select_directory_click)
         self.ui.PrimaryPushButton_import_codes.clicked.connect(
@@ -707,7 +700,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
         It checks if the game is running and decides whether to launch it
         or proceed directly with the automation thread.
         """
-        game_opened = is_exist_snowbreak()
+        game_opened = self._is_game_window_open()
         plan = self.periodic_controller.build_run_plan(
             task_ids=tasks_to_run,
             game_opened=bool(game_opened),
@@ -786,7 +779,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
             )
 
         def _start_local(selected_task_id: str):
-            meta = TASK_REGISTRY.get(selected_task_id, {})
+            meta = self.task_registry.get(selected_task_id, {})
             task_name = meta.get("en_name", selected_task_id) if getattr(
                 self, '_is_non_chinese_ui', False) else meta.get(
                     "zh_name", selected_task_id)
@@ -842,7 +835,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
             is_checked=lambda task_id: bool(
                 self.task_widget_map.get(task_id).checkbox.isChecked()
             ) if self.task_widget_map.get(task_id) else False,
-            primary_task_id=PRIMARY_TASK_ID,
+            primary_task_id=self.primary_task_id,
             current_panel_task_id=self.ui.shared_scheduling_panel.task_id,
             allow_primary_when_current=False,
         )
@@ -863,7 +856,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
         upsert_rule_to_tasks(
             sequence=sequence,
             target_task_ids=set(checked_task_ids),
-            primary_task_id=PRIMARY_TASK_ID,
+            primary_task_id=self.primary_task_id,
             rule_data=rule_data,
         )
         self.scheduler.save_task_sequence(sequence)
@@ -898,7 +891,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
             is_checked=lambda task_id: bool(
                 self.task_widget_map.get(task_id).checkbox.isChecked()
             ) if self.task_widget_map.get(task_id) else False,
-            primary_task_id=PRIMARY_TASK_ID,
+            primary_task_id=self.primary_task_id,
             current_panel_task_id=current_panel_task_id,
             allow_primary_when_current=True,
         )
@@ -1113,7 +1106,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
     def set_checkbox_enable(self, enable: bool):
         for checkbox in self.ui.findChildren(CheckBox):
             # 保护机制：全局 UI 解锁时，永远不要解锁主任务选项
-            if checkbox.objectName() == PRIMARY_OPTION_KEY:
+            if checkbox.objectName() == self.primary_option_key:
                 checkbox.setEnabled(False)
             else:
                 checkbox.setEnabled(enable)
@@ -1130,7 +1123,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
             self.logger.error(e)
 
     def record_task_failed(self, task_id: str):
-        meta = TASK_REGISTRY.get(task_id, {})
+        meta = self.task_registry.get(task_id, {})
         task_name = meta.get("en_name", task_id) if getattr(self, '_is_non_chinese_ui', False) else meta.get("zh_name", task_id)
 
         fail_msg = f"⚠️ Task [{task_name}] skipped!" if getattr(self, '_is_non_chinese_ui', False) else f"⚠️ {task_name} 未能成功执行，已跳过！"
@@ -1149,7 +1142,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
     def record_task_completed(self, task_id: str):
         sequence = self.scheduler.get_task_sequence()
 
-        meta = TASK_REGISTRY.get(task_id, {})
+        meta = self.task_registry.get(task_id, {})
         task_name = meta.get("en_name", task_id) if getattr(
             self, '_is_non_chinese_ui', False) else meta.get(
                 "zh_name", task_id)
@@ -1181,99 +1174,27 @@ class PeriodicTasksPage(QFrame, BaseInterface):
             self.ui.ComboBox_power_day.setEnabled(bool(maybe_power_enabled))
 
     def save_item_changed(self, index, check_state):
-        self.settings_usecase.persist_indexed_item("item_person_", index, check_state)
+        self.shopping_selection_usecase.save_person_item(
+            settings_usecase=self.settings_usecase,
+            index=index,
+            check_state=check_state,
+        )
 
     def save_item2_changed(self, index, check_state):
-        self.settings_usecase.persist_indexed_item("item_weapon_", index, check_state)
+        self.shopping_selection_usecase.save_weapon_item(
+            settings_usecase=self.settings_usecase,
+            index=index,
+            check_state=check_state,
+        )
 
     def get_tips(self, url=None):
-        if url:
-            tips_dic = get_date_from_api(url)
-            if "error" in tips_dic.keys():
-                self.logger.error(tips_dic["error"])
-                return
-            self.settings_usecase.save_date_tip(tips_dic)
-        else:
-            tips_dic = self.settings_usecase.load_date_tip()
-            if not tips_dic:
-                InfoBar.error(title=ui_text('活动日程更新失败', 'Failed to update event schedule'),
-                              content=ui_text(f"本地没有存储信息且未获取到url", f"No local information stored and no URL fetched"),
-                              orient=Qt.Orientation.Horizontal,
-                              isClosable=True,
-                              position=InfoBarPosition.TOP_RIGHT,
-                              duration=2000,
-                              parent=self)
-                return
-
-        if self.settings_usecase.is_log_enabled():
-            self.logger.info(ui_text("获取活动日程成功", "Successfully fetched event schedule"))
-
-        for key, value in tips_dic.items():
-            tips_dic[key] = calculate_time_difference(value)
-
-        max_total_days = 1
-        for key, value in tips_dic.items():
-            days, total_day, status = value
-            if status == 0 and total_day > max_total_days:
-                max_total_days = total_day
-
-        index = 0
-        items_list = []
         try:
-            for key, value in tips_dic.items():
-                if self.ui.scrollAreaWidgetContents_tips.findChild(
-                        BodyLabel, name=f"BodyLabel_tip_{index + 1}"):
-                    BodyLabel_tip = self.ui.scrollAreaWidgetContents_tips.findChild(
-                        BodyLabel, name=f"BodyLabel_tip_{index + 1}")
-                else:
-                    BodyLabel_tip = BodyLabel(
-                        self.ui.scrollAreaWidgetContents_tips)
-                    BodyLabel_tip.setObjectName(f"BodyLabel_tip_{index + 1}")
-
-                if self.ui.scrollAreaWidgetContents_tips.findChild(
-                        ProgressBar, name=f"ProgressBar_tip{index + 1}"):
-                    ProgressBar_tip = self.ui.scrollAreaWidgetContents_tips.findChild(
-                        ProgressBar, name=f"ProgressBar_tip{index + 1}")
-                else:
-                    ProgressBar_tip = ProgressBar(
-                        self.ui.scrollAreaWidgetContents_tips)
-                    ProgressBar_tip.setObjectName(
-                        f"ProgressBar_tip{index + 1}")
-
-                days, total_day, status = value
-
-                if status == -1:
-                    BodyLabel_tip.setText(
-                        f"{key} {self._ui_text('已结束', 'finished')}")
-                    sort_weight = 99999
-                    ProgressBar_tip.setValue(0)
-                elif status == 1:
-                    BodyLabel_tip.setText(
-                        self._ui_text(f"{key} 还有 {days} 天开始",
-                                      f"{key} in {days}d(s)"))
-                    sort_weight = 10000 + days
-                    ProgressBar_tip.setValue(0)
-                else:
-                    BodyLabel_tip.setText(
-                        self._ui_text(f"{key}剩：{days}天",
-                                      f"{key}: {days}d(s) left"))
-                    sort_weight = days
-
-                    normalized_percent = int((days / max_total_days) * 100)
-                    ProgressBar_tip.setValue(normalized_percent)
-
-                items_list.append(
-                    [BodyLabel_tip, ProgressBar_tip, sort_weight])
-                index += 1
-
-            items_list.sort(key=lambda x: x[2])
-
-            for i in range(len(items_list)):
-                self.ui.gridLayout_tips.addWidget(items_list[i][0], i + 1, 0,
-                                                  1, 1)
-                self.ui.gridLayout_tips.addWidget(items_list[i][1], i + 1, 1,
-                                                  1, 1)
-
+            self.event_tips_usecase.refresh_tips_panel(
+                ui=self.ui,
+                logger=self.logger,
+                host=self,
+                url=url,
+            )
         except Exception as e:
             self.logger.error(ui_text(f"更新控件出错：{e}", f"Error occurred while updating controls: {e}"))
 

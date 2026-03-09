@@ -4,6 +4,7 @@ from app.framework.infra.config.app_config import config
 from app.framework.infra.config.app_config import is_non_chinese_ui_language
 from app.features.modules.shopping.item_constants import get_item_key_to_name_map, get_shop_item_key_to_name_map, \
     get_shop_item_zh_name_to_display_name_map
+from app.framework.ui.widgets.tree import TreeFrame_person, TreeFrame_weapon
 from app.framework.infra.automation.timer import Timer
 from app.features.utils.home_navigation import back_to_home
 
@@ -169,7 +170,7 @@ class ShoppingModule:
         for key, value in self.commodity_dic.items():
             if value and key in self.name_dic_zh:
                 result_list.append(self.name_dic_zh[key])
-                
+
         return result_list
 
     def _display_name(self, target_name):
@@ -207,3 +208,40 @@ class ShoppingModule:
         return False
 
 
+class ShoppingSelectionUseCase:
+    """Shopping/person/weapon selection-tree ownership for periodic host."""
+
+    def __init__(self, is_non_chinese_ui: bool):
+        self._is_non_chinese_ui = bool(is_non_chinese_ui)
+
+    def create_selectors(self, parent):
+        select_person = TreeFrame_person(
+            parent=parent,
+            enableCheck=True,
+            is_non_chinese_ui=self._is_non_chinese_ui,
+        )
+        select_weapon = TreeFrame_weapon(
+            parent=parent,
+            enableCheck=True,
+            is_non_chinese_ui=self._is_non_chinese_ui,
+        )
+        return select_person, select_weapon
+
+    @staticmethod
+    def load_item_config(settings_usecase, select_person, select_weapon, person_text_to_key, weapon_text_to_key):
+        settings_usecase.apply_tree_selection(
+            tree=select_person.tree,
+            text_to_key=person_text_to_key,
+        )
+        settings_usecase.apply_tree_selection(
+            tree=select_weapon.tree,
+            text_to_key=weapon_text_to_key,
+        )
+
+    @staticmethod
+    def save_person_item(settings_usecase, index: int, check_state: int):
+        settings_usecase.persist_indexed_item("item_person_", index, check_state)
+
+    @staticmethod
+    def save_weapon_item(settings_usecase, index: int, check_state: int):
+        settings_usecase.persist_indexed_item("item_weapon_", index, check_state)

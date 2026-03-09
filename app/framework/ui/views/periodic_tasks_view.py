@@ -33,7 +33,6 @@ from qfluentwidgets import (
     EditableComboBox,
     isDarkTheme,
 )
-from app.framework.application.tasks.task_policy import PRIMARY_TASK_ID, MANDATORY_PERIODIC_TASK_IDS
 from app.features.modules.chasm.ui.chasm_periodic_page import ChasmPage
 from app.features.modules.close_game.ui.close_game_periodic_page import CloseGamePage
 from app.features.modules.collect_supplies.ui.collect_supplies_periodic_page import (
@@ -88,7 +87,7 @@ class TaskListView(ListWidget):
         item.setData(Qt.ItemDataRole.UserRole, task_item_widget.task_id)
 
         # 彻底剥夺强制首位任务的拖拽能力
-        if task_item_widget.task_id == PRIMARY_TASK_ID:
+        if getattr(task_item_widget, "is_force_first", False):
             item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsDragEnabled)
 
         self.addItem(item)
@@ -254,7 +253,18 @@ class TaskItemWidget(QWidget):
     play_clicked = Signal(str)
     play_from_here_clicked = Signal(str)
 
-    def __init__(self, task_id, zh_name, en_name, is_enabled, is_non_chinese_ui, parent=None):
+    def __init__(
+        self,
+        task_id,
+        zh_name,
+        en_name,
+        is_enabled,
+        is_non_chinese_ui,
+        parent=None,
+        *,
+        is_mandatory: bool = False,
+        is_force_first: bool = False,
+    ):
         super().__init__(parent)
         self.task_id = task_id
         self._is_non_chinese_ui = is_non_chinese_ui
@@ -263,7 +273,8 @@ class TaskItemWidget(QWidget):
         self.is_scheduled = False    # 独立记录是否启用了计划
 
         # 标记当前任务是否为强制底座（由注册中心定义）
-        self.is_mandatory = self.task_id in MANDATORY_PERIODIC_TASK_IDS
+        self.is_mandatory = bool(is_mandatory)
+        self.is_force_first = bool(is_force_first)
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(4, 4, 4, 4)
