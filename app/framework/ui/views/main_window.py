@@ -96,6 +96,7 @@ class MainWindow(FluentWindow, BaseInterface):
             'help': False,
             'setting': False,
         }
+        self._shared_task_sidebar_cards = None
 
         # 【新增】全局任务运行状态
         self.global_is_running = False
@@ -267,11 +268,44 @@ class MainWindow(FluentWindow, BaseInterface):
         from .periodic_tasks_page import PeriodicTasksPage
         self.homeInterface = PeriodicTasksPage('Periodic Tasks', self)
         self._localize_widget_if_needed(self.homeInterface)
+        self._sync_task_workspace_sidebar()
 
     def _create_additional_interface(self):
         from .on_demand_tasks_page import OnDemandTasksPage
-        self.additionalInterface = OnDemandTasksPage('On Demand Tasks', self)
+        shared_log_browser = None
+        if self.homeInterface is not None and hasattr(self.homeInterface, "textBrowser_log"):
+            shared_log_browser = self.homeInterface.textBrowser_log
+        self.additionalInterface = OnDemandTasksPage(
+            'On Demand Tasks',
+            self,
+            shared_log_browser=shared_log_browser,
+        )
         self._localize_widget_if_needed(self.additionalInterface)
+        self._sync_task_workspace_sidebar()
+
+    def _sync_task_workspace_sidebar(self):
+        if self.homeInterface is None or self.additionalInterface is None:
+            return
+
+        current_widget = self.stackedWidget.currentWidget()
+
+        if current_widget == self.additionalInterface:
+            cards = self.homeInterface.detach_shared_sidebar_cards()
+            self._shared_task_sidebar_cards = cards
+            self.additionalInterface.set_shared_sidebar_cards(
+                cards,
+                shared_log_browser=self.homeInterface.textBrowser_log,
+            )
+            return
+
+        if current_widget == self.homeInterface:
+            cards = self.additionalInterface.release_shared_sidebar_cards(
+                shared_log_browser=self.homeInterface.textBrowser_log
+            )
+            if not cards:
+                cards = self._shared_task_sidebar_cards
+            self.homeInterface.attach_shared_sidebar_cards(cards)
+            return
 
     def _create_help_interface(self):
         from .help import Help
@@ -484,6 +518,7 @@ class MainWindow(FluentWindow, BaseInterface):
         signalBus.showMessageBox.connect(self.showMessageBox)
         signalBus.showScreenshot.connect(self.showScreenshot)
         signalBus.requestExitApp.connect(self.quit_app)
+        self.stackedWidget.currentChanged.connect(lambda _: self._sync_task_workspace_sidebar())
 
     def initNavigation(self):
         self.navigationInterface.setCollapsible(True)

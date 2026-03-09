@@ -149,6 +149,11 @@ class PeriodicTasksPage(QFrame, BaseInterface):
         self._f8_pressed = False
 
         self.checkbox_dic = None
+        self._shared_sidebar_cards = [
+            self.ui.SimpleCardWidget,
+            self.ui.SimpleCardWidget_tips,
+        ]
+        self._shared_sidebar_detached = False
 
         QTimer.singleShot(500, self._on_init_sync)
 
@@ -159,6 +164,24 @@ class PeriodicTasksPage(QFrame, BaseInterface):
             self.get_tips()
 
         self.scheduler.start()
+
+    def detach_shared_sidebar_cards(self):
+        if self._shared_sidebar_detached:
+            return list(self._shared_sidebar_cards)
+
+        self.ui.gridLayout_2.removeWidget(self.ui.SimpleCardWidget)
+        self.ui.gridLayout_2.removeWidget(self.ui.SimpleCardWidget_tips)
+        self._shared_sidebar_detached = True
+        return list(self._shared_sidebar_cards)
+
+    def attach_shared_sidebar_cards(self, cards=None):
+        target_cards = list(cards) if cards else list(self._shared_sidebar_cards)
+        if len(target_cards) < 2:
+            return
+
+        self.ui.gridLayout_2.addWidget(target_cards[0], 0, 2, 1, 1)
+        self.ui.gridLayout_2.addWidget(target_cards[1], 1, 2, 1, 1)
+        self._shared_sidebar_detached = False
 
     def _on_init_sync(self):
         self._load_presets()

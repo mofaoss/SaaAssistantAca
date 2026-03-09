@@ -25,7 +25,7 @@ from app.framework.application.periodic.on_demand_runner import OnDemandRunner
 class OnDemandTasksPage(QFrame, BaseInterface):
     """On-demand task host: a single-run specialization over periodic scheduling primitives."""
 
-    def __init__(self, text: str, parent=None):
+    def __init__(self, text: str, parent=None, *, shared_log_browser=None):
         super().__init__(parent)
         BaseInterface.__init__(self)
         self.ui = OnDemandTasksView(self)
@@ -52,13 +52,8 @@ class OnDemandTasksPage(QFrame, BaseInterface):
         self.on_demand_runner = OnDemandRunner()
 
         # 所有 additional 模块统一共享日志
-        self.shared_logger = setup_ui_logger(
-            "logger_additional_shared",
-            self.ui.textBrowser_shared_log,
-        )
-        self.task_loggers = {
-            spec.id: self.shared_logger for spec in self.module_specs
-        }
+        self._active_log_browser = shared_log_browser or self.ui.textBrowser_shared_log
+        self._bind_shared_logger(self._active_log_browser)
 
         self._load_config()
         self._connect_to_slot()
@@ -72,6 +67,34 @@ class OnDemandTasksPage(QFrame, BaseInterface):
             self.SegmentedWidget.setCurrentItem(first_page.objectName())
             self.stackedWidget.setCurrentWidget(first_page)
         StyleSheet.ON_DEMAND_TASKS_INTERFACE.apply(self)
+
+    def _bind_shared_logger(self, log_browser):
+        self._active_log_browser = log_browser or self.ui.textBrowser_shared_log
+        self.shared_logger = setup_ui_logger(
+            "logger_additional_shared",
+            self._active_log_browser,
+        )
+        self.task_loggers = {
+            spec.id: self.shared_logger for spec in self.module_specs
+        }
+
+    def set_shared_sidebar_cards(self, cards: list[QWidget], *, shared_log_browser=None):
+        if cards:
+            self.ui.show_external_sidebar_cards(cards)
+            if shared_log_browser is not None:
+                self._bind_shared_logger(shared_log_browser)
+            return
+
+        self.release_shared_sidebar_cards()
+
+    def release_shared_sidebar_cards(self, *, shared_log_browser=None) -> list[QWidget]:
+        cards = self.ui.take_external_sidebar_cards()
+        self.ui.show_internal_sidebar()
+        if shared_log_browser is not None:
+            self._bind_shared_logger(shared_log_browser)
+        else:
+            self._bind_shared_logger(self.ui.textBrowser_shared_log)
+        return cards
 
     def __getattr__(self, item):
         ui = self.__dict__.get('ui')
@@ -363,6 +386,6 @@ class OnDemandTasksPage(QFrame, BaseInterface):
         self._load_config()
 
     def get_shared_log_browser(self):
-        return self.ui.textBrowser_shared_log
+        return self._active_log_browser
 
 
