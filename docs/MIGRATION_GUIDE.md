@@ -3,7 +3,7 @@
 ## Removed Legacy Layout
 - `app/view` -> `app/presentation/views`
 - `app/repackage` -> `app/presentation/widgets`
-- `app/resource` -> `app/presentation/resources`
+- `app/resource` -> `app/framework/ui/resources`
 - `utils` -> `app/infrastructure/*`
 - `app/infra` -> `app/infrastructure`
 

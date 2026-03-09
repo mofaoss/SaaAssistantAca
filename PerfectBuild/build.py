@@ -132,14 +132,15 @@ class PerfectBuild:
             "--windows-uac-admin",
             "--windows-console-mode=disable",
             # 添加文件
-            "--noinclude-qt-plugins=qml,webengine,network,multimedia,sql,test,sensorkit,position,location,bluetooth,nfc,serialport,websockets,printsupport,dbus,xml,pdf"
-            "--include-data-file=patch/shapely.libs/.load-order-shapely-2.0.7=shapely.libs/.load-order-shapely-2.0.7",
-            "--include-data-dir=app/presentation/resources=app/presentation/resources",
+            "--noinclude-qt-plugins=qml,webengine,network,multimedia,sql,test,sensorkit,position,location,bluetooth,nfc,serialport,websockets,printsupport,dbus,xml,pdf",
+            "--include-data-file=PerfectBuild/assets/shapely.libs/.load-order-shapely-2.0.7=shapely.libs/.load-order-shapely-2.0.7",
+            "--include-data-dir=app/framework/ui/resources=app/framework/ui/resources",
             "--include-data-file=docs/help.md=docs/help.md",
             "--include-data-file=docs/help_en.md=docs/help_en.md",
             "--include-data-file=update_data.txt=update_data.txt",
             "--include-data-dir=asset=asset",
-            "--include-data-dir=app/modules/onnxocr/models/ppocrv5=app/modules/onnxocr/models/ppocrv5",
+            "--include-data-dir=app/features/modules=app/features/modules",
+            "--include-data-dir=app/features/modules/onnxocr/models/ppocrv5=app/features/modules/onnxocr/models/ppocrv5",
         ]
         if platform.system() == "Windows":
             cmd_args.extend((f"--windows-icon-from-ico={self.app_icon}", "--msvc=latest"))

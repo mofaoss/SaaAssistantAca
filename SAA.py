@@ -1,4 +1,4 @@
-﻿# coding:utf-8
+# coding:utf-8
 import os
 import sys
 from pathlib import Path
@@ -7,11 +7,11 @@ from PySide6.QtCore import Qt, QTranslator, QSize, QObject, QThread, QTimer, Sig
 from PySide6.QtGui import QMovie, QPixmap, QFont
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel
 
-from app.infrastructure.config.app_config import config, resolve_configured_locale
-from app.infrastructure.runtime.paths import PROJECT_ROOT, ensure_runtime_dirs
+from app.framework.infra.config.app_config import config, resolve_configured_locale
+from app.framework.infra.runtime.paths import PROJECT_ROOT, ensure_runtime_dirs
 
 
-IMAGES_DIR = Path(getattr(sys, "_MEIPASS", PROJECT_ROOT)) / "app" / "presentation" / "resources" / "images"
+IMAGES_DIR = Path(getattr(sys, "_MEIPASS", PROJECT_ROOT)) / "app" / "framework" / "ui" / "resources" / "images"
 
 
 class EarlySplash(QWidget):
@@ -150,7 +150,7 @@ class StartupController(QObject):
         self.FluentTranslator = imported['FluentTranslator']
         self.patch_infobar_for_traditional = imported['patch_infobar_for_traditional']
         self.localize_widget_tree_for_traditional = imported['localize_widget_tree_for_traditional']
-        from app.presentation.views.main_window import MainWindow
+        from app.framework.ui.views.main_window import MainWindow
         self.MainWindow = MainWindow
         QTimer.singleShot(0, self._run_next_task)
 
@@ -162,7 +162,7 @@ class StartupController(QObject):
         locale = resolve_configured_locale(config.get(config.language))
         self.translator = self.FluentTranslator(locale)
         self.galleryTranslator = QTranslator()
-        self.galleryTranslator.load(locale, "app", ".", ":/app/presentation/resources/i18n")
+        self.galleryTranslator.load(locale, "app", ".", ":/app/framework/ui/resources/i18n")
 
         self.app.installTranslator(self.translator)
         self.app.installTranslator(self.galleryTranslator)
@@ -188,7 +188,7 @@ class RuntimeImportWorker(QThread):
     def run(self):
         try:
             from qfluentwidgets import FluentTranslator
-            from app.presentation.shared.localizer import patch_infobar_for_traditional, localize_widget_tree_for_traditional
+            from app.framework.ui.shared.localizer import patch_infobar_for_traditional, localize_widget_tree_for_traditional
 
             self.ready.emit({
                 'FluentTranslator': FluentTranslator,

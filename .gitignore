@@ -1,8 +1,8 @@
-/app/modules/test.py
+/app/features/modules/test.py
 /.idea/
 /dist/
-/app/modules/mask.png
-/app/modules/result.jpg
+/app/features/modules/mask.png
+/app/features/modules/result.jpg
 /temp/
 /fish/
 /runtime/
