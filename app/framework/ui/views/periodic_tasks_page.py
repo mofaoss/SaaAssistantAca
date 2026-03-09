@@ -1,7 +1,7 @@
 import logging
 from typing import Callable, Dict, List
 
-from PySide6.QtCore import QTimer
+from PySide6.QtCore import QEasingCurve, QParallelAnimationGroup, QPropertyAnimation, QTimer, QPoint
 from PySide6.QtWidgets import QFrame, QWidget, QVBoxLayout
 from qfluentwidgets import CheckBox
 
@@ -164,6 +164,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
             self.ui.SimpleCardWidget_tips,
         ]
         self._shared_sidebar_detached = False
+        self._left_panel_animation_group = None
 
         QTimer.singleShot(500, self._on_init_sync)
 
@@ -176,6 +177,36 @@ class PeriodicTasksPage(QFrame, BaseInterface):
             self.refresh_tips()
 
         self.scheduler.start()
+
+    def play_left_panel_animation(self):
+        targets = [
+            getattr(self.ui, "SimpleCardWidget_option", None),
+            getattr(self.ui, "SimpleCardWidget_3", None),
+            getattr(self.ui, "SimpleCardWidget_2", None),
+        ]
+
+        group = QParallelAnimationGroup(self)
+        offset_step = 18
+        duration = 210
+        for index, widget in enumerate(targets):
+            if widget is None or not widget.isVisible():
+                continue
+            end_pos = widget.pos()
+            start_pos = QPoint(end_pos.x() - (offset_step + index * 6), end_pos.y())
+            widget.move(start_pos)
+
+            animation = QPropertyAnimation(widget, b"pos", self)
+            animation.setDuration(duration + index * 20)
+            animation.setStartValue(start_pos)
+            animation.setEndValue(end_pos)
+            animation.setEasingCurve(QEasingCurve.OutCubic)
+            group.addAnimation(animation)
+
+        if group.animationCount() == 0:
+            return
+
+        self._left_panel_animation_group = group
+        group.start(QParallelAnimationGroup.DeletionPolicy.DeleteWhenStopped)
 
     def detach_shared_sidebar_cards(self):
         if self._shared_sidebar_detached:

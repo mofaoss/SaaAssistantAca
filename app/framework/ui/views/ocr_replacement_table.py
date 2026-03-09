@@ -295,6 +295,7 @@ class OcrReplacementTable(QFrame, BaseInterface):
         direct_dic = replacements['direct']
         conditional_dic = replacements['conditional']
         total_rows = len(direct_dic) + len(conditional_dic)
+        self.TableWidget_ocr_table.clearSpans()
         self.TableWidget_ocr_table.setRowCount(total_rows)
 
         row_index = 0
@@ -308,6 +309,13 @@ class OcrReplacementTable(QFrame, BaseInterface):
             self.TableWidget_ocr_table.setItem(row_index, 1, QTableWidgetItem(key))
             self.TableWidget_ocr_table.setItem(row_index, 2, QTableWidgetItem(value))
             row_index += 1
+
+        if total_rows == 0:
+            self.TableWidget_ocr_table.setRowCount(1)
+            empty_item = QTableWidgetItem(self._ui_text("暂无替换规则", "No replacement rules yet"))
+            empty_item.setFlags(empty_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            self.TableWidget_ocr_table.setItem(0, 0, empty_item)
+            self.TableWidget_ocr_table.setSpan(0, 0, 1, 3)
 
         self.TableWidget_ocr_table.resizeColumnsToContents()
         # self.resize(self.parent.width(), self.parent.height())

@@ -99,6 +99,7 @@ class OnDemandTasksView(QWidget):
         self.gridLayout.addWidget(cards[0], 0, 1, 2, 1)
 
     def show_external_sidebar_cards(self, cards: list[QWidget]):
+        self.gridLayout.setColumnMinimumWidth(1, 0)
         self._clear_right_column_layout()
         self._external_sidebar_cards = list(cards)
         self._mount_right_cards(self._external_sidebar_cards)
@@ -110,6 +111,7 @@ class OnDemandTasksView(QWidget):
         return cards
 
     def show_internal_sidebar(self):
+        self.gridLayout.setColumnMinimumWidth(1, 246)
         self._clear_right_column_layout()
         self._external_sidebar_cards = []
         self._mount_right_cards([self.sharedLogCard])

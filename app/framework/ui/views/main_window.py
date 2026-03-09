@@ -398,6 +398,14 @@ class MainWindow(FluentWindow, BaseInterface):
 
         self._task_sidebar_owner = None
 
+    def _on_main_stacked_current_changed(self, _):
+        self._sync_task_workspace_sidebar()
+        current_widget = self.stackedWidget.currentWidget()
+        if current_widget == self.homeInterface and hasattr(self.homeInterface, "play_left_panel_animation"):
+            self.homeInterface.play_left_panel_animation()
+        elif current_widget == self.additionalInterface and hasattr(self.additionalInterface, "play_left_panel_animation"):
+            self.additionalInterface.play_left_panel_animation()
+
     def _create_help_interface(self):
         from .help import Help
         self.helpInterface = Help('Help Interface', self)
@@ -599,7 +607,7 @@ class MainWindow(FluentWindow, BaseInterface):
         signalBus.showMessageBox.connect(self.showMessageBox)
         signalBus.showScreenshot.connect(self.showScreenshot)
         signalBus.requestExitApp.connect(self.quit_app)
-        self.stackedWidget.currentChanged.connect(lambda _: self._sync_task_workspace_sidebar())
+        self.stackedWidget.currentChanged.connect(self._on_main_stacked_current_changed)
 
     def initNavigation(self):
         self.navigationInterface.setCollapsible(True)

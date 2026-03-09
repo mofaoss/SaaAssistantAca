@@ -1,6 +1,7 @@
 import re
 from functools import partial
 
+from PySide6.QtCore import QEasingCurve, QParallelAnimationGroup, QPropertyAnimation, QPoint
 from PySide6.QtWidgets import QFrame, QSizePolicy, QWidget, QVBoxLayout
 from rapidfuzz import process
 from qfluentwidgets import SpinBox, CheckBox, ComboBox, LineEdit, Slider, InfoBar
@@ -76,6 +77,27 @@ class OnDemandTasksPage(QFrame, BaseInterface):
             self.SegmentedWidget.setCurrentItem(first_page.objectName())
             self.stackedWidget.setCurrentWidget(first_page)
         StyleSheet.ON_DEMAND_TASKS_INTERFACE.apply(self)
+        self._left_panel_animation_group = None
+
+    def play_left_panel_animation(self):
+        left_pane = getattr(self.ui, "leftPane", None)
+        if left_pane is None or not left_pane.isVisible():
+            return
+
+        end_pos = left_pane.pos()
+        start_pos = QPoint(end_pos.x() - 26, end_pos.y())
+        left_pane.move(start_pos)
+
+        animation = QPropertyAnimation(left_pane, b"pos", self)
+        animation.setDuration(220)
+        animation.setStartValue(start_pos)
+        animation.setEndValue(end_pos)
+        animation.setEasingCurve(QEasingCurve.OutCubic)
+
+        group = QParallelAnimationGroup(self)
+        group.addAnimation(animation)
+        self._left_panel_animation_group = group
+        group.start(QParallelAnimationGroup.DeletionPolicy.DeleteWhenStopped)
 
     def _bind_shared_logger(self, log_browser):
         self._active_log_browser = log_browser or self.ui.textBrowser_shared_log
