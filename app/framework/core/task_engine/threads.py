@@ -1,9 +1,8 @@
-# coding:utf-8
+﻿# coding:utf-8
 import inspect
 import sys
 import types
 from typing import Callable
-from app.framework.i18n.runtime import _
 
 from PySide6.QtCore import QThread, Signal
 
@@ -111,26 +110,41 @@ class TaskQueueThread(QThread):
         self.is_running_signal.emit("start")
         normal_stop_flag = True
         try:
-            if self.tasks_to_run and not self.session.prepare():
+            if not self.tasks_to_run:
+                self.logger.warning(_('No tasks queued; skipping execution', msgid='no_tasks_queued_skipping_execution'))
+                normal_stop_flag = False
+                return
+
+            if not self.session.prepare():
+                self.logger.error(_('Runtime automation session initialization failed; tasks skipped', msgid='runtime_automation_session_initialization_failed'))
                 normal_stop_flag = False
                 return
 
             auto = self.session.auto
+            queue_names = []
+            for queued_task_id in self.tasks_to_run:
+                queued_meta = self.task_registry.get(queued_task_id, {})
+                queued_name = queued_meta.get('en_name', queued_task_id) if is_non_chinese_ui_language() else queued_meta.get('zh_name', queued_task_id)
+                queue_names.append(queued_name)
+            self.logger.info(_(f"Task queue resolved: {', '.join(queue_names)}", msgid='task_queue_resolved'))
+
             for task_id in self.tasks_to_run:
                 if not self._is_running:
                     normal_stop_flag = False
+                    self.logger.warning(_('Execution interrupted before task start', msgid='execution_interrupted_before_task_start'))
                     break
 
                 meta = self.task_registry.get(task_id)
                 if not meta:
+                    self.logger.warning(_(f"Skipping task '{task_id}': metadata not found", msgid='skipping_task_metadata_not_found'))
                     continue
 
-                task_name = meta["en_name"] if is_non_chinese_ui_language() else meta["zh_name"]
+                task_name = meta['en_name'] if is_non_chinese_ui_language() else meta['zh_name']
                 self.logger.info(_(f'Current task: {task_name}', msgid='current_task_task_name'))
                 self.task_started_signal.emit(task_id)
 
                 task_success = True
-                requires_home_sync = bool(meta.get("requires_home_sync", True))
+                requires_home_sync = bool(meta.get('requires_home_sync', True))
                 if requires_home_sync:
                     self.logger.info(
                         _(f'Preparing {task_name}, returning to home...', msgid='preparing_task_name_returning_to_home')
@@ -139,10 +153,13 @@ class TaskQueueThread(QThread):
                         self.logger.error(
                             _(f'[{task_name}] Failed to return to home before start, skipping.', msgid='task_name_failed_to_return_to_home_before_start')
                         )
+                        self.logger.warning(
+                            _(f'Task skipped: {task_name}, reason=home_sync_failed', msgid='task_skipped_home_sync_failed')
+                        )
                         task_success = False
 
                 if task_success:
-                    module_class = meta["module_class"]
+                    module_class = meta['module_class']
                     module = self._instantiate_module(module_class, auto, self.logger, self.runtime_config)
                     module.run()
 
@@ -161,23 +178,23 @@ class TaskQueueThread(QThread):
                     normal_stop_flag = False
                     break
 
-                if config.inform_message.value or "--toast-only" in sys.argv:
+                if config.inform_message.value or '--toast-only' in sys.argv:
                     full_time = auto.calculate_power_time() if auto is not None else None
-                    content = f"体力将在 {full_time} 完全恢复" if full_time else "体力计算出错"
-                    self.show_tray_message_signal.emit("已完成勾选任务", content)
+                    content = f'体力将在 {full_time} 完全恢复' if full_time else '体力计算出错'
+                    self.show_tray_message_signal.emit('已完成勾选任务', content)
 
         except Exception as e:
-            if str(e) != "已停止":
+            if str(e) != '已停止':
                 self.logger.warning(e)
         finally:
             if self.session.auto is not None:
                 self.session.stop()
             if normal_stop_flag and self._is_running:
-                self.is_running_signal.emit("end")
+                self.is_running_signal.emit('end')
             elif self._interrupted_reason:
-                self.is_running_signal.emit("interrupted")
+                self.is_running_signal.emit('interrupted')
             else:
-                self.is_running_signal.emit("no_auto")
+                self.is_running_signal.emit('no_auto')
 
 
 class ModuleTaskThread(QThread):

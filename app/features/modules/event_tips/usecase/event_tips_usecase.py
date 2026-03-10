@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from PySide6.QtCore import Qt
 from qfluentwidgets import BodyLabel, InfoBar, InfoBarPosition, ProgressBar
@@ -48,7 +48,7 @@ class EventTipsUseCase:
         max_total_days = max(
             (
                 total_day
-                for _, (days, total_day, status) in normalized.items()
+                for _event_key, (days, total_day, status) in normalized.items()
                 if status == 0
             ),
             default=1,
@@ -90,7 +90,7 @@ class EventTipsUseCase:
             index += 1
 
         items_list.sort(key=lambda item: item[2])
-        for row, (body_label, progress_bar, _) in enumerate(items_list, start=1):
+        for row, (body_label, progress_bar, _sort_weight) in enumerate(items_list, start=1):
             ui.gridLayout_tips.addWidget(body_label, row, 0, 1, 1)
             ui.gridLayout_tips.addWidget(progress_bar, row, 1, 1, 1)
 
@@ -121,3 +121,6 @@ class EventTipsActions:
             )
         except Exception as e:
             self._logger.error(_(f'Error occurred while updating controls: {e}', msgid='error_occurred_while_updating_controls_e'))
+
+
+

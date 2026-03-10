@@ -1,4 +1,5 @@
 {
+  "module.dummy.title": "Use Stamina",
   "module.task_stamina.title": "Use Stamina",
   "module.use_power.log.刷常规后勤超时": "刷常规后勤超时",
   "module.use_power.log.刷活动体力超时": "刷活动体力超时",
@@ -17,6 +18,5 @@
   "module.use_power.log.等待活动任务奖励页面超时_重试打开任务": "等待活动任务奖励页面超时，重试打开任务",
   "module.use_power.log.进入活动页面超时": "进入活动页面超时",
   "module.use_power.log.配置数据为空或格式不正确": "配置数据为空或格式不正确",
-  "module.use_power.log.领取活动物资超时": "领取活动物资超时",
-  "module.dummy.title": "Use Stamina"
+  "module.use_power.log.领取活动物资超时": "领取活动物资超时"
 }

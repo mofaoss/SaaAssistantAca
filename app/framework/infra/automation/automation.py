@@ -1,4 +1,4 @@
-import functools
+﻿import functools
 import math
 import threading
 import time
@@ -604,7 +604,7 @@ class Automation:
             )
             return None
 
-        crop_image, _ = ImageUtils.crop_image(self.first_screenshot, crop, self.hwnd)
+        crop_image, crop_relative_pos = ImageUtils.crop_image(self.first_screenshot, crop, self.hwnd)
         if config.showScreenshot.value:
             signalBus.showScreenshot.emit(crop_image)
         if is_resize:
@@ -625,7 +625,7 @@ class Automation:
             )
             self.ocr_result = []
             return self.ocr_result
-        crop_image, _ = ImageUtils.crop_image(self.first_screenshot, crop, self.hwnd)
+        crop_image, crop_relative_pos = ImageUtils.crop_image(self.first_screenshot, crop, self.hwnd)
         self.perform_ocr(image=crop_image, extract=extract, is_log=is_log)
         return self.ocr_result
 
@@ -699,6 +699,7 @@ class Automation:
 
 if __name__ == '__main__':
     pass
+
 
 
 

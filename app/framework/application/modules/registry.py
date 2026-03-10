@@ -1,8 +1,23 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from app.framework.application.modules.contracts import ModuleSpec, ModuleUiBindings
 from app.framework.core.module_system import ModuleHost, get_modules_by_host, make_module_class
 from app.framework.i18n.runtime import get_catalog
+
+
+_DEFAULT_ZH_TITLE_FALLBACK: dict[str, str] = {
+    "task_login": "自动登录",
+    "task_supplies": "领取补给",
+    "task_shop": "商店购买",
+    "task_stamina": "领取体力",
+    "task_shards": "角色碎片",
+    "task_chasm": "神经模拟",
+    "task_reward": "领取奖励",
+    "task_operation": "行动任务",
+    "task_weapon": "武器升级",
+    "task_shard_exchange": "碎片兑换",
+    "task_close_game": "关闭游戏",
+}
 
 
 def _resolve_localized_titles(meta) -> tuple[str, str]:
@@ -17,6 +32,11 @@ def _resolve_localized_titles(meta) -> tuple[str, str]:
         or zh_hk_catalog.get(key)
         or en_name
     ).strip()
+
+    # i18n tooling may keep zh catalogs in English; preserve localized runtime UX for core periodic tasks.
+    if zh_name == en_name:
+        zh_name = _DEFAULT_ZH_TITLE_FALLBACK.get(meta.id, zh_name)
+
     return zh_name, en_name
 
 

@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from PySide6.QtCore import QSize, Qt, Signal
 from PySide6.QtWidgets import (
@@ -306,7 +306,8 @@ class TaskItemWidget(QWidget):
             font = self.label.font()
             font.setBold(False)
 
-            base_text = f"📅 {self._original_text}" if self.is_scheduled else self._original_text
+            schedule_prefix = "[Schedule] " if self._is_non_chinese_ui else "[计划] "
+            base_text = f"{schedule_prefix}{self._original_text}" if self.is_scheduled else self._original_text
 
             self.btn.setVisible(True)
             self.btn_play_from_here.setVisible(True)
@@ -379,7 +380,8 @@ class TaskItemWidget(QWidget):
         """在任务执行期间无感刷新计划图标📅，绝不触碰任何锁和按钮状态"""
         self.is_scheduled = is_scheduled
 
-        base_text = f"📅 {self._original_text}" if self.is_scheduled else self._original_text
+        schedule_prefix = "[Schedule] " if self._is_non_chinese_ui else "[计划] "
+        base_text = f"{schedule_prefix}{self._original_text}" if self.is_scheduled else self._original_text
 
         suffix = self._get_state_suffix(self.current_state)
 
@@ -891,3 +893,4 @@ class PeriodicTasksView(ScrollArea):
         self.PushButton_no_select.setText(self._ui_text("清空", "Clear"))
         self.hint_label.setText(self._ui_text("拖动调整顺序", "Drag to sort"))
         self.TitleLabel_3.setText(self._ui_text("日程提醒", "Event Reminder"))
+

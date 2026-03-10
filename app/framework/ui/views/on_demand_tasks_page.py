@@ -1,4 +1,4 @@
-import re
+﻿import re
 from functools import partial
 
 from PySide6.QtCore import QEasingCurve, QParallelAnimationGroup, QPropertyAnimation, QPoint
@@ -285,7 +285,7 @@ class OnDemandTasksPage(QFrame, BaseInterface):
             return
         self.is_global_running = is_running
         meta_dict = self._get_task_metadata()
-        for _, meta in meta_dict.items():
+        for _task_id, meta in meta_dict.items():
             page = getattr(self, meta["page_attr"], None)
             if not page:
                 continue
@@ -482,5 +482,6 @@ class OnDemandTasksPage(QFrame, BaseInterface):
 
     def get_shared_log_browser(self):
         return self._active_log_browser
+
 
 

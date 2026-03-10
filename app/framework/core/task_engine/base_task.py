@@ -1,4 +1,4 @@
-import logging
+﻿import logging
 from typing import Callable, Optional
 
 import win32gui
@@ -62,7 +62,6 @@ class BaseTask:
         automation=None,
         automation_factory: Optional[Callable[[], object]] = None,
     ):
-        _ = name
         if self.auto is not None:
             self.logger.debug(_(f'Using existing auto: {self.auto.hwnd}', msgid='using_existing_auto_value'))
             return True

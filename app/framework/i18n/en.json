@@ -162,6 +162,9 @@
   "framework.log.窗口追踪检测到跨屏缩放异常_修复失败": "窗口追踪检测到跨屏缩放异常，修复失败",
   "framework.ui.关闭": "关闭",
   "framework.ui.确定": "确定",
-  "framework.log.periodic_no_active_schedules": "📅 No active schedules.",
-  "framework.log.hotkey_pressed": "Hotkey pressed"
+  "framework.log.periodic_no_active_schedules": "No active schedules.",
+  "framework.log.hotkey_pressed": "Hotkey pressed",
+  "framework.log.no_tasks_queued_skipping_execution": "No tasks queued; skipping execution",
+  "framework.log.runtime_automation_session_initialization_failed": "Runtime automation session initialization failed; tasks skipped",
+  "framework.log.execution_interrupted_before_task_start": "Execution interrupted before task start"
 }

@@ -1,4 +1,4 @@
-# coding:utf-8
+﻿# coding:utf-8
 from app.framework.infra.automation.automation import Automation
 from app.framework.infra.config.app_config import config
 from app.framework.core.task_engine.base_task import BaseTask
@@ -22,7 +22,10 @@ class RuntimeAutomationSession:
         if not ok:
             return False
         if self.auto is not None:
-            self.auto.reset()
+            if hasattr(self.auto, "start"):
+                self.auto.start()
+            if hasattr(self.auto, "resume"):
+                self.auto.resume()
         return True
 
     def _build_default_automation(self):
@@ -43,4 +46,3 @@ class RuntimeAutomationSession:
         if self.auto is None:
             return
         self.auto.stop()
-

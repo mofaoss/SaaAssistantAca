@@ -1,4 +1,4 @@
-# coding: utf-8
+﻿# coding: utf-8
 import os.path
 import re
 import sys
@@ -338,7 +338,7 @@ class MainWindow(FluentWindow, BaseInterface):
 
         self._task_sidebar_owner = None
 
-    def _on_main_stacked_current_changed(self, _):
+    def _on_main_stacked_current_changed(self, index):
         self._sync_task_workspace_sidebar()
         current_widget = self.stackedWidget.currentWidget()
         if current_widget == self.homeInterface and hasattr(self.homeInterface, "play_left_panel_animation"):
@@ -862,5 +862,6 @@ def setup_global_exception_hook():
             logger.error(_(f"崩溃弹窗失败: {dialog_error}"))
 
     sys.excepthook = handle_exception
+
 
 

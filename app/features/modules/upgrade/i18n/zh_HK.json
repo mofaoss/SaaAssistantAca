@@ -1,4 +1,5 @@
 {
+  "module.dummy.title": "Weapon Upgrade",
   "module.task_weapon.title": "Weapon Upgrade",
   "module.upgrade.log.发现空的强化槽_点击_号打开材料选择面板": "发现空的强化槽，点击【+】号打开材料选择面板...",
   "module.upgrade.log.开始武器强化流程": "开始武器强化流程...",
@@ -10,6 +11,5 @@
   "module.upgrade.log.用户未勾选_升级枪械_跳过该任务": "用户未勾选【升级枪械】，跳过该任务。",
   "module.upgrade.log.经验不足_持续添加强化材料": "经验不足，持续添加强化材料...",
   "module.upgrade.log.经验值已足够_点击_升级_按钮": "经验值已足够，点击【升级】按钮！",
-  "module.upgrade.log.触发_等级提升_点击空白处关闭弹窗": "触发【等级提升】，点击空白处关闭弹窗...",
-  "module.dummy.title": "Weapon Upgrade"
+  "module.upgrade.log.触发_等级提升_点击空白处关闭弹窗": "触发【等级提升】，点击空白处关闭弹窗..."
 }

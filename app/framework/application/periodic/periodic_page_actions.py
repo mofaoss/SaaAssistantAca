@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import time
 
@@ -30,7 +30,7 @@ class PeriodicPresetActions:
 
     @staticmethod
     def on_preset_changed(host, index):
-        _ = index
+        preset_index = index
         preset_name = host.ui.ComboBox_presets.currentText()
         enabled_tasks = host.settings_usecase.get_enabled_tasks_for_preset(preset_name)
         for task_id, item in host.task_widget_map.items():
@@ -692,3 +692,4 @@ class PeriodicRuntimeActions:
             if getattr(host, "is_running", False) or getattr(host, "is_launch_pending", False):
                 if hasattr(task_item, "lock_ui_for_execution"):
                     task_item.lock_ui_for_execution()
+

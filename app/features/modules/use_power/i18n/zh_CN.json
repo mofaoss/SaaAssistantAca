@@ -1,5 +1,4 @@
 {
-  "module.task_stamina.title": "Use Stamina",
   "module.use_power.log.配置数据为空或格式不正确": "配置数据为空或格式不正确",
   "module.use_power.log.检查体力超时": "检查体力超时",
   "module.use_power.log.常规后勤当前页面无进展_重试": "常规后勤当前页面无进展，重试",
@@ -18,5 +17,6 @@
   "module.use_power.log.活动奖励页面已就绪_检测到可领取奖励": "活动奖励页面已就绪，检测到可领取奖励",
   "module.use_power.log.活动奖励页面已就绪_当前无可领取奖励": "活动奖励页面已就绪，当前无可领取奖励",
   "module.use_power.log.查找_深渊_连续滚动无进展_尝试重置页面": "查找“深渊”连续滚动无进展，尝试重置页面",
-  "module.dummy.title": "Use Stamina"
+  "module.dummy.title": "Use Stamina",
+  "module.task_stamina.title": "Use Stamina"
 }

@@ -1,5 +1,4 @@
 {
-  "module.task_shard_exchange.title": "Shard Exchange",
   "module.jigsaw.log.未识别出对应的地图": "未识别出对应的地图",
   "module.jigsaw.log.没有找到能填满全部格子的方案": "没有找到能填满全部格子的方案",
   "module.jigsaw.log.开始信源碎片相关流程": "开始信源碎片相关流程...",
@@ -19,6 +18,7 @@
   "module.jigsaw.log.赠送流程超时": "赠送流程超时。",
   "module.jigsaw.log.已成功赠送给好友": "已成功赠送给好友。",
   "module.jigsaw.log.碎片不足_无法进行回收": "碎片不足，无法进行回收。",
+  "module.dummy.title": "Shard Exchange",
   "module.jigsaw.log.text": "???????????????????????",
-  "module.dummy.title": "Shard Exchange"
+  "module.task_shard_exchange.title": "Shard Exchange"
 }
