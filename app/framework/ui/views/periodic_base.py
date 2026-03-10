@@ -3,7 +3,7 @@ import logging
 from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget
 
 from app.framework.infra.config.app_config import is_non_chinese_ui_language
-from app.framework.i18n import _
+from app.framework.i18n import _ as i18n_translate
 
 
 class BaseInterface:
@@ -27,6 +27,9 @@ class BaseInterface:
                 return translate(zh_text)
 
         return zh_text
+
+    def _(self, text, *args, **kwargs):
+        return i18n_translate(text, *args, **kwargs)
 
     def load_config(self):
         """Load configuration into UI elements. Override in subclass."""

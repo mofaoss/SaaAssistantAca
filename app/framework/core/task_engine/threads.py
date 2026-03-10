@@ -118,13 +118,7 @@ class TaskQueueThread(QThread):
 
     def _telemetry_periodic(self, event: str, task_id: str, task_name: str, detail: str = "") -> None:
         try:
-            self.logger.debug(
-                "periodic_event=%s task_id=%s task_name=%s detail=%s",
-                event,
-                task_id,
-                task_name,
-                detail,
-            )
+            self.logger.debug(f"periodic_event={event} task_id={task_id} task_name={task_name} detail={detail}")
         except Exception:
             pass
 
@@ -372,3 +366,4 @@ class ModuleTaskThread(QThread):
             except Exception as stop_error:
                 self.logger.warning(_(f"SubTask结束时恢复窗口位置失败：{stop_error}"))
             self.is_running.emit(False)
+

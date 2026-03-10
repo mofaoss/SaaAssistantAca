@@ -134,8 +134,8 @@ class FishingInterface(ModulePageBase):
     def apply_i18n(self):
         self.ComboBox_fishing_mode.clear()
         self.ComboBox_fishing_mode.addItems([
-            self._ui_text("高性能（消耗性能高速判断，准确率高）", "High Performance (faster and more accurate, higher CPU usage)"),
-            self._ui_text("低性能（超时自动拉杆，准确率较低）", "Low Performance (timeout-based auto reel, lower accuracy)")
+            self._("High Performance (faster and more accurate, higher CPU usage)", msgid='high_performance_faster_and_more_accurate_higher_cpu_usage'),
+            self._("Low Performance (timeout-based auto reel, lower accuracy)", msgid='low_performance_timeout_based_auto_reel_lower_accuracy')
         ])
         self.BodyLabel_tip_fish.setText(
             "### Tips\n* Side mouse buttons are not supported in background mode\n* Use analyst for fishing character, otherwise it may fail\n* Configure cast key, fishing times and lure type in game first\n* Daily limit: rare spot 25, epic spot 50, normal spot unlimited\n* Move to next fishing spot manually after one spot is exhausted\n* If yellow block detection is abnormal, recalibrate HSV color\n"
@@ -152,21 +152,21 @@ class FishingInterface(ModulePageBase):
         self.ComboBox_lure_type.clear()
         self.ComboBox_lure_type.addItems(lure_type_items)
 
-        self.PushButton_start_fishing.setText(self._ui_text('开始钓鱼', 'Start Fishing'))
-        self.TitleLabel.setText(self._ui_text("日志", "Log"))
-        self.CheckBox_is_save_fish.setText(self._ui_text("新纪录是否暂停", "Pause on new records"))
-        self.BodyLabel_7.setText(self._ui_text("颜色查找下限", "Color lower bound"))
-        self.PrimaryPushButton_get_color.setText(self._ui_text("校准颜色", "Calibrate Color"))
-        self.BodyLabel.setText(self._ui_text("钓鱼次数：", "Fishing attempts:"))
-        self.CheckBox_is_limit_time.setText(self._ui_text("是否限制单次收杆时间间隔上限", "Limit max reeling interval per attempt"))
-        self.BodyLabel_21.setText(self._ui_text("自定义钓鱼键", "Custom fishing key"))
-        self.StrongBodyLabel.setText(self._ui_text("校准完美收杆区域HSV（当收杆出错，日志说黄色块大于2时用）", "Calibrate perfect reeling HSV (use when logs report yellow block count > 2)"))
-        self.LineEdit_fish_key.setPlaceholderText(self._ui_text("钓鱼键与尘白闪避键绑定", "Fishing key is bound to in-game dodge key"))
-        self.BodyLabel_6.setText(self._ui_text("颜色查找上限", "Color upper bound"))
-        self.BodyLabel_5.setText(self._ui_text("基准HSV值", "Base HSV"))
-        self.BodyLabel_2.setText(self._ui_text("钓鱼模式", "Fishing mode"))
-        self.PushButton_reset.setText(self._ui_text("重置", "Reset"))
-        self.BodyLabel_23.setText(self._ui_text("鱼饵类型：", "Bait type:"))
+        self.PushButton_start_fishing.setText(self._('Start Fishing', msgid='start_fishing'))
+        self.TitleLabel.setText(self._("Log", msgid='log'))
+        self.CheckBox_is_save_fish.setText(self._("Pause on new records", msgid='pause_on_new_records'))
+        self.BodyLabel_7.setText(self._("Color lower bound", msgid='color_lower_bound'))
+        self.PrimaryPushButton_get_color.setText(self._("Calibrate Color", msgid='calibrate_color'))
+        self.BodyLabel.setText(self._("Fishing attempts:", msgid='fishing_attempts'))
+        self.CheckBox_is_limit_time.setText(self._("Limit max reeling interval per attempt", msgid='limit_max_reeling_interval_per_attempt'))
+        self.BodyLabel_21.setText(self._("Custom fishing key", msgid='custom_fishing_key'))
+        self.StrongBodyLabel.setText(self._("Calibrate perfect reeling HSV (use when logs report yellow block count > 2)", msgid='calibrate_perfect_reeling_hsv_use_when_logs_report_yellow_block_count_2'))
+        self.LineEdit_fish_key.setPlaceholderText(self._("Fishing key is bound to in-game dodge key", msgid='fishing_key_is_bound_to_in_game_dodge_key'))
+        self.BodyLabel_6.setText(self._("Color upper bound", msgid='color_upper_bound'))
+        self.BodyLabel_5.setText(self._("Base HSV", msgid='base_hsv'))
+        self.BodyLabel_2.setText(self._("Fishing mode", msgid='fishing_mode'))
+        self.PushButton_reset.setText(self._("Reset", msgid='reset'))
+        self.BodyLabel_23.setText(self._("Bait type:", msgid='bait_type'))
 
     def update_label_color(self):
         hsv_value = [int(value) for value in config.LineEdit_fish_base.value.split(",")]
@@ -200,4 +200,5 @@ class FishingInterface(ModulePageBase):
         # Specific load logic for fishing if needed, 
         # but the host can also do generic loading by object name
         self.update_label_color()
+
 

@@ -31,8 +31,12 @@
   "module.operation_action.log.cn_text_0003_7": "进入常规行动超时",
   "module.operation_action.log.cn_text_0003_8": "进入常规行动超时",
   "module.operation_action.log.cn_text_0003_9": "进入常规行动超时",
-  "module.task_operation.title": "行动任务",
+  "module.operation_action.log.txt_25f747b8c522": "进入常规行动时连续滚轮无进展，已停止以避免后台卡死",
   "module.operation_action.log.txt_494267964b01": "执行常规训练超时",
   "module.operation_action.log.txt_a66679214182": "进入常规行动超时",
-  "module.operation_action.log.txt_25f747b8c522": "进入常规行动时连续滚轮无进展，已停止以避免后台卡死"
+  "module.operation_action.ui.log": "日志",
+  "module.operation_action.ui.run_count": "刷取次数",
+  "module.operation_action.ui.sprint_mode": "疾跑方式",
+  "module.operation_action.ui.start_operation": "开始常规训练",
+  "module.task_operation.title": "行动任务"
 }

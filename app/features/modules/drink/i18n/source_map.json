@@ -46,5 +46,13 @@
   "module.drink.log.txt_e663ae4a386c": "zh_CN",
   "module.drink.log.txt_f85dd903b70f": "zh_CN",
   "module.drink.title": "en",
+  "module.drink.ui.i_have_enabled_speed_up_manually": "en",
+  "module.drink.ui.log": "en",
+  "module.drink.ui.mode": "en",
+  "module.drink.ui.mystery_box_raid_exp_achievements": "en",
+  "module.drink.ui.run_count_1_means_infinite": "en",
+  "module.drink.ui.standard_fast_exp": "en",
+  "module.drink.ui.start_drink": "en",
+  "module.drink.ui.tips_stand_at_the_card_match_entrance_before_starting_both_modes_prioritize_endi": "en",
   "module.dummy.title": "en"
 }

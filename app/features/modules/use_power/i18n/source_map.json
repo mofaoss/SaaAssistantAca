@@ -201,5 +201,10 @@
   "module.use_power.log.txt_ca6f28b9b405": "zh_CN",
   "module.use_power.log.txt_d78394cce7f4": "zh_CN",
   "module.use_power.log.txt_d99122bbcf29": "zh_CN",
-  "module.use_power.log.txt_ed71b62bb094": "zh_CN"
+  "module.use_power.log.txt_ed71b62bb094": "zh_CN",
+  "module.use_power.ui.auto_use_expiring": "en",
+  "module.use_power.ui.day_potion": "en",
+  "module.use_power.ui.event_stages": "en",
+  "module.use_power.ui.operation_logistics": "en",
+  "module.use_power.ui.stamina_usage_mode": "en"
 }

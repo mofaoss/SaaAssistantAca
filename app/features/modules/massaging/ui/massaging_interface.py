@@ -6,8 +6,8 @@ from qfluentwidgets import BodyLabel, PrimaryPushButton, SimpleCardWidget
 
 
 class MassagingInterface(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
+    def __init_self._(self, parent=None):
+        super().__init_self._(parent=parent)
         self.setObjectName("page_massaging")
 
         self.main_layout = QHBoxLayout(self)

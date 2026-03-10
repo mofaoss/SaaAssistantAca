@@ -1,8 +1,8 @@
 import time
 
-from app.features.modules.onnxocr.predict_system import TextSystem
-from app.features.modules.onnxocr.utils import infer_args as init_args
-from app.features.modules.onnxocr.utils import str2bool, draw_ocr
+from app.framework.infra.vision.onnxocr.predict_system import TextSystem
+from app.framework.infra.vision.onnxocr.utils import infer_args as init_args
+from app.framework.infra.vision.onnxocr.utils import str2bool, draw_ocr
 import argparse
 
 

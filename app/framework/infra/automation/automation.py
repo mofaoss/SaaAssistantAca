@@ -1,4 +1,4 @@
-﻿import functools
+import functools
 import math
 import threading
 import time
@@ -85,12 +85,14 @@ class Automation:
 
         self._init_input()
 
-    def _log_error_throttled(self, key, message, interval=2.0):
+    def _log_error_throttled(self, key, message, interval=2.0, level="error"):
         now = time.time()
         last = self._last_error_log.get(key, 0)
         if now - last >= interval:
-            self.logger.error(message)
+            log_fn = getattr(self.logger, level, self.logger.error)
+            log_fn(message)
             self._last_error_log[key] = now
+
 
     @staticmethod
     def _template_log_name(template: str) -> str:
@@ -631,6 +633,7 @@ class Automation:
             self._log_error_throttled(
                 "read_text_no_screenshot",
                 _('No screenshot currently, unable to read text', msgid='no_screenshot_currently_unable_to_read_text'),
+                level="warning",
             )
             self.ocr_result = []
             return self.ocr_result
@@ -684,11 +687,15 @@ class Automation:
 
     def calculate_power_time(self):
         """
-        识别并计算当前体力值，然后计算出恢复时间
+        Calculate current stamina recovery completion time based on OCR value.
         """
         try:
             ocr_result = self.read_text_from_crop(crop=(900 / 1920, 0, 1076 / 1920, 70 / 1080))
-            text = ocr_result[0][0]
+            if not ocr_result or not isinstance(ocr_result, list) or not isinstance(ocr_result[0], (list, tuple)):
+                self.logger.warning(_('Unable to recognize stamina from screenshot', msgid='unable_to_recognize_stamina_from_screenshot'))
+                return None
+
+            text = str(ocr_result[0][0]) if ocr_result[0] else ""
             if "/" in text:
                 num = int(text.split("/")[0])
                 now = datetime.now()
@@ -696,13 +703,12 @@ class Automation:
                     return now.strftime('%m-%d %H:%M')
                 minutes_to_add = max(0, 6 * (240 - num))
                 future_time = now + timedelta(minutes=minutes_to_add)
-                formatted_time = future_time.strftime('%m-%d %H:%M')
-                return formatted_time
-            else:
-                self.logger.error(_(f'Recognition result error: {text}', msgid='recognition_result_error_text'))
-                return None
+                return future_time.strftime('%m-%d %H:%M')
+
+            self.logger.warning(_(f'Recognition result error: {text}', msgid='recognition_result_error_text'))
+            return None
         except Exception as e:
-            self.logger.error(_(f'Failed to recognize stamina: {e}', msgid='failed_to_recognize_stamina_e'))
+            self.logger.warning(_(f'Failed to recognize stamina: {e}', msgid='failed_to_recognize_stamina_e'))
             return None
 
 

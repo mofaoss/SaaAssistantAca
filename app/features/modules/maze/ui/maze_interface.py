@@ -66,18 +66,16 @@ class MazeInterface(ModulePageBase):
 
     def apply_i18n(self):
         self.BodyLabel_tip_maze.setText(
-            self._ui_text(
-                "### 提示\n* 本功能只适用于增益迷宫（新迷宫），而非老迷宫\n* 运行模式中单次运行适合打前3关，重复运行则是一直刷最后一关\n* 进配队界面选好增益后再让安卡希雅的开始迷宫\n* 增益推荐配技能-爆电和护盾-夺取\n* 配队必须要有辰星-琼弦，且把角色放在中间位\n* 辅助有豹豹上豹豹防止暴毙",
-                "### Tips\n* This feature only supports the new Buff Maze, not the old maze\n* Single Run is suitable for first 3 stages; Repeat Run keeps farming the last stage\n* Select buffs in team setup first, then click Start Maze in Acacia\n* Recommended buffs: Skill-Chain Lightning and Shield-Steal\n* Team must include Chenxing - Qiongxian in the middle slot\n* Bring a strong support unit to reduce sudden deaths"
-            )
+            self._("### Tips\n* This feature only supports the new Buff Maze, not the old maze\n* Single Run is suitable for first 3 stages; Repeat Run keeps farming the last stage\n* Select buffs in team setup first, then click Start Maze in Acacia\n* Recommended buffs: Skill-Chain Lightning and Shield-Steal\n* Team must include Chenxing - Qiongxian in the middle slot\n* Bring a strong support unit to reduce sudden deaths", msgid='tips_this_feature_only_supports_the_new_buff_maze_not_the_old_maze_single_run_is')
         )
-        self.BodyLabel_27.setText(self._ui_text("运行模式", "Run mode"))
-        self.TitleLabel_5.setText(self._ui_text("日志", "Log"))
-        self.PushButton_start_maze.setText(self._ui_text('开始迷宫', 'Start Maze'))
+        self.BodyLabel_27.setText(self._("Run mode", msgid='run_mode'))
+        self.TitleLabel_5.setText(self._("Log", msgid='log'))
+        self.PushButton_start_maze.setText(self._('Start Maze', msgid='start_maze'))
 
         self.ComboBox_mode_maze.clear()
         self.ComboBox_mode_maze.addItems(
-            [self._ui_text("单次运行", "Single Run"),
-             self._ui_text("重复运行", "Repeat Run")]
+            [self._("Single Run", msgid='single_run'),
+             self._("Repeat Run", msgid='repeat_run')]
         )
+
 

@@ -5,8 +5,8 @@ from app.framework.ui.views.periodic_base import ModulePageBase
 
 
 class UsePowerPage(ModulePageBase):
-    def __init__(self, parent=None):
-        super().__init__("page_2", parent=parent, host_context="periodic", use_default_layout=True)
+    def __init_self._(self, parent=None):
+        super().__init_self._("page_2", parent=parent, host_context="periodic", use_default_layout=True)
 
         first_line = QHBoxLayout()
         self.CheckBox_is_use_power = CheckBox(self)
@@ -34,10 +34,11 @@ class UsePowerPage(ModulePageBase):
         self.ComboBox_power_day.addItems(["1", "2", "3", "4", "5", "6"])
         self.ComboBox_power_usage.addItems(
             [
-                self._ui_text("活动材料本", "Event Stages"),
-                self._ui_text("刷常规后勤", "Operation Logistics"),
+                self._("Event Stages", msgid='event_stages'),
+                self._("Operation Logistics", msgid='operation_logistics'),
             ]
         )
-        self.StrongBodyLabel_2.setText(self._ui_text("选择体力使用方式", "Stamina usage mode"))
-        self.CheckBox_is_use_power.setText(self._ui_text("自动使用期限", "Auto use expiring"))
-        self.BodyLabel_6.setText(self._ui_text("天内的体力药", "day potion"))
+        self.StrongBodyLabel_2.setText(self._("Stamina usage mode", msgid='stamina_usage_mode'))
+        self.CheckBox_is_use_power.setText(self._("Auto use expiring", msgid='auto_use_expiring'))
+        self.BodyLabel_6.setText(self._("day potion", msgid='day_potion'))
+

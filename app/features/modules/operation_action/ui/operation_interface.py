@@ -3,11 +3,10 @@ from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
 from qfluentwidgets import (BodyLabel, ComboBox, PushButton, SimpleCardWidget, SpinBox, TitleLabel)
 from app.framework.infra.config.app_config import config
 from app.framework.ui.views.periodic_base import ModulePageBase
-from app.framework.i18n import _
 
 class OperationInterface(ModulePageBase):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init_self._(self, parent=None):
+        super().__init_self._(parent)
         self.setObjectName("page_operation")
 
         self.main_layout = QHBoxLayout(self)
@@ -81,10 +80,10 @@ class OperationInterface(ModulePageBase):
         self.ComboBox_run.clear()
         self.ComboBox_run.addItems(run_items)
 
-        self.PushButton_start_action.setText(self._ui_text('开始常规训练', 'Start Operation'))
-        self.BodyLabel_4.setText(self._ui_text("刷取次数", "Run count"))
-        self.BodyLabel_22.setText(self._ui_text("疾跑方式", "Sprint mode"))
-        self.TitleLabel_2.setText(self._ui_text("日志", "Log"))
+        self.PushButton_start_action.setText(self._('Start Operation', msgid='start_operation'))
+        self.BodyLabel_4.setText(self._("Run count", msgid='run_count'))
+        self.BodyLabel_22.setText(self._("Sprint mode", msgid='sprint_mode'))
+        self.TitleLabel_2.setText(self._("Log", msgid='log'))
 
     def bind_host_context(self, host_context):
         super().bind_host_context(host_context)
@@ -103,4 +102,5 @@ class OperationInterface(ModulePageBase):
         if getattr(self, "main_layout", None) is not None:
             self.main_layout.setStretch(0, 1)
             self.main_layout.setStretch(1, 0 if is_periodic else 1)
+
 

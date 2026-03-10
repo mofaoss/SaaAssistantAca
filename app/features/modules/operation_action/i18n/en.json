@@ -1,5 +1,9 @@
 {
   "module.action.title": "Operation",
   "module.dummy.title": "Operation",
+  "module.operation_action.ui.log": "Log",
+  "module.operation_action.ui.run_count": "Run count",
+  "module.operation_action.ui.sprint_mode": "Sprint mode",
+  "module.operation_action.ui.start_operation": "Start Operation",
   "module.task_operation.title": "Operation"
 }

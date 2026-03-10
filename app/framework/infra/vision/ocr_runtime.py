@@ -1,13 +1,18 @@
+import gc
+import json
+import logging
+import os
 import time
+
 import cv2
 import numpy as np
-import gc
 
 from app.framework.infra.config.app_config import config
 from app.framework.infra.vision.image import ImageUtils
 from app.features.utils.text_normalizer import normalize_chinese_text
 from app.framework.infra.system.cpu import cpu_support_avx2
-from app.features.modules.onnxocr.onnx_paddleocr import ONNXPaddleOcr
+from app.framework.infra.runtime.paths import APPDATA_DIR, ensure_runtime_dirs
+from app.framework.infra.vision.onnxocr.onnx_paddleocr import ONNXPaddleOcr
 from app.framework.i18n import _
 
 
@@ -372,5 +377,35 @@ class OCR:
         # 强制释放图像残余占用空间
         gc.collect()
 
+logger = logging.getLogger(__name__)
 
+
+def _load_replacements() -> dict:
+    ensure_runtime_dirs()
+    json_path = APPDATA_DIR / "ocr_replacements.json"
+    os.makedirs(json_path.parent, exist_ok=True)
+
+    if not json_path.exists():
+        json_path.write_text(
+            json.dumps({"direct": {}, "conditional": {}}, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
+    try:
+        data = json.loads(json_path.read_text(encoding="utf-8-sig"))
+    except Exception:
+        data = {"direct": {}, "conditional": {}}
+
+    if not isinstance(data, dict):
+        data = {"direct": {}, "conditional": {}}
+
+    if not isinstance(data.get("direct"), dict):
+        data["direct"] = {}
+    if not isinstance(data.get("conditional"), dict):
+        data["conditional"] = {}
+
+    return data
+
+
+ocr = OCR(logger, _load_replacements())
 

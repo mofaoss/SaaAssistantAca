@@ -1,4 +1,12 @@
 {
   "module.drink.title": "Card Match",
+  "module.drink.ui.i_have_enabled_speed_up_manually": "I have enabled speed-up manually",
+  "module.drink.ui.log": "Log",
+  "module.drink.ui.mode": "Mode",
+  "module.drink.ui.mystery_box_raid_exp_achievements": "Mystery Box Raid (EXP/Achievements)",
+  "module.drink.ui.run_count_1_means_infinite": "Run count (-1 means infinite)",
+  "module.drink.ui.standard_fast_exp": "Standard (fast EXP)",
+  "module.drink.ui.start_drink": "Start Drink",
+  "module.drink.ui.tips_stand_at_the_card_match_entrance_before_starting_both_modes_prioritize_endi": "### Tips\n* Stand at the Card Match entrance before starting\n* Both modes prioritize ending matches quickly for fast farming\n* Logic: always challenge when possible; play the middle card on your turn\n* Win/loss may vary; it is designed for passive EXP farming",
   "module.dummy.title": "Card Match"
 }

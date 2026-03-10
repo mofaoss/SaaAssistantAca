@@ -132,5 +132,12 @@
   "module.water_bomb.log.txt_c5f17c5e958e": "zh_CN",
   "module.water_bomb.log.txt_e6dbf839e2f7": "zh_CN",
   "module.water_bomb.log.txt_f90f4fc5221b": "zh_CN",
-  "module.water_bomb.title": "en"
+  "module.water_bomb.title": "en",
+  "module.water_bomb.ui.count_confidence": "en",
+  "module.water_bomb.ui.log": "en",
+  "module.water_bomb.ui.start_water_bomb": "en",
+  "module.water_bomb.ui.stop_after_wins": "en",
+  "module.water_bomb.ui.template_confidence": "en",
+  "module.water_bomb.ui.tips_stand_at_the_water_bomb_entrance_before_starting_if_items_or_hp_are_not_rec": "en",
+  "module.water_bomb.ui.win_streak": "en"
 }

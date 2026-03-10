@@ -218,5 +218,8 @@
   "module.jigsaw.log.txt_e4aaa31123ac": "zh_CN",
   "module.jigsaw.log.txt_e8d1a87afe86": "zh_CN",
   "module.jigsaw.log.txt_eb0ee52f7360": "zh_CN",
+  "module.jigsaw.ui.auto_gift": "en",
+  "module.jigsaw.ui.auto_receive": "en",
+  "module.jigsaw.ui.smart_recycle": "en",
   "module.task_shard_exchange.title": "en"
 }

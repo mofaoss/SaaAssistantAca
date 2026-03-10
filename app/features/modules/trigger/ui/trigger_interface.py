@@ -3,11 +3,10 @@ from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QFrame
 from qfluentwidgets import (BodyLabel, SimpleCardWidget, StrongBodyLabel, SwitchButton)
 from app.framework.infra.config.app_config import config
 from app.framework.ui.views.periodic_base import ModulePageBase
-from app.framework.i18n import _
 
 class TriggerInterface(ModulePageBase):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init_self._(self, parent=None):
+        super().__init_self._(parent)
         self.setObjectName("page_trigger")
         self.item_count = 0
 
@@ -102,14 +101,12 @@ class TriggerInterface(ModulePageBase):
         self.item_count += 1
 
     def apply_i18n(self):
-        self.StrongBodyLabel_trigger_f.setText(self._ui_text("自动采集或劝降", "Auto Collect"))
-        self.BodyLabel_trigger_f.setText(self._ui_text("按钮出现时就按下F键", "Automatically press F when collect prompt appears"))
-        self.StrongBodyLabel_trigger_e.setText(self._ui_text("自动妮塔悸响qte", "Nita E Auto QTE"))
-        self.BodyLabel_trigger_e.setText(self._ui_text("到qte时机就按下E键", "Automatically press E during QTE stage"))
-        self.TitleLabel_trigger_log.setText(self._ui_text("日志", "Log"))
+        self.StrongBodyLabel_trigger_f.setText(self._("Auto Collect", msgid='auto_collect'))
+        self.BodyLabel_trigger_f.setText(self._("Automatically press F when collect prompt appears", msgid='automatically_press_f_when_collect_prompt_appears'))
+        self.StrongBodyLabel_trigger_e.setText(self._("Nita E Auto QTE", msgid='nita_e_auto_qte'))
+        self.BodyLabel_trigger_e.setText(self._("Automatically press E during QTE stage", msgid='automatically_press_e_during_qte_stage'))
+        self.TitleLabel_trigger_log.setText(self._("Log", msgid='log'))
         self.BodyLabel_trigger_tip.setText(
-            self._ui_text(
-                "### 提示\n* 先启动游戏再开启本功能\n* 开启后，遇到符合的情况就自动触发\n* 不影响手动游玩",
-                "### Tips\n* Launch the game before enabling this feature\n* These are toggle switches. Once enabled, detection keeps running and triggers automatically when conditions match\n* It does not block manual gameplay, acting as semi-automation assistance"
-            ))
+            self._("### Tips\n* Launch the game before enabling this feature\n* These are toggle switches. Once enabled, detection keeps running and triggers automatically when conditions match\n* It does not block manual gameplay, acting as semi-automation assistance", msgid='tips_launch_the_game_before_enabling_this_feature_these_are_toggle_switches_once'))
+
 

@@ -218,5 +218,8 @@
   "module.jigsaw.log.txt_e4aaa31123ac": "赠送流程超时。",
   "module.jigsaw.log.txt_e8d1a87afe86": "成功一键接收碎片。",
   "module.jigsaw.log.txt_eb0ee52f7360": "没有更多碎片可以赠送了。",
+  "module.jigsaw.ui.auto_gift": "一键赠送",
+  "module.jigsaw.ui.auto_receive": "一键接收",
+  "module.jigsaw.ui.smart_recycle": "智能回收",
   "module.task_shard_exchange.title": "碎片兑换"
 }

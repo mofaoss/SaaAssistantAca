@@ -5,8 +5,8 @@ from app.framework.infra.config.app_config import config
 from app.framework.ui.views.periodic_base import ModulePageBase
 
 class CapturePalsInterface(ModulePageBase):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init_self._(self, parent=None):
+        super().__init_self._(parent)
         self.setObjectName("page_capture_pals")
 
         self.main_layout = QHBoxLayout(self)
@@ -148,27 +148,28 @@ class CapturePalsInterface(ModulePageBase):
             "* 同步抓帕鲁：双岛同时勾选，按“各自周期”在两岛间切换；一岛结束会只刷另一岛\n"
         )
 
-        self.BodyLabel_capture_pals_partner_mode.setText(self._ui_text("伙伴岛模式", "Partner Island mode"))
-        self.BodyLabel_capture_pals_adventure_mode.setText(self._ui_text("探险岛模式", "Adventure Island mode"))
-        self.StrongBodyLabel_capture_pals_island.setText(self._ui_text("选择岛屿", "Select islands"))
-        self.CheckBox_capture_pals_partner.setText(self._ui_text("伙伴岛", "Partner Island"))
-        self.CheckBox_capture_pals_adventure.setText(self._ui_text("探险岛", "Adventure Island"))
-        self.CheckBox_capture_pals_sync.setText(self._ui_text("同步抓帕鲁", "Sync capture"))
-        self.StrongBodyLabel_capture_pals_partner.setText(self._ui_text("伙伴岛参数", "Partner Island settings"))
-        self.BodyLabel_capture_pals_partner_fixed.setText(self._ui_text("定点间隔(秒)", "Fixed interval (s)"))
-        self.BodyLabel_capture_pals_partner_patrol.setText(self._ui_text("巡逻间隔(秒)", "Patrol interval (s)"))
-        self.StrongBodyLabel_capture_pals_adventure.setText(self._ui_text("探险岛参数", "Adventure Island settings"))
-        self.BodyLabel_capture_pals_adventure_fixed.setText(self._ui_text("定点间隔(秒)", "Fixed interval (s)"))
-        self.BodyLabel_capture_pals_adventure_patrol.setText(self._ui_text("巡逻间隔(秒)", "Patrol interval (s)"))
-        self.TitleLabel_log_capture_pals.setText(self._ui_text("日志", "Log"))
-        self.PushButton_start_capture_pals.setText(self._ui_text('开始抓帕鲁', 'Start Capture Pals'))
+        self.BodyLabel_capture_pals_partner_mode.setText(self._("Partner Island mode", msgid='partner_island_mode'))
+        self.BodyLabel_capture_pals_adventure_mode.setText(self._("Adventure Island mode", msgid='adventure_island_mode'))
+        self.StrongBodyLabel_capture_pals_island.setText(self._("Select islands", msgid='select_islands'))
+        self.CheckBox_capture_pals_partner.setText(self._("Partner Island", msgid='partner_island'))
+        self.CheckBox_capture_pals_adventure.setText(self._("Adventure Island", msgid='adventure_island'))
+        self.CheckBox_capture_pals_sync.setText(self._("Sync capture", msgid='sync_capture'))
+        self.StrongBodyLabel_capture_pals_partner.setText(self._("Partner Island settings", msgid='partner_island_settings'))
+        self.BodyLabel_capture_pals_partner_fixed.setText(self._("Fixed interval (s)", msgid='fixed_interval_s'))
+        self.BodyLabel_capture_pals_partner_patrol.setText(self._("Patrol interval (s)", msgid='patrol_interval_s'))
+        self.StrongBodyLabel_capture_pals_adventure.setText(self._("Adventure Island settings", msgid='adventure_island_settings'))
+        self.BodyLabel_capture_pals_adventure_fixed.setText(self._("Fixed interval (s)", msgid='fixed_interval_s'))
+        self.BodyLabel_capture_pals_adventure_patrol.setText(self._("Patrol interval (s)", msgid='patrol_interval_s'))
+        self.TitleLabel_log_capture_pals.setText(self._("Log", msgid='log'))
+        self.PushButton_start_capture_pals.setText(self._('Start Capture Pals', msgid='start_capture_pals'))
 
         capture_pals_mode_items = [
-            self._ui_text("定点抓帕鲁", "Fixed Point Capture"),
-            self._ui_text("巡逻抓帕鲁", "Patrol Capture")
+            self._("Fixed Point Capture", msgid='fixed_point_capture'),
+            self._("Patrol Capture", msgid='patrol_capture')
         ]
         self.ComboBox_capture_pals_partner_mode.clear()
         self.ComboBox_capture_pals_partner_mode.addItems(capture_pals_mode_items)
         self.ComboBox_capture_pals_adventure_mode.clear()
         self.ComboBox_capture_pals_adventure_mode.addItems(capture_pals_mode_items)
+
 

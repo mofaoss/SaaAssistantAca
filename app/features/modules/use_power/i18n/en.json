@@ -1,4 +1,9 @@
 {
   "module.dummy.title": "Use Stamina",
-  "module.task_stamina.title": "Use Stamina"
+  "module.task_stamina.title": "Use Stamina",
+  "module.use_power.ui.auto_use_expiring": "Auto use expiring",
+  "module.use_power.ui.day_potion": "day potion",
+  "module.use_power.ui.event_stages": "Event Stages",
+  "module.use_power.ui.operation_logistics": "Operation Logistics",
+  "module.use_power.ui.stamina_usage_mode": "Stamina usage mode"
 }

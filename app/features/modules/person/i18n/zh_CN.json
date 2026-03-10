@@ -61,5 +61,12 @@
   "module.person.log.txt_79072efe7879": "点击右上角加号补充体力",
   "module.person.log.txt_ad7862e474e6": "使用记忆嵌片超时",
   "module.person.log.txt_be40b8eb9c07": "记忆嵌片已用尽",
+  "module.person.ui.auto_use_2_chips_when_not_enough": "记忆嵌片不足时自动使用2片",
+  "module.person.ui.character_1": "角色1：",
+  "module.person.ui.character_2": "角色2：",
+  "module.person.ui.character_3": "角色3：",
+  "module.person.ui.character_4": "角色4：",
+  "module.person.ui.not_set": "未输入",
+  "module.person.ui.select_characters_for_shards": "选择需要刷碎片的角色",
   "module.task_shards.title": "角色碎片"
 }

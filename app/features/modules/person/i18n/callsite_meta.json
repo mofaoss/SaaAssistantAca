@@ -1,4 +1,88 @@
 {
+  "app/features/modules/person/ui/person_periodic_page.py:55:39": {
+    "kind": "static_literal",
+    "key": "module.person.ui.select_characters_for_shards",
+    "msgid": "select_characters_for_shards",
+    "source_text": "Select characters for shards",
+    "owner_scope": "module",
+    "owner_module": "person",
+    "file_path": "app/features/modules/person/ui/person_periodic_page.py",
+    "line": 55,
+    "col": 39,
+    "context": "ui"
+  },
+  "app/features/modules/person/ui/person_periodic_page.py:56:33": {
+    "kind": "static_literal",
+    "key": "module.person.ui.character_1",
+    "msgid": "character_1",
+    "source_text": "Character 1:",
+    "owner_scope": "module",
+    "owner_module": "person",
+    "file_path": "app/features/modules/person/ui/person_periodic_page.py",
+    "line": 56,
+    "col": 33,
+    "context": "ui"
+  },
+  "app/features/modules/person/ui/person_periodic_page.py:57:33": {
+    "kind": "static_literal",
+    "key": "module.person.ui.character_2",
+    "msgid": "character_2",
+    "source_text": "Character 2:",
+    "owner_scope": "module",
+    "owner_module": "person",
+    "file_path": "app/features/modules/person/ui/person_periodic_page.py",
+    "line": 57,
+    "col": 33,
+    "context": "ui"
+  },
+  "app/features/modules/person/ui/person_periodic_page.py:58:33": {
+    "kind": "static_literal",
+    "key": "module.person.ui.character_3",
+    "msgid": "character_3",
+    "source_text": "Character 3:",
+    "owner_scope": "module",
+    "owner_module": "person",
+    "file_path": "app/features/modules/person/ui/person_periodic_page.py",
+    "line": 58,
+    "col": 33,
+    "context": "ui"
+  },
+  "app/features/modules/person/ui/person_periodic_page.py:59:33": {
+    "kind": "static_literal",
+    "key": "module.person.ui.character_4",
+    "msgid": "character_4",
+    "source_text": "Character 4:",
+    "owner_scope": "module",
+    "owner_module": "person",
+    "file_path": "app/features/modules/person/ui/person_periodic_page.py",
+    "line": 59,
+    "col": 33,
+    "context": "ui"
+  },
+  "app/features/modules/person/ui/person_periodic_page.py:61:41": {
+    "kind": "static_literal",
+    "key": "module.person.ui.not_set",
+    "msgid": "not_set",
+    "source_text": "Not set",
+    "owner_scope": "module",
+    "owner_module": "person",
+    "file_path": "app/features/modules/person/ui/person_periodic_page.py",
+    "line": 61,
+    "col": 41,
+    "context": "ui"
+  },
+  "app/features/modules/person/ui/person_periodic_page.py:62:42": {
+    "kind": "static_literal",
+    "key": "module.person.ui.auto_use_2_chips_when_not_enough",
+    "msgid": "auto_use_2_chips_when_not_enough",
+    "source_text": "Auto use 2 chips when not enough",
+    "owner_scope": "module",
+    "owner_module": "person",
+    "file_path": "app/features/modules/person/ui/person_periodic_page.py",
+    "line": 62,
+    "col": 42,
+    "context": "ui"
+  },
   "app/features/modules/person/usecase/person_usecase.py:134:40": {
     "kind": "dynamic_template",
     "key": "module.person.log.tmpl_643e755089c6",

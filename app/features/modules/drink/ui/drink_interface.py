@@ -5,8 +5,8 @@ from app.framework.infra.config.app_config import config
 from app.framework.ui.views.periodic_base import ModulePageBase
 
 class DrinkInterface(ModulePageBase):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init_self._(self, parent=None):
+        super().__init_self._(parent)
         self.setObjectName("page_card")
 
         self.main_layout = QHBoxLayout(self)
@@ -79,20 +79,18 @@ class DrinkInterface(ModulePageBase):
 
     def apply_i18n(self):
         self.BodyLabel_tip_card.setText(
-            self._ui_text(
-                "### 提示\n* 站在猜心对局入口位置后再点开始\n* 两种模式均无策略，目的均是为了快速结束对局刷下一把\n* 逻辑：有质疑直接质疑，轮到自己出牌时出中间的那一张\n* 实测有赢有输，挂着刷经验就行",
-                "### Tips\n* Stand at the Card Match entrance before starting\n* Both modes prioritize ending matches quickly for fast farming\n* Logic: always challenge when possible; play the middle card on your turn\n* Win/loss may vary; it is designed for passive EXP farming"
-            )
+            self._("### Tips\n* Stand at the Card Match entrance before starting\n* Both modes prioritize ending matches quickly for fast farming\n* Logic: always challenge when possible; play the middle card on your turn\n* Win/loss may vary; it is designed for passive EXP farming", msgid='tips_stand_at_the_card_match_entrance_before_starting_both_modes_prioritize_endi')
         )
-        self.BodyLabel_31.setText(self._ui_text("模式", "Mode"))
-        self.BodyLabel_32.setText(self._ui_text("刷取次数(-1代表无限刷)", "Run count (-1 means infinite)"))
-        self.CheckBox_is_speed_up.setText(self._ui_text("是否已手动开启倍速", "I have enabled speed-up manually"))
-        self.TitleLabel_7.setText(self._ui_text("日志", "Log"))
-        self.PushButton_start_drink.setText(self._ui_text('开始喝酒', 'Start Drink'))
+        self.BodyLabel_31.setText(self._("Mode", msgid='mode'))
+        self.BodyLabel_32.setText(self._("Run count (-1 means infinite)", msgid='run_count_1_means_infinite'))
+        self.CheckBox_is_speed_up.setText(self._("I have enabled speed-up manually", msgid='i_have_enabled_speed_up_manually'))
+        self.TitleLabel_7.setText(self._("Log", msgid='log'))
+        self.PushButton_start_drink.setText(self._('Start Drink', msgid='start_drink'))
 
         self.ComboBox_card_mode.clear()
         self.ComboBox_card_mode.addItems(
-            [self._ui_text('标准模式（速刷经验）', 'Standard (fast EXP)'),
-             self._ui_text('秘盒奇袭（刷经验成就）', 'Mystery Box Raid (EXP/Achievements)')]
+            [self._('Standard (fast EXP)', msgid='standard_fast_exp'),
+             self._('Mystery Box Raid (EXP/Achievements)', msgid='mystery_box_raid_exp_achievements')]
         )
+
 

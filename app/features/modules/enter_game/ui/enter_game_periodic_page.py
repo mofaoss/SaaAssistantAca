@@ -11,12 +11,11 @@ from qfluentwidgets import (
 
 from app.framework.infra.runtime.paths import PROJECT_ROOT
 from app.framework.ui.views.periodic_base import ModulePageBase
-from app.framework.i18n import _
 
 
 class EnterGamePage(ModulePageBase):
-    def __init__(self, parent=None):
-        super().__init__("page_5", parent=parent, host_context="periodic", use_default_layout=True)
+    def __init_self._(self, parent=None):
+        super().__init_self._("page_5", parent=parent, host_context="periodic", use_default_layout=True)
 
         top_line = QHBoxLayout()
         self.StrongBodyLabel_4 = StrongBodyLabel(self)
@@ -51,10 +50,10 @@ class EnterGamePage(ModulePageBase):
         self.finalize()
 
     def _apply_i18n(self):
-        self.PrimaryPushButton_path_tutorial.setText(self._ui_text("查看教程", "Tutorial"))
-        self.StrongBodyLabel_4.setText(self._ui_text("启动器中查看游戏路径", "Find game path in launcher"))
-        self.CheckBox_open_game_directly.setText(self._ui_text("自动打开游戏", "Auto open game"))
-        self.PushButton_select_directory.setText(self._ui_text("选择", "Browse"))
+        self.PrimaryPushButton_path_tutorial.setText(self._("Tutorial", msgid='tutorial'))
+        self.StrongBodyLabel_4.setText(self._("Find game path in launcher", msgid='find_game_path_in_launcher'))
+        self.CheckBox_open_game_directly.setText(self._("Auto open game", msgid='auto_open_game'))
+        self.PushButton_select_directory.setText(self._("Browse", msgid='browse'))
         self.BodyLabel_enter_tip.setText(
             "### Tips\n* Select your server in Settings\n* Enable \"Auto open game\" and select the correct game path by the tutorial above\n* Game will be launched automatically when you click start or when a task needs to execute, no need to set schedule\n* Schedule for auto login is not affected by other modules"
             if self._is_non_chinese_ui
@@ -79,3 +78,4 @@ class EnterGamePage(ModulePageBase):
             "content": content,
             "image": image,
         }
+

@@ -1,4 +1,18 @@
 {
   "module.dummy.title": "en",
-  "module.trigger.title": "en"
+  "module.trigger.log.error": "en",
+  "module.trigger.log.game_task_is_not_running": "en",
+  "module.trigger.title": "en",
+  "module.trigger.ui.auto_collect": "en",
+  "module.trigger.ui.auto_f": "en",
+  "module.trigger.ui.automatically_press_e_during_qte_stage": "en",
+  "module.trigger.ui.automatically_press_f_when_collect_prompt_appears": "en",
+  "module.trigger.ui.disabled": "en",
+  "module.trigger.ui.error": "en",
+  "module.trigger.ui.game_task_is_not_running": "en",
+  "module.trigger.ui.log": "en",
+  "module.trigger.ui.nita_auto_e": "en",
+  "module.trigger.ui.nita_e_auto_qte": "en",
+  "module.trigger.ui.tips_launch_the_game_before_enabling_this_feature_these_are_toggle_switches_once": "en",
+  "module.trigger.ui.trigger_list": "en"
 }

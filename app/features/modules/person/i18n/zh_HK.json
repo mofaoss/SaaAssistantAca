@@ -1,4 +1,11 @@
 {
   "module.dummy.title": "角色碎片",
+  "module.person.ui.auto_use_2_chips_when_not_enough": "记忆嵌片不足时自动使用2片",
+  "module.person.ui.character_1": "角色1：",
+  "module.person.ui.character_2": "角色2：",
+  "module.person.ui.character_3": "角色3：",
+  "module.person.ui.character_4": "角色4：",
+  "module.person.ui.not_set": "未输入",
+  "module.person.ui.select_characters_for_shards": "选择需要刷碎片的角色",
   "module.task_shards.title": "角色碎片"
 }

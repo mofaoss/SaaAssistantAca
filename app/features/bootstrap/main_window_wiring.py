@@ -74,7 +74,7 @@ class SnowbreakMainWindowBridge(MainWindowFeatureBridge):
         )
 
     def initialize_ocr_module(self):
-        from app.features.modules.ocr import ocr
+        from app.framework.infra.vision.ocr_runtime import ocr
 
         ocr.instance_ocr()
         return ocr

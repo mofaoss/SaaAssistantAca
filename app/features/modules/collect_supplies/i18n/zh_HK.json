@@ -1,4 +1,10 @@
 {
+  "module.collect_supplies.ui.claim_bait": "领取鱼饵",
+  "module.collect_supplies.ui.claim_mail": "领取邮件",
+  "module.collect_supplies.ui.dorm_shards": "宿舍碎片",
+  "module.collect_supplies.ui.import": "导入",
+  "module.collect_supplies.ui.redeem_codes": "领取兑换码",
+  "module.collect_supplies.ui.reset": "重置",
   "module.dummy.title": "领取补给",
   "module.task_supplies.title": "领取补给"
 }

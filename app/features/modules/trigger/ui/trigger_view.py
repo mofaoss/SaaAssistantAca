@@ -6,14 +6,14 @@ from qfluentwidgets import BodyLabel, SimpleCardWidget, StrongBodyLabel, SwitchB
 
 
 class TriggerItemCard(SimpleCardWidget):
-    def __init__(
+    def __init_self._(
         self,
         title_object_name: str,
         desc_object_name: str,
         switch_object_name: str,
         parent=None,
     ):
-        super().__init__(parent)
+        super().__init_self._(parent)
 
         main_layout = QHBoxLayout(self)
         main_layout.setContentsMargins(11, 11, 11, 11)
@@ -40,8 +40,8 @@ class TriggerItemCard(SimpleCardWidget):
 
 
 class TriggerView(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init_self._(self, parent=None):
+        super().__init_self._(parent)
         self.setObjectName("trigger")
 
         self.gridLayout = QVBoxLayout(self)

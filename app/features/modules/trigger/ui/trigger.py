@@ -7,13 +7,12 @@ from app.features.modules.trigger.usecase.nita_auto_e_usecase import NitaAutoEMo
 from app.framework.ui.views.periodic_base import BaseInterface
 from app.features.modules.fishing.ui.subtask import SubTask
 from .trigger_view import TriggerView
-from app.framework.i18n import _
 
 
 class Trigger(QFrame, BaseInterface):
-    def __init__(self, text: str, parent=None):
-        super().__init__(parent)
-        BaseInterface.__init__(self)
+    def __init_self._(self, text: str, parent=None):
+        super().__init_self._(parent)
+        BaseInterface.__init_self._(self)
         self.ui = TriggerView(self)
         root_layout = QVBoxLayout(self)
         root_layout.setContentsMargins(0, 0, 0, 0)
@@ -29,23 +28,20 @@ class Trigger(QFrame, BaseInterface):
         self._initWidget()
         self._connect_to_slot()
 
-    def __getattr__(self, item):
+    def __getattr_self._(self, item):
         ui = self.__dict__.get('ui')
         if ui is not None and hasattr(ui, item):
             return getattr(ui, item)
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{item}'")
 
     def _initWidget(self):
-        self.TitleLabel_trigger.setText(self._ui_text("自动辅助", "Trigger List"))
-        self.StrongBodyLabel.setText(self._ui_text("自动采集或劝降", "Auto Collect"))
-        self.BodyLabel.setText(self._ui_text("按钮出现时就按下F键", "Automatically press F when collect prompt appears"))
-        self.StrongBodyLabel_2.setText(self._ui_text("自动妮塔悸响qte", "Nita E Auto QTE"))
-        self.BodyLabel_2.setText(self._ui_text("到qte时机就按下E键", "Automatically press E during QTE stage"))
+        self.TitleLabel_trigger.setText(self._("Trigger List", msgid='trigger_list'))
+        self.StrongBodyLabel.setText(self._("Auto Collect", msgid='auto_collect'))
+        self.BodyLabel.setText(self._("Automatically press F when collect prompt appears", msgid='automatically_press_f_when_collect_prompt_appears'))
+        self.StrongBodyLabel_2.setText(self._("Nita E Auto QTE", msgid='nita_e_auto_qte'))
+        self.BodyLabel_2.setText(self._("Automatically press E during QTE stage", msgid='automatically_press_e_during_qte_stage'))
         self.BodyLabel_trigger_tip.setText(
-            self._ui_text(
-                "### 提示\n* 先启动游戏再开启本功能\n* 开启后，遇到符合的情况就自动触发\n* 不影响手动游玩",
-                "### Tips\n* Launch the game before enabling this feature\n* These are toggle switches. Once enabled, detection keeps running and triggers automatically when conditions match\n* It does not block manual gameplay, acting as semi-automation assistance"
-            ))
+            self._("### Tips\n* Launch the game before enabling this feature\n* These are toggle switches. Once enabled, detection keeps running and triggers automatically when conditions match\n* It does not block manual gameplay, acting as semi-automation assistance", msgid='tips_launch_the_game_before_enabling_this_feature_these_are_toggle_switches_once'))
 
     def _connect_to_slot(self):
         self.SwitchButton_f.checkedChanged.connect(self.on_f_toggled)
@@ -69,16 +65,16 @@ class Trigger(QFrame, BaseInterface):
             if hasattr(self, 'f_thread') and self.f_thread.isRunning():
                 self.f_thread.stop()
                 InfoBar.success(
-                    self._ui_text('自动按F', 'Auto F'),
-                    self._ui_text('已关闭', 'Disabled'),
+                    self._('Auto F', msgid='auto_f'),
+                    self._('Disabled', msgid='disabled'),
                     isClosable=True,
                     duration=2000,
                     parent=self
                 )
             else:
                 InfoBar.error(
-                    self._ui_text('错误', 'Error'),
-                    self._ui_text('游戏未打开或任务未运行', 'Game/Task is not running'),
+                    self._('Error', msgid='error'),
+                    self._('Game/Task is not running', msgid='game_task_is_not_running'),
                     isClosable=True,
                     duration=2000,
                     parent=self
@@ -94,18 +90,19 @@ class Trigger(QFrame, BaseInterface):
             if hasattr(self, 'nita_e_thread') and self.nita_e_thread.isRunning():
                 self.nita_e_thread.stop()
                 InfoBar.success(
-                    self._ui_text('妮塔自动E', 'Nita Auto E'),
-                    self._ui_text('已关闭', 'Disabled'),
+                    self._('Nita Auto E', msgid='nita_auto_e'),
+                    self._('Disabled', msgid='disabled'),
                     isClosable=True,
                     duration=2000,
                     parent=self
                 )
             else:
                 InfoBar.error(
-                    self._ui_text('错误', 'Error'),
-                    self._ui_text('游戏未打开或任务未运行', 'Game/Task is not running'),
+                    self._('Error', msgid='error'),
+                    self._('Game/Task is not running', msgid='game_task_is_not_running'),
                     isClosable=True,
                     duration=2000,
                     parent=self
                 )
+
 

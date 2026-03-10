@@ -881,6 +881,30 @@
     "col": 30,
     "context": "ui"
   },
+  "app/framework/core/task_engine/threads.py:196:36": {
+    "kind": "static_literal",
+    "key": "framework.log.no_tasks_queued_skipping_execution",
+    "msgid": "no_tasks_queued_skipping_execution",
+    "source_text": "No tasks queued; skipping execution",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 196,
+    "col": 36,
+    "context": "log"
+  },
+  "app/framework/core/task_engine/threads.py:201:34": {
+    "kind": "static_literal",
+    "key": "framework.log.runtime_automation_session_initialization_failed",
+    "msgid": "runtime_automation_session_initialization_failed",
+    "source_text": "Runtime automation session initialization failed; tasks skipped",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 201,
+    "col": 34,
+    "context": "log"
+  },
   "app/framework/core/task_engine/threads.py:202:36": {
     "kind": "static_literal",
     "key": "framework.log.no_tasks_queued_skipping_execution",
@@ -905,6 +929,18 @@
     "col": 34,
     "context": "log"
   },
+  "app/framework/core/task_engine/threads.py:212:16": {
+    "kind": "static_literal",
+    "key": "framework.log.task_queue_resolved",
+    "msgid": "task_queue_resolved",
+    "source_text": "Task queue resolved: {tasks}",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 212,
+    "col": 16,
+    "context": "log"
+  },
   "app/framework/core/task_engine/threads.py:218:16": {
     "kind": "static_literal",
     "key": "framework.log.task_queue_resolved",
@@ -917,6 +953,30 @@
     "col": 16,
     "context": "log"
   },
+  "app/framework/core/task_engine/threads.py:218:40": {
+    "kind": "static_literal",
+    "key": "framework.log.execution_interrupted_before_task_start",
+    "msgid": "execution_interrupted_before_task_start",
+    "source_text": "Execution interrupted before task start",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 218,
+    "col": 40,
+    "context": "log"
+  },
+  "app/framework/core/task_engine/threads.py:224:24": {
+    "kind": "static_literal",
+    "key": "framework.log.skipping_task_metadata_not_found",
+    "msgid": "skipping_task_metadata_not_found",
+    "source_text": "Skipping task '{task_id}': metadata not found",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 224,
+    "col": 24,
+    "context": "log"
+  },
   "app/framework/core/task_engine/threads.py:224:40": {
     "kind": "static_literal",
     "key": "framework.log.execution_interrupted_before_task_start",
@@ -927,6 +987,18 @@
     "file_path": "app/framework/core/task_engine/threads.py",
     "line": 224,
     "col": 40,
+    "context": "log"
+  },
+  "app/framework/core/task_engine/threads.py:229:33": {
+    "kind": "static_literal",
+    "key": "framework.log.current_task_task_name",
+    "msgid": "current_task_task_name",
+    "source_text": "Current task: {task_name}",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 229,
+    "col": 33,
     "context": "log"
   },
   "app/framework/core/task_engine/threads.py:230:24": {
@@ -968,6 +1040,30 @@
     "col": 33,
     "context": "log"
   },
+  "app/framework/core/task_engine/threads.py:236:24": {
+    "kind": "static_literal",
+    "key": "framework.log.preparing_task_name_returning_to_home",
+    "msgid": "preparing_task_name_returning_to_home",
+    "source_text": "Preparing {task_name}, returning to home...",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 236,
+    "col": 24,
+    "context": "log"
+  },
+  "app/framework/core/task_engine/threads.py:240:28": {
+    "kind": "static_literal",
+    "key": "framework.log.task_name_failed_to_return_to_home_before_start",
+    "msgid": "task_name_failed_to_return_to_home_before_start",
+    "source_text": "[{task_name}] Failed to return to home before start, skipping.",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 240,
+    "col": 28,
+    "context": "log"
+  },
   "app/framework/core/task_engine/threads.py:242:24": {
     "kind": "static_literal",
     "key": "framework.log.preparing_task_name_returning_to_home",
@@ -978,6 +1074,18 @@
     "file_path": "app/framework/core/task_engine/threads.py",
     "line": 242,
     "col": 24,
+    "context": "log"
+  },
+  "app/framework/core/task_engine/threads.py:243:28": {
+    "kind": "static_literal",
+    "key": "framework.log.task_skipped_home_sync_failed",
+    "msgid": "task_skipped_home_sync_failed",
+    "source_text": "Task skipped: {task_name}, reason=home_sync_failed",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 243,
+    "col": 28,
     "context": "log"
   },
   "app/framework/core/task_engine/threads.py:245:32": {
@@ -1034,6 +1142,18 @@
     "col": 36,
     "context": "log"
   },
+  "app/framework/core/task_engine/threads.py:254:28": {
+    "kind": "static_literal",
+    "key": "framework.log.task_skipped_reason",
+    "msgid": "task_skipped_reason",
+    "source_text": "Task skipped: {task_name}, reason={reason}",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 254,
+    "col": 28,
+    "context": "log"
+  },
   "app/framework/core/task_engine/threads.py:260:28": {
     "kind": "static_literal",
     "key": "framework.log.task_skipped_reason",
@@ -1043,6 +1163,18 @@
     "owner_module": null,
     "file_path": "app/framework/core/task_engine/threads.py",
     "line": 260,
+    "col": 28,
+    "context": "log"
+  },
+  "app/framework/core/task_engine/threads.py:267:28": {
+    "kind": "static_literal",
+    "key": "framework.log.task_failed_reason",
+    "msgid": "task_failed_reason",
+    "source_text": "Task failed: {task_name}, reason={reason}",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 267,
     "col": 28,
     "context": "log"
   },
@@ -1058,6 +1190,18 @@
     "col": 28,
     "context": "log"
   },
+  "app/framework/core/task_engine/threads.py:276:30": {
+    "kind": "static_literal",
+    "key": "framework.ui.task_name_finished_returning_to_home",
+    "msgid": "task_name_finished_returning_to_home",
+    "source_text": "{task_name} finished, returning to home...",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 276,
+    "col": 30,
+    "context": "ui"
+  },
   "app/framework/core/task_engine/threads.py:282:30": {
     "kind": "static_literal",
     "key": "framework.ui.task_name_finished_returning_to_home",
@@ -1070,6 +1214,18 @@
     "col": 30,
     "context": "ui"
   },
+  "app/framework/core/task_engine/threads.py:298:28": {
+    "kind": "static_literal",
+    "key": "framework.log.non_critical_tray_message_update_failed",
+    "msgid": "non_critical_tray_message_update_failed",
+    "source_text": "Non-critical tray message update failed: {error}",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 298,
+    "col": 28,
+    "context": "log"
+  },
   "app/framework/core/task_engine/threads.py:304:28": {
     "kind": "static_literal",
     "key": "framework.log.non_critical_tray_message_update_failed",
@@ -1080,6 +1236,18 @@
     "file_path": "app/framework/core/task_engine/threads.py",
     "line": 304,
     "col": 28,
+    "context": "log"
+  },
+  "app/framework/core/task_engine/threads.py:308:20": {
+    "kind": "static_literal",
+    "key": "framework.log.unhandled_queue_runtime_exception",
+    "msgid": "unhandled_queue_runtime_exception",
+    "source_text": "Unhandled queue runtime exception: {error}",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 308,
+    "col": 20,
     "context": "log"
   },
   "app/framework/core/task_engine/threads.py:314:20": {
@@ -1112,6 +1280,27 @@
     "owner_module": null,
     "file_path": "app/framework/core/task_engine/threads.py",
     "line": 344,
+    "col": 32,
+    "context": "log"
+  },
+  "app/framework/core/task_engine/threads.py:350:32": {
+    "kind": "dynamic_template",
+    "key": "framework.log.exception_occurred_while_stopping_sub_task_ignor",
+    "msgid": "exception_occurred_while_stopping_sub_task_ignor",
+    "source_template": "Exception occurred while stopping sub task, ignored: {e}",
+    "fields": [
+      "e"
+    ],
+    "field_details": {
+      "e": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 350,
     "col": 32,
     "context": "log"
   },
@@ -1154,6 +1343,48 @@
     "owner_module": null,
     "file_path": "app/framework/core/task_engine/threads.py",
     "line": 361,
+    "col": 36,
+    "context": "log"
+  },
+  "app/framework/core/task_engine/threads.py:362:32": {
+    "kind": "dynamic_template",
+    "key": "framework.log.tmpl_3edd0b79ee2e",
+    "msgid": "tmpl_3edd0b79ee2e",
+    "source_template": "SubTask：{e}",
+    "fields": [
+      "e"
+    ],
+    "field_details": {
+      "e": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 362,
+    "col": 32,
+    "context": "log"
+  },
+  "app/framework/core/task_engine/threads.py:367:36": {
+    "kind": "dynamic_template",
+    "key": "framework.log.tmpl_0b515f4f1710",
+    "msgid": "tmpl_0b515f4f1710",
+    "source_template": "SubTask结束时恢复窗口位置失败：{stop_error}",
+    "fields": [
+      "stop_error"
+    ],
+    "field_details": {
+      "stop_error": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 367,
     "col": 36,
     "context": "log"
   },
@@ -1292,6 +1523,27 @@
     "col": 16,
     "context": "ui"
   },
+  "app/framework/infra/automation/automation.py:133:16": {
+    "kind": "dynamic_template",
+    "key": "framework.ui.handle_for_window_value_not_found",
+    "msgid": "handle_for_window_value_not_found",
+    "source_template": "Handle for window {self_window_title} not found",
+    "fields": [
+      "self_window_title"
+    ],
+    "field_details": {
+      "self_window_title": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 133,
+    "col": 16,
+    "context": "ui"
+  },
   "app/framework/infra/automation/automation.py:169:29": {
     "kind": "dynamic_template",
     "key": "framework.log.found_handle_for_window_value_hwnd",
@@ -1318,6 +1570,32 @@
     "col": 29,
     "context": "log"
   },
+  "app/framework/infra/automation/automation.py:171:29": {
+    "kind": "dynamic_template",
+    "key": "framework.log.found_handle_for_window_value_hwnd",
+    "msgid": "found_handle_for_window_value_hwnd",
+    "source_template": "Found handle for window {self_window_title}: {hwnd}",
+    "fields": [
+      "self_window_title",
+      "hwnd"
+    ],
+    "field_details": {
+      "self_window_title": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "hwnd": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 171,
+    "col": 29,
+    "context": "log"
+  },
   "app/framework/infra/automation/automation.py:172:29": {
     "kind": "dynamic_template",
     "key": "framework.ui.handle_for_value_not_found",
@@ -1336,6 +1614,27 @@
     "owner_module": null,
     "file_path": "app/framework/infra/automation/automation.py",
     "line": 172,
+    "col": 29,
+    "context": "ui"
+  },
+  "app/framework/infra/automation/automation.py:174:29": {
+    "kind": "dynamic_template",
+    "key": "framework.ui.handle_for_value_not_found",
+    "msgid": "handle_for_value_not_found",
+    "source_template": "Handle for {self_window_title} not found",
+    "fields": [
+      "self_window_title"
+    ],
+    "field_details": {
+      "self_window_title": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 174,
     "col": 29,
     "context": "ui"
   },
@@ -1360,6 +1659,27 @@
     "col": 64,
     "context": "ui"
   },
+  "app/framework/infra/automation/automation.py:196:64": {
+    "kind": "dynamic_template",
+    "key": "framework.ui.screenshot_failed_e",
+    "msgid": "screenshot_failed_e",
+    "source_template": "Screenshot failed: {e}",
+    "fields": [
+      "e"
+    ],
+    "field_details": {
+      "e": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 196,
+    "col": 64,
+    "context": "ui"
+  },
   "app/framework/infra/automation/automation.py:220:16": {
     "kind": "static_literal",
     "key": "framework.ui.no_available_screenshot_currently_skipping_image",
@@ -1369,6 +1689,18 @@
     "owner_module": null,
     "file_path": "app/framework/infra/automation/automation.py",
     "line": 220,
+    "col": 16,
+    "context": "ui"
+  },
+  "app/framework/infra/automation/automation.py:222:16": {
+    "kind": "static_literal",
+    "key": "framework.ui.no_available_screenshot_currently_skipping_image",
+    "msgid": "no_available_screenshot_currently_skipping_image",
+    "source_text": "No available screenshot currently, skipping image matching",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 222,
     "col": 16,
     "context": "ui"
   },
@@ -1395,6 +1727,32 @@
     "owner_module": null,
     "file_path": "app/framework/infra/automation/automation.py",
     "line": 236,
+    "col": 42,
+    "context": "log"
+  },
+  "app/framework/infra/automation/automation.py:238:42": {
+    "kind": "dynamic_template",
+    "key": "framework.log.target_image_template_name_similarity_conf",
+    "msgid": "target_image_template_name_similarity_conf",
+    "source_template": "Target image: {template_name} Similarity: {conf:.2f}",
+    "fields": [
+      "template_name",
+      "conf"
+    ],
+    "field_details": {
+      "template_name": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "conf": {
+        "format_spec": ".2f",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 238,
     "col": 42,
     "context": "log"
   },
@@ -1429,6 +1787,37 @@
     "col": 42,
     "context": "log"
   },
+  "app/framework/infra/automation/automation.py:243:42": {
+    "kind": "dynamic_template",
+    "key": "framework.log.target_image_template_name_similarity_conf_below",
+    "msgid": "target_image_template_name_similarity_conf_below",
+    "source_template": "Target image: {template_name} Similarity: {conf:.2f}, below {threshold}",
+    "fields": [
+      "template_name",
+      "conf",
+      "threshold"
+    ],
+    "field_details": {
+      "template_name": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "conf": {
+        "format_spec": ".2f",
+        "conversion": ""
+      },
+      "threshold": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 243,
+    "col": 42,
+    "context": "log"
+  },
   "app/framework/infra/automation/automation.py:245:38": {
     "kind": "dynamic_template",
     "key": "framework.log.target_image_template_name_no_match_found",
@@ -1450,6 +1839,27 @@
     "col": 38,
     "context": "log"
   },
+  "app/framework/infra/automation/automation.py:247:38": {
+    "kind": "dynamic_template",
+    "key": "framework.log.target_image_template_name_no_match_found",
+    "msgid": "target_image_template_name_no_match_found",
+    "source_template": "Target image: {template_name} No match found",
+    "fields": [
+      "template_name"
+    ],
+    "field_details": {
+      "template_name": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 247,
+    "col": 38,
+    "context": "log"
+  },
   "app/framework/infra/automation/automation.py:259:58": {
     "kind": "dynamic_template",
     "key": "framework.ui.error_finding_image_e",
@@ -1468,6 +1878,27 @@
     "owner_module": null,
     "file_path": "app/framework/infra/automation/automation.py",
     "line": 259,
+    "col": 58,
+    "context": "ui"
+  },
+  "app/framework/infra/automation/automation.py:261:58": {
+    "kind": "dynamic_template",
+    "key": "framework.ui.error_finding_image_e",
+    "msgid": "error_finding_image_e",
+    "source_template": "Error finding image: {e}",
+    "fields": [
+      "e"
+    ],
+    "field_details": {
+      "e": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 261,
     "col": 58,
     "context": "ui"
   },
@@ -1513,6 +1944,27 @@
     "col": 59,
     "context": "ui"
   },
+  "app/framework/infra/automation/automation.py:279:59": {
+    "kind": "dynamic_template",
+    "key": "framework.ui.ocr_recognition_failed_e",
+    "msgid": "ocr_recognition_failed_e",
+    "source_template": "OCR recognition failed: {e}",
+    "fields": [
+      "e"
+    ],
+    "field_details": {
+      "e": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 279,
+    "col": 59,
+    "context": "ui"
+  },
   "app/framework/infra/automation/automation.py:458:30": {
     "kind": "dynamic_template",
     "key": "framework.log.target_target_initial_verification_unconfirmed_r",
@@ -1552,6 +2004,27 @@
     "owner_module": null,
     "file_path": "app/framework/infra/automation/automation.py",
     "line": 467,
+    "col": 30,
+    "context": "log"
+  },
+  "app/framework/infra/automation/automation.py:469:30": {
+    "kind": "dynamic_template",
+    "key": "framework.log.target_target_initial_verification_unconfirmed_r",
+    "msgid": "target_target_initial_verification_unconfirmed_r",
+    "source_template": "Target {target} initial verification unconfirmed, retrying click",
+    "fields": [
+      "target"
+    ],
+    "field_details": {
+      "target": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 469,
     "col": 30,
     "context": "log"
   },
@@ -1597,6 +2070,27 @@
     "col": 16,
     "context": "ui"
   },
+  "app/framework/infra/automation/automation.py:591:16": {
+    "kind": "dynamic_template",
+    "key": "framework.ui.failed_to_restore_window_position_e",
+    "msgid": "failed_to_restore_window_position_e",
+    "source_template": "Failed to restore window position: {e}",
+    "fields": [
+      "e"
+    ],
+    "field_details": {
+      "e": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 591,
+    "col": 16,
+    "context": "ui"
+  },
   "app/framework/infra/automation/automation.py:603:16": {
     "kind": "static_literal",
     "key": "framework.ui.no_first_screenshot_currently_crop_failed",
@@ -1618,6 +2112,18 @@
     "owner_module": null,
     "file_path": "app/framework/infra/automation/automation.py",
     "line": 612,
+    "col": 16,
+    "context": "ui"
+  },
+  "app/framework/infra/automation/automation.py:614:16": {
+    "kind": "static_literal",
+    "key": "framework.ui.no_first_screenshot_currently_crop_failed",
+    "msgid": "no_first_screenshot_currently_crop_failed",
+    "source_text": "No first_screenshot currently, crop failed",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 614,
     "col": 16,
     "context": "ui"
   },
@@ -1645,6 +2151,18 @@
     "col": 16,
     "context": "ui"
   },
+  "app/framework/infra/automation/automation.py:635:16": {
+    "kind": "static_literal",
+    "key": "framework.ui.no_screenshot_currently_unable_to_read_text",
+    "msgid": "no_screenshot_currently_unable_to_read_text",
+    "source_text": "No screenshot currently, unable to read text",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 635,
+    "col": 16,
+    "context": "ui"
+  },
   "app/framework/infra/automation/automation.py:640:20": {
     "kind": "static_literal",
     "key": "framework.ui.target_image_is_empty_skipping_match_counting",
@@ -1666,6 +2184,18 @@
     "owner_module": null,
     "file_path": "app/framework/infra/automation/automation.py",
     "line": 649,
+    "col": 20,
+    "context": "ui"
+  },
+  "app/framework/infra/automation/automation.py:652:20": {
+    "kind": "static_literal",
+    "key": "framework.ui.target_image_is_empty_skipping_match_counting",
+    "msgid": "target_image_is_empty_skipping_match_counting",
+    "source_text": "Target image is empty, skipping match counting",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 652,
     "col": 20,
     "context": "ui"
   },
@@ -1773,6 +2303,58 @@
     "col": 34,
     "context": "log"
   },
+  "app/framework/infra/automation/automation.py:666:42": {
+    "kind": "dynamic_template",
+    "key": "framework.log.target_image_template_name_similarity_conf",
+    "msgid": "target_image_template_name_similarity_conf",
+    "source_template": "Target image: {template_name} Similarity: {conf:.2f}",
+    "fields": [
+      "template_name",
+      "conf"
+    ],
+    "field_details": {
+      "template_name": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "conf": {
+        "format_spec": ".2f",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 666,
+    "col": 42,
+    "context": "log"
+  },
+  "app/framework/infra/automation/automation.py:667:34": {
+    "kind": "dynamic_template",
+    "key": "framework.log.count_of_image_template_name_is_value",
+    "msgid": "count_of_image_template_name_is_value",
+    "source_template": "Count of image {template_name} is {value_2}",
+    "fields": [
+      "template_name",
+      "value_2"
+    ],
+    "field_details": {
+      "template_name": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "value_2": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 667,
+    "col": 34,
+    "context": "log"
+  },
   "app/framework/infra/automation/automation.py:672:16": {
     "kind": "dynamic_template",
     "key": "framework.ui.error_finding_image_and_counting_e",
@@ -1815,6 +2397,27 @@
     "col": 16,
     "context": "ui"
   },
+  "app/framework/infra/automation/automation.py:684:16": {
+    "kind": "dynamic_template",
+    "key": "framework.ui.error_finding_image_and_counting_e",
+    "msgid": "error_finding_image_and_counting_e",
+    "source_template": "Error finding image and counting: {e}",
+    "fields": [
+      "e"
+    ],
+    "field_details": {
+      "e": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 684,
+    "col": 16,
+    "context": "ui"
+  },
   "app/framework/infra/automation/automation.py:693:34": {
     "kind": "dynamic_template",
     "key": "framework.log.recognition_result_error_text",
@@ -1834,6 +2437,18 @@
     "file_path": "app/framework/infra/automation/automation.py",
     "line": 693,
     "col": 34,
+    "context": "log"
+  },
+  "app/framework/infra/automation/automation.py:695:36": {
+    "kind": "static_literal",
+    "key": "framework.log.unable_to_recognize_stamina_from_screenshot",
+    "msgid": "unable_to_recognize_stamina_from_screenshot",
+    "source_text": "Unable to recognize stamina from screenshot",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 695,
+    "col": 36,
     "context": "log"
   },
   "app/framework/infra/automation/automation.py:696:30": {
@@ -1897,6 +2512,48 @@
     "file_path": "app/framework/infra/automation/automation.py",
     "line": 705,
     "col": 30,
+    "context": "log"
+  },
+  "app/framework/infra/automation/automation.py:708:32": {
+    "kind": "dynamic_template",
+    "key": "framework.log.recognition_result_error_text",
+    "msgid": "recognition_result_error_text",
+    "source_template": "Recognition result error: {text}",
+    "fields": [
+      "text"
+    ],
+    "field_details": {
+      "text": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 708,
+    "col": 32,
+    "context": "log"
+  },
+  "app/framework/infra/automation/automation.py:711:32": {
+    "kind": "dynamic_template",
+    "key": "framework.log.failed_to_recognize_stamina_e",
+    "msgid": "failed_to_recognize_stamina_e",
+    "source_template": "Failed to recognize stamina: {e}",
+    "fields": [
+      "e"
+    ],
+    "field_details": {
+      "e": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 711,
+    "col": 32,
     "context": "log"
   },
   "app/framework/infra/automation/input.py:138:20": {
@@ -2657,6 +3314,248 @@
     "file_path": "app/framework/infra/vision/matcher.py",
     "line": 220,
     "col": 29,
+    "context": "log"
+  },
+  "app/framework/infra/vision/ocr_runtime.py:117:20": {
+    "kind": "static_literal",
+    "key": "framework.log.ocr_hit_frame_cache_skipping_repeated_recognitio",
+    "msgid": "ocr_hit_frame_cache_skipping_repeated_recognitio",
+    "source_text": "OCR hit frame cache, skipping repeated recognition",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/vision/ocr_runtime.py",
+    "line": 117,
+    "col": 20,
+    "context": "log"
+  },
+  "app/framework/infra/vision/ocr_runtime.py:130:20": {
+    "kind": "static_literal",
+    "key": "framework.log.ocr_hit_no_text_cooldown_skipping_recognition",
+    "msgid": "ocr_hit_no_text_cooldown_skipping_recognition",
+    "source_text": "OCR hit no-text cooldown, skipping recognition",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/vision/ocr_runtime.py",
+    "line": 130,
+    "col": 20,
+    "context": "log"
+  },
+  "app/framework/infra/vision/ocr_runtime.py:137:20": {
+    "kind": "static_literal",
+    "key": "framework.log.ocr_quick_check_low_text_probability_frame_skipp",
+    "msgid": "ocr_quick_check_low_text_probability_frame_skipp",
+    "source_text": "OCR quick check: low text probability frame, skipping recognition",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/vision/ocr_runtime.py",
+    "line": 137,
+    "col": 20,
+    "context": "log"
+  },
+  "app/framework/infra/vision/ocr_runtime.py:167:34": {
+    "kind": "dynamic_template",
+    "key": "framework.log.ocr_low_res_enhance_w_x_h_new_w_x_new_h_x_scale",
+    "msgid": "ocr_low_res_enhance_w_x_h_new_w_x_new_h_x_scale",
+    "source_template": "OCR low-res enhance: {w}x{h} -> {new_w}x{new_h} (x{scale:.2f})",
+    "fields": [
+      "w",
+      "h",
+      "new_w",
+      "new_h",
+      "scale"
+    ],
+    "field_details": {
+      "w": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "h": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "new_w": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "new_h": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "scale": {
+        "format_spec": ".2f",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/vision/ocr_runtime.py",
+    "line": 167,
+    "col": 34,
+    "context": "log"
+  },
+  "app/framework/infra/vision/ocr_runtime.py:251:24": {
+    "kind": "static_literal",
+    "key": "framework.log.ocr_input_image_is_empty_skipping_this_recogniti",
+    "msgid": "ocr_input_image_is_empty_skipping_this_recogniti",
+    "source_text": "OCR input image is empty, skipping this recognition",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/vision/ocr_runtime.py",
+    "line": 251,
+    "col": 24,
+    "context": "log"
+  },
+  "app/framework/infra/vision/ocr_runtime.py:260:42": {
+    "kind": "dynamic_template",
+    "key": "framework.log.ocr_failed_to_read_image_invalid_path_or_unreada",
+    "msgid": "ocr_failed_to_read_image_invalid_path_or_unreada",
+    "source_template": "OCR failed to read image, invalid path or unreadable file: {image_path}",
+    "fields": [
+      "image_path"
+    ],
+    "field_details": {
+      "image_path": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/vision/ocr_runtime.py",
+    "line": 260,
+    "col": 42,
+    "context": "log"
+  },
+  "app/framework/infra/vision/ocr_runtime.py:287:38": {
+    "kind": "static_literal",
+    "key": "framework.log.ocr_recognized_no_text",
+    "msgid": "ocr_recognized_no_text",
+    "source_text": "OCR recognized no text",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/vision/ocr_runtime.py",
+    "line": 287,
+    "col": 38,
+    "context": "log"
+  },
+  "app/framework/infra/vision/ocr_runtime.py:293:34": {
+    "kind": "dynamic_template",
+    "key": "framework.log.ocr_adopted_strategy_best_name",
+    "msgid": "ocr_adopted_strategy_best_name",
+    "source_template": "OCR adopted strategy: {best_name}",
+    "fields": [
+      "best_name"
+    ],
+    "field_details": {
+      "best_name": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/vision/ocr_runtime.py",
+    "line": 293,
+    "col": 34,
+    "context": "log"
+  },
+  "app/framework/infra/vision/ocr_runtime.py:298:28": {
+    "kind": "dynamic_template",
+    "key": "framework.ui.error_executing_ocr_e",
+    "msgid": "error_executing_ocr_e",
+    "source_template": "Error executing ocr: {e}",
+    "fields": [
+      "e"
+    ],
+    "field_details": {
+      "e": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/vision/ocr_runtime.py",
+    "line": 298,
+    "col": 28,
+    "context": "ui"
+  },
+  "app/framework/infra/vision/ocr_runtime.py:345:26": {
+    "kind": "dynamic_template",
+    "key": "framework.log.ocr_recognition_result_log_content",
+    "msgid": "ocr_recognition_result_log_content",
+    "source_template": "OCR recognition result: {log_content}",
+    "fields": [
+      "log_content"
+    ],
+    "field_details": {
+      "log_content": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/vision/ocr_runtime.py",
+    "line": 345,
+    "col": 26,
+    "context": "log"
+  },
+  "app/framework/infra/vision/ocr_runtime.py:356:34": {
+    "kind": "static_literal",
+    "key": "framework.log.starting_to_initialize_ocr",
+    "msgid": "starting_to_initialize_ocr",
+    "source_text": "Starting to initialize OCR...",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/vision/ocr_runtime.py",
+    "line": 356,
+    "col": 34,
+    "context": "log"
+  },
+  "app/framework/infra/vision/ocr_runtime.py:359:37": {
+    "kind": "static_literal",
+    "key": "framework.log.ocr_initialization_completed",
+    "msgid": "ocr_initialization_completed",
+    "source_text": "OCR initialization completed",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/vision/ocr_runtime.py",
+    "line": 359,
+    "col": 37,
+    "context": "log"
+  },
+  "app/framework/infra/vision/ocr_runtime.py:363:24": {
+    "kind": "static_literal",
+    "key": "framework.log.ocr_initialization_failed_this_cpu_does_not_supp",
+    "msgid": "ocr_initialization_failed_this_cpu_does_not_supp",
+    "source_text": "OCR initialization failed: This CPU does not support AVX2 instruction set",
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/vision/ocr_runtime.py",
+    "line": 363,
+    "col": 24,
+    "context": "log"
+  },
+  "app/framework/infra/vision/ocr_runtime.py:366:34": {
+    "kind": "dynamic_template",
+    "key": "framework.log.ocr_initialization_failed_e",
+    "msgid": "ocr_initialization_failed_e",
+    "source_template": "OCR initialization failed: {e}",
+    "fields": [
+      "e"
+    ],
+    "field_details": {
+      "e": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/vision/ocr_runtime.py",
+    "line": 366,
+    "col": 34,
     "context": "log"
   },
   "app/framework/ui/views/main_window.py:162:27": {

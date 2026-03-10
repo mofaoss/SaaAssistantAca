@@ -5,8 +5,8 @@ from app.framework.ui.views.periodic_base import ModulePageBase
 
 
 class ShardExchangePage(ModulePageBase):
-    def __init__(self, parent=None):
-        super().__init__("page_shard_exchange", parent=parent, host_context="periodic", use_default_layout=True)
+    def __init_self._(self, parent=None):
+        super().__init_self._("page_shard_exchange", parent=parent, host_context="periodic", use_default_layout=True)
 
         self.CheckBox_receive_shards = CheckBox(self)
         self.CheckBox_receive_shards.setObjectName("enable_receive_shards")
@@ -21,9 +21,9 @@ class ShardExchangePage(ModulePageBase):
         self.BodyLabel_shard_tip.setObjectName("BodyLabel_shard_tip")
         self.BodyLabel_shard_tip.setTextFormat(Qt.TextFormat.MarkdownText)
         self.BodyLabel_shard_tip.setWordWrap(True)
-        self.CheckBox_receive_shards.setText(self._ui_text("一键接收", "Auto Receive"))
-        self.CheckBox_gift_shards.setText(self._ui_text("一键赠送", "Auto Gift"))
-        self.CheckBox_recycle_shards.setText(self._ui_text("智能回收", "Smart Recycle"))
+        self.CheckBox_receive_shards.setText(self._("Auto Receive", msgid='auto_receive'))
+        self.CheckBox_gift_shards.setText(self._("Auto Gift", msgid='auto_gift'))
+        self.CheckBox_recycle_shards.setText(self._("Smart Recycle", msgid='smart_recycle'))
         self.BodyLabel_shard_tip.setText(
             "### Tips\n* Auto receive, gift, and recycle puzzle shards\n* Retains at least 15 of each shard when recycling"
             if self._is_non_chinese_ui
@@ -35,3 +35,4 @@ class ShardExchangePage(ModulePageBase):
         self.main_layout.addWidget(self.CheckBox_recycle_shards)
         self.main_layout.addWidget(self.BodyLabel_shard_tip)
         self.finalize()
+

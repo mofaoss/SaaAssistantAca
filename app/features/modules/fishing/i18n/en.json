@@ -1,4 +1,21 @@
 {
   "module.dummy.title": "Fishing",
-  "module.fishing.title": "Fishing"
+  "module.fishing.title": "Fishing",
+  "module.fishing.ui.bait_type": "Bait type:",
+  "module.fishing.ui.base_hsv": "Base HSV",
+  "module.fishing.ui.calibrate_color": "Calibrate Color",
+  "module.fishing.ui.calibrate_perfect_reeling_hsv_use_when_logs_report_yellow_block_count_2": "Calibrate perfect reeling HSV (use when logs report yellow block count > 2)",
+  "module.fishing.ui.color_lower_bound": "Color lower bound",
+  "module.fishing.ui.color_upper_bound": "Color upper bound",
+  "module.fishing.ui.custom_fishing_key": "Custom fishing key",
+  "module.fishing.ui.fishing_attempts": "Fishing attempts:",
+  "module.fishing.ui.fishing_key_is_bound_to_in_game_dodge_key": "Fishing key is bound to in-game dodge key",
+  "module.fishing.ui.fishing_mode": "Fishing mode",
+  "module.fishing.ui.high_performance_faster_and_more_accurate_higher_cpu_usage": "High Performance (faster and more accurate, higher CPU usage)",
+  "module.fishing.ui.limit_max_reeling_interval_per_attempt": "Limit max reeling interval per attempt",
+  "module.fishing.ui.log": "Log",
+  "module.fishing.ui.low_performance_timeout_based_auto_reel_lower_accuracy": "Low Performance (timeout-based auto reel, lower accuracy)",
+  "module.fishing.ui.pause_on_new_records": "Pause on new records",
+  "module.fishing.ui.reset": "Reset",
+  "module.fishing.ui.start_fishing": "Start Fishing"
 }

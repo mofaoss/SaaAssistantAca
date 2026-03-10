@@ -1,4 +1,8 @@
 {
   "module.dummy.title": "自动登录",
+  "module.enter_game.ui.auto_open_game": "自动打开游戏",
+  "module.enter_game.ui.browse": "选择",
+  "module.enter_game.ui.find_game_path_in_launcher": "启动器中查看游戏路径",
+  "module.enter_game.ui.tutorial": "查看教程",
   "module.task_login.title": "自动登录"
 }

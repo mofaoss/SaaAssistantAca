@@ -87,6 +87,7 @@
   "framework.log.current_task_task_name": "当前任务：{task_name}",
   "framework.log.execution_interrupted_before_task_start": "任务启动前执行被中断",
   "framework.log.external_task_finished_waking_up_queued_daily_ta": "外部任务结束，正在唤醒排队的日常任务...",
+  "framework.log.failed_to_recognize_stamina_e": "识别体力失败：{e}",
   "framework.log.no_tasks_queued_skipping_execution": "任务队列为空，跳过执行",
   "framework.log.periodic_no_active_schedules": "当前无激活日程。",
   "framework.log.preparing_task_name_returning_to_home": "正在准备 {task_name}，返回主页中...",
@@ -103,6 +104,7 @@
   "framework.log.txt_bc1b6ea94bb0": "窗口追踪失败：无效窗口句柄",
   "framework.log.txt_e2e85bf76496": "窗口追踪失败：窗口尺寸异常，恢复失败，已跳过本次移动",
   "framework.log.txt_fbb38f5ae828": "窗口追踪检测到跨屏缩放异常，修复失败",
+  "framework.log.unable_to_recognize_stamina_from_screenshot": "无法从截图识别体力",
   "framework.ui.00_00": "00:00",
   "framework.ui.1": "1",
   "framework.ui.996710620": "996710620",
@@ -126,6 +128,7 @@
   "framework.ui.cn_text_0023_2": "关闭",
   "framework.ui.cn_text_0024": "确定",
   "framework.ui.cn_text_0024_2": "确定",
+  "framework.ui.no_screenshot_currently_unable_to_read_text": "当前无截图，无法读取文本",
   "framework.ui.txt_6c14bd7f6f9e": "关闭",
   "framework.ui.txt_f526c89937e1": "确定"
 }

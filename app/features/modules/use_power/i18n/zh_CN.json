@@ -201,5 +201,10 @@
   "module.use_power.log.txt_ca6f28b9b405": "查找“深渊”连续滚动无进展，尝试重置页面",
   "module.use_power.log.txt_d78394cce7f4": "刷常规后勤超时",
   "module.use_power.log.txt_d99122bbcf29": "刷活动体力超时",
-  "module.use_power.log.txt_ed71b62bb094": "已进入活动奖励页面，当前无可领取奖励"
+  "module.use_power.log.txt_ed71b62bb094": "已进入活动奖励页面，当前无可领取奖励",
+  "module.use_power.ui.auto_use_expiring": "自动使用期限",
+  "module.use_power.ui.day_potion": "天内的体力药",
+  "module.use_power.ui.event_stages": "活动材料本",
+  "module.use_power.ui.operation_logistics": "刷常规后勤",
+  "module.use_power.ui.stamina_usage_mode": "选择体力使用方式"
 }

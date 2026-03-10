@@ -61,5 +61,12 @@
   "module.person.log.txt_79072efe7879": "zh_CN",
   "module.person.log.txt_ad7862e474e6": "zh_CN",
   "module.person.log.txt_be40b8eb9c07": "zh_CN",
+  "module.person.ui.auto_use_2_chips_when_not_enough": "en",
+  "module.person.ui.character_1": "en",
+  "module.person.ui.character_2": "en",
+  "module.person.ui.character_3": "en",
+  "module.person.ui.character_4": "en",
+  "module.person.ui.not_set": "en",
+  "module.person.ui.select_characters_for_shards": "en",
   "module.task_shards.title": "en"
 }

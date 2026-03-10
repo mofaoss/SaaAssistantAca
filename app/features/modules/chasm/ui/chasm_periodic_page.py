@@ -5,8 +5,8 @@ from app.framework.ui.views.periodic_base import ModulePageBase
 
 
 class ChasmPage(ModulePageBase):
-    def __init__(self, parent=None):
-        super().__init__("page_chasm", parent=parent, host_context="periodic", use_default_layout=True)
+    def __init_self._(self, parent=None):
+        super().__init_self._("page_chasm", parent=parent, host_context="periodic", use_default_layout=True)
 
         self.BodyLabel_chasm_tip = BodyLabel(self)
         self.BodyLabel_chasm_tip.setObjectName("BodyLabel_chasm_tip")

@@ -51,8 +51,6 @@ class ShoppingModule:
         ]
         self.scroll_point_index = 0
 
-    def _ui_text(self, zh_text: str, en_text: str) -> str:
-        return en_text if self.is_non_chinese_ui else zh_text
 
     def run(self):
         back_to_home(self.auto, self.logger)
@@ -74,7 +72,7 @@ class ShoppingModule:
                 continue
 
             if timeout.reached():
-                self.logger.error(self._ui_text("打开商店超时", "Open shop timeout"))
+                self.logger.error(_("Open shop timeout", msgid='open_shop_timeout'))
                 break
 
     def buy(self):
@@ -133,7 +131,7 @@ class ShoppingModule:
                     continue
                 if self.auto.find_element('不足', 'text', crop=(866 / 1920, 513 / 1080, 1048 / 1920, 880 / 1080),
                                           is_log=self.is_log):
-                    self.logger.warning(self._ui_text('买不起了，杂鱼~', 'Insufficient currency'))
+                    self.logger.warning(_('Insufficient currency', msgid='insufficient_currency'))
                     break
                 if self.auto.click_element('最大', 'text', crop=(1713 / 1920, 822 / 1080, 1, 895 / 1080),
                                            is_log=self.is_log):
@@ -158,7 +156,7 @@ class ShoppingModule:
             else:
                 break
             if timeout.reached():
-                self.logger.error(self._ui_text("购买商品超时", "Purchase timeout"))
+                self.logger.error(_("Purchase timeout", msgid='purchase_timeout'))
                 break
         back_to_home(self.auto, self.logger)
 
@@ -202,8 +200,7 @@ class ShoppingModule:
     def scroll_to_bottom(self, scroll_times=3):
         for _ in range(scroll_times):
             if not self.scroll_once():
-                self.logger.warning(self._ui_text("商店滚动失败：本轮所有滚轮点位均未生效",
-                                              "Shop scroll failed: all fallback points were ineffective"))
+                self.logger.warning(_("Shop scroll failed: all fallback points were ineffective", msgid='shop_scroll_failed_all_fallback_points_were_ineffective'))
 
     def scroll_once(self):
         total = len(self.scroll_fallback_points)
@@ -279,6 +276,7 @@ class ShoppingSelectionUseCase:
     @staticmethod
     def save_weapon_item(*, settings_usecase, index: int, check_state: int):
         settings_usecase.persist_indexed_item("item_weapon_", index, check_state)
+
 
 
 

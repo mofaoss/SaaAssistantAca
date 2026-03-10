@@ -140,7 +140,7 @@ class PerfectBuild:
             "--include-data-file=update_data.txt=update_data.txt",
             "--include-data-dir=asset=asset",
             "--include-data-dir=app/features/modules=app/features/modules",
-            "--include-data-dir=app/features/modules/onnxocr/models/ppocrv5=app/features/modules/onnxocr/models/ppocrv5",
+            "--include-data-dir=app/framework/infra/vision/onnxocr/models/ppocrv5=app/framework/infra/vision/onnxocr/models/ppocrv5",
         ]
         if platform.system() == "Windows":
             cmd_args.extend((f"--windows-icon-from-ico={self.app_icon}", "--msvc=latest"))

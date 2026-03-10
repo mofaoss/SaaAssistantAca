@@ -1,4 +1,16 @@
 {
   "module.dummy.title": "自动辅助",
-  "module.trigger.title": "自动辅助"
+  "module.trigger.title": "自动辅助",
+  "module.trigger.ui.auto_collect": "自动采集或劝降",
+  "module.trigger.ui.auto_f": "自动按F",
+  "module.trigger.ui.automatically_press_e_during_qte_stage": "到qte时机就按下E键",
+  "module.trigger.ui.automatically_press_f_when_collect_prompt_appears": "按钮出现时就按下F键",
+  "module.trigger.ui.disabled": "已关闭",
+  "module.trigger.ui.error": "错误",
+  "module.trigger.ui.game_task_is_not_running": "游戏未打开或任务未运行",
+  "module.trigger.ui.log": "日志",
+  "module.trigger.ui.nita_auto_e": "妮塔自动E",
+  "module.trigger.ui.nita_e_auto_qte": "自动妮塔悸响qte",
+  "module.trigger.ui.tips_launch_the_game_before_enabling_this_feature_these_are_toggle_switches_once": "### 提示\n* 先启动游戏再开启本功能\n* 开启后，遇到符合的情况就自动触发\n* 不影响手动游玩",
+  "module.trigger.ui.trigger_list": "自动辅助"
 }

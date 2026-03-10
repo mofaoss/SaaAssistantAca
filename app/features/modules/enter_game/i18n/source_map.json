@@ -56,9 +56,13 @@
   "module.enter_game.log.txt_c5303da7e7c3": "zh_CN",
   "module.enter_game.log.txt_ce08b8b145bb": "zh_CN",
   "module.enter_game.ui.71ae3513d20a": "en",
+  "module.enter_game.ui.auto_open_game": "en",
+  "module.enter_game.ui.browse": "en",
   "module.enter_game.ui.clicking_the_start_button_will_action_automatica": "en",
   "module.enter_game.ui.failed_to_resolve_launch_arguments": "en",
   "module.enter_game.ui.fc3cf53d556a": "en",
+  "module.enter_game.ui.find_game_path_in_launcher": "en",
   "module.enter_game.ui.game_executable_not_found_under_start_path": "en",
+  "module.enter_game.ui.tutorial": "en",
   "module.task_login.title": "en"
 }
