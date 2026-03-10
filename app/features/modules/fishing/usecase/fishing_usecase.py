@@ -1,4 +1,4 @@
-import os
+﻿import os
 import time
 from datetime import datetime
 from app.framework.i18n.runtime import _
@@ -152,7 +152,7 @@ class FishingModule:
                 open_lure = True
             # 选取鱼饵
             if not open_lure:
-                self.auto.click_element('app/features/assets/fishing/select_lure.png', 'image',
+                self.auto.click_element('app/features/modules/fishing/assets/images/select_lure.png', 'image',
                                         crop=(1563 / 1920, 787 / 1080, 1598 / 1920, 823 / 1080), is_log=self.is_log,
                                         match_method=cv2.TM_CCOEFF_NORMED)
                 time.sleep(0.3)
@@ -217,7 +217,7 @@ class FishingModule:
             self.auto.take_screenshot()
             # if save_flag:
             #     if self.auto.find_element("新纪录", "text") or self.auto.find_element(
-            #             "app/features/assets/fishing/new_record.png", "image", threshold=0.5,
+            #             "app/features/modules/fishing/assets/images/new_record.png", "image", threshold=0.5,
             #             crop=(1245 / 1920, 500 / 1080, 1366 / 1920, 578 / 1080), is_log=self.is_log):
             #         self.save_picture()
             #     break
@@ -274,7 +274,7 @@ class FishingModule:
         :return:
         """
         # self.auto.take_screenshot()
-        if self.auto.find_element('app/features/assets/fishing/fish.png', 'image', threshold=0.6,
+        if self.auto.find_element('app/features/modules/fishing/assets/images/fish.png', 'image', threshold=0.6,
                                   crop=(29 / 1920, 212 / 1080, 116 / 1920, 292 / 1080), is_log=self.is_log,
                                   match_method=cv2.TM_CCOEFF_NORMED):
             return False
@@ -302,5 +302,6 @@ class FishingModule:
             self.logger.error(_(f"未识别出按键文字，请手动设置{e}"))
             return False
         return True
+
 
 

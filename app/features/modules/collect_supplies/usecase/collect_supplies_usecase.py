@@ -1,4 +1,4 @@
-import time
+﻿import time
 from datetime import datetime
 from app.framework.i18n.runtime import _
 
@@ -107,7 +107,7 @@ class CollectSuppliesModule:
             if self.auto.click_element('键收赠', 'text', crop=(1722 / 1920, 1012 / 1080, 1858 / 1920, 1055 / 1080),
                                        is_log=self.is_log):
                 continue
-            # if self.auto.click_element("app/features/assets/collect_supplies/friends.png", "image",
+            # if self.auto.click_element("app/features/modules/collect_supplies/assets/images/friends.png", "image",
             #                            crop=(259 / 1920, 448 / 1080, 364 / 1920, 515 / 1080), is_log=self.is_log):
             #     continue
             if self.auto.find_element('基地', 'text', crop=(
@@ -178,7 +178,7 @@ class CollectSuppliesModule:
                                        is_log=self.is_log):
                 click_flag = True
                 continue
-            # if self.auto.click_element('app/features/assets/collect_supplies/mail.png', 'image',
+            # if self.auto.click_element('app/features/modules/collect_supplies/assets/images/mail.png', 'image',
             #                            crop=(76 / 1920, 437 / 1080, 151 / 1920, 491 / 1080), is_log=self.is_log):
             #     continue
             if self.auto.find_element('基地', 'text', crop=(
@@ -380,5 +380,6 @@ class CollectSuppliesModule:
                 self.logger.error(_("兑换兑换码超时"))
                 break
         back_to_home(self.auto, self.logger)
+
 
 

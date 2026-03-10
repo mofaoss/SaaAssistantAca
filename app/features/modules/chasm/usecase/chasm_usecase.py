@@ -1,4 +1,4 @@
-import time
+﻿import time
 from datetime import datetime, timedelta
 from app.framework.i18n.runtime import _
 
@@ -94,7 +94,7 @@ class ChasmModule:
         enter_flag = False
         while True:
             self.auto.take_screenshot()
-            if not self.auto.find_element("app/features/assets/chasm/reward.png", "image",
+            if not self.auto.find_element("app/features/modules/chasm/assets/images/reward.png", "image",
                                               threshold=0.65, crop=(62 / 1920, 857 / 1080, 193 / 1920, 973 / 1080),
                                               is_log=self.is_log):
                 self.logger.warning(_('当前未开放拟境'))
@@ -150,5 +150,6 @@ class ChasmModule:
             days=(0 - current_weekday) + 7)
         # print(tuesday_10am, now, next_monday_4am)
         return tuesday_10am <= now < next_monday_4am
+
 
 

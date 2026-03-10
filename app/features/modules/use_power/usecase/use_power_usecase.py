@@ -1,4 +1,4 @@
-import re
+﻿import re
 import time
 from pathlib import Path
 from app.framework.i18n.runtime import _
@@ -117,7 +117,7 @@ class UsePowerModule:
         return day_options
 
     def check_power(self):
-        relative_path = Path("app/features/assets/use_power/time.png")
+        relative_path = Path("app/features/modules/use_power/assets/images/time.png")
         project_root = Path(__file__).resolve().parents[3]
         power_icon_template = next(
             (str(path) for path in (relative_path, project_root / relative_path) if path.exists()),
@@ -634,5 +634,6 @@ class UsePowerModule:
             return True, False
 
         return False, False
+
 
 

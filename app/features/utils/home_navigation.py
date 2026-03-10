@@ -1,4 +1,4 @@
-import time
+﻿import time
 
 from app.framework.infra.automation.timer import Timer
 from app.framework.i18n import _
@@ -22,7 +22,7 @@ def back_to_home(auto, logger, timeout_seconds=10):
             return True
 
         if auto.find_element(
-            "app/features/assets/reward/home.png",
+            "app/features/modules/get_reward/assets/images/home.png",
             "image",
             threshold=0.5,
             crop=(1580 / 1920, 18 / 1080, 1701 / 1920, 120 / 1080),
@@ -45,3 +45,4 @@ def back_to_home(auto, logger, timeout_seconds=10):
         if timeout.reached():
             logger.error(_('Timeout returning to home page', msgid='timeout_returning_to_home_page'))
             return False
+

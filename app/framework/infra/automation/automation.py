@@ -285,7 +285,6 @@ class Automation:
             return str(template)
         normalized = template.replace("\\", "/")
         for prefix in (
-            "app/features/assets/",
             "app/features/modules/",
             "resources/",
         ):

@@ -1,4 +1,4 @@
-import time
+﻿import time
 from app.framework.i18n.runtime import _
 
 from app.framework.infra.automation.timer import Timer
@@ -69,7 +69,7 @@ class MassagingModule:
                                        is_log=self.is_log):
                 pass
 
-            if self.auto.click_element("app/features/assets/massaging/yellow_dot.png", "image",
+            if self.auto.click_element("app/features/modules/massaging/assets/images/yellow_dot.png", "image",
                                        crop=(700 / 1920, 335 / 1080, 1688 / 1920, 832 / 1080), is_log=self.is_log,
                                        threshold=0.7):
                 self.auto.key_down("space")
@@ -77,7 +77,7 @@ class MassagingModule:
                 self.auto.key_up("space")
                 continue
 
-            if self.auto.click_element("app/features/assets/massaging/red_dot.png", 'image',
+            if self.auto.click_element("app/features/modules/massaging/assets/images/red_dot.png", 'image',
                                        crop=(700 / 1920, 335 / 1080, 1688 / 1920, 832 / 1080), is_log=self.is_log,
                                        threshold=0.7):
                 self.auto.key_down("space")
@@ -88,3 +88,4 @@ class MassagingModule:
             if timeout.reached():
                 self.logger.error(_("按摩超时"))
                 break
+

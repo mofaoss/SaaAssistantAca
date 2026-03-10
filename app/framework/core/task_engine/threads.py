@@ -118,9 +118,36 @@ class TaskQueueThread(QThread):
 
     def _telemetry_periodic(self, event: str, task_id: str, task_name: str, detail: str = "") -> None:
         try:
-            self.logger.debug(f"periodic_event={event} task_id={task_id} task_name={task_name} detail={detail}")
+            event_label_map = {
+                "task_execution_return_observed": "执行返回观察",
+                "task_execution_return_none": "执行返回为空",
+                "task_execution_unpacked_guarded": "执行解包保护",
+                "task_execution_result_normalized": "执行结果已规范化",
+                "task_execution_result_invalid": "执行结果异常",
+                "task_execution_stopped": "受控停止",
+            }
+            if is_non_chinese_ui_language():
+                self.logger.debug(f"periodic_event={event} task_id={task_id} task_name={task_name} detail={detail}")
+            else:
+                event_label = event_label_map.get(event, event)
+                self.logger.debug(
+                    _(
+                        "Periodic diagnostic: event={event} ({event_code}) task_id={task_id} task_name={task_name} detail={detail}",
+                        msgid="periodic_diagnostic_event_event_code_task_id_task_name_detail",
+                        event=event_label,
+                        event_code=event,
+                        task_id=task_id,
+                        task_name=task_name,
+                        detail=detail or "无",
+                    )
+                )
         except Exception:
             pass
+
+    @staticmethod
+    def _is_controlled_stop_exception(exc: Exception) -> bool:
+        text = str(exc).strip()
+        return text in {"已停止", "stopped", "stopped_by_user"}
 
     def _normalize_task_result(
         self,
@@ -185,6 +212,9 @@ class TaskQueueThread(QThread):
             raw_result = module.run()
             return self._normalize_task_result(task_id, task_name, raw_result)
         except Exception as exc:
+            if self._is_controlled_stop_exception(exc):
+                self._telemetry_periodic("task_execution_stopped", task_id, task_name, f"reason={str(exc) or '已停止'}")
+                return TaskExecutionResult(ok=False, skipped=True, message="stopped_by_user", detail=str(exc), error=exc)
             self._telemetry_periodic("task_execution_result_invalid", task_id, task_name, f"exception={exc!r}")
             return TaskExecutionResult(ok=False, message="exception", detail=str(exc), error=exc)
 
@@ -250,12 +280,14 @@ class TaskQueueThread(QThread):
                     execution_result = self._execute_module_task(task_id, task_name, module)
                     if execution_result.skipped:
                         task_success = False
-                        self.logger.warning(
+                        skip_reason = execution_result.message or execution_result.detail or "unknown"
+                        log_fn = self.logger.info if skip_reason == "stopped_by_user" else self.logger.warning
+                        log_fn(
                             _(
                                 "Task skipped: {task_name}, reason={reason}",
                                 msgid="task_skipped_reason",
                                 task_name=task_name,
-                                reason=execution_result.message or execution_result.detail or "unknown",
+                                reason=skip_reason,
                             )
                         )
                     elif not execution_result.ok:

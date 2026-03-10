@@ -1,4 +1,4 @@
-"""
+﻿"""
 The workflow logic, ROIs, and pipeline design in this script are heavily
 inspired by and adapted from the open-source project MAA_SnowBreak.
 
@@ -86,7 +86,7 @@ class ShardExchangeModule:
 
     def swipe_to_base_puzzle(self):
         # 注意这里加入 take_screenshot=True 确保刷新了首张截图
-        if self.auto.find_element('app/features/assets/jigsaw/base.png', 'image', crop=self._roi(0, 0, 95, 102), take_screenshot=True, is_log=self.is_log):
+        if self.auto.find_element('app/features/modules/jigsaw/assets/images/base.png', 'image', crop=self._roi(0, 0, 95, 102), take_screenshot=True, is_log=self.is_log):
             self.logger.info(_("识别到在基地内部，调整拼图视角..."))
 
             # 使用 first_screenshot 的宽高计算实际点击像素坐标
@@ -133,7 +133,7 @@ class ShardExchangeModule:
                     time.sleep(1)
                 continue
 
-            if self.auto.find_element('app/features/assets/jigsaw/9_piece_present.png', 'image', crop=self._roi(495, 618, 567, 74), take_screenshot=False):
+            if self.auto.find_element('app/features/modules/jigsaw/assets/images/9_piece_present.png', 'image', crop=self._roi(495, 618, 567, 74), take_screenshot=False):
                 self.logger.info(_("没有更多碎片可以赠送了。"))
                 break
 
@@ -271,6 +271,7 @@ class ShardExchangeModule:
             remaining -= take
 
         return new_recyclable
+
 
 
 

@@ -1,4 +1,4 @@
-import time
+﻿import time
 from app.framework.i18n.runtime import _
 
 import cv2
@@ -145,7 +145,7 @@ class WaterBombModule:
                 # self.update_items_list(is_player=True)
                 continue
             if not self.is_speed_up:
-                if not self.auto.find_element('app/features/assets/water_bomb/speed.png', 'image',
+                if not self.auto.find_element('app/features/modules/water_bomb/assets/images/speed.png', 'image',
                                               crop=(1700 / 1920, 30 / 1080, 1800 / 1920, 130 / 1080),
                                               is_log=self.is_log, threshold=0.6,
                                               match_method=cv2.TM_CCOEFF_NORMED):
@@ -164,7 +164,7 @@ class WaterBombModule:
                     is_player_round = False
                 if is_player_round:
                     if current_strategy == '':
-                        if self.auto.find_element('app/features/assets/water_bomb/head.png', 'image',
+                        if self.auto.find_element('app/features/modules/water_bomb/assets/images/head.png', 'image',
                                                   crop=(18 / 1920, 758 / 1080, 127 / 1920, 857 / 1080),
                                                   is_log=self.is_log, threshold=self.template_threshold):
                             is_open_items = True
@@ -281,7 +281,7 @@ class WaterBombModule:
     def handle_shooting(self, person):
         """处理开枪策略下的逻辑"""
         timeout = Timer(20).start()
-        path = f'app/features/assets/water_bomb/{person}.png'
+        path = f'app/features/modules/water_bomb/assets/images/{person}.png'
         while True:
             self.auto.take_screenshot()
 
@@ -332,7 +332,7 @@ class WaterBombModule:
                     self.current_power = 1
                     self.bullet_type = -1
                     return True
-                if self.auto.find_element('app/features/assets/water_bomb/gun.png', 'image',
+                if self.auto.find_element('app/features/modules/water_bomb/assets/images/gun.png', 'image',
                                           crop=(1494 / 1920, 352 / 1080, 1714 / 1920, 581 / 1080), is_log=self.is_log,
                                           threshold=self.template_threshold,
                                           match_method=cv2.TM_CCOEFF_NORMED):
@@ -359,7 +359,7 @@ class WaterBombModule:
             self.auto.perform_ocr(image=crop_image, is_log=self.is_log)
             if self.auto.ocr_result:
                 for ocr_result in self.auto.ocr_result:
-                    if '空' in ocr_result[0] or self.auto.find_element('app/features/assets/water_bomb/blank.png',
+                    if '空' in ocr_result[0] or self.auto.find_element('app/features/modules/water_bomb/assets/images/blank.png',
                                                                        'image', crop=(
                                     1470 / 2560, 1290 / 1440, 1640 / 2560, 1364 / 1440),
                                                                        match_method=cv2.TM_CCOEFF_NORMED,
@@ -367,7 +367,7 @@ class WaterBombModule:
                                                                        threshold=self.template_threshold):
                         self.bullet_type = 0
                         return
-                    elif '水' in ocr_result[0] or self.auto.find_element('app/features/assets/water_bomb/live.png',
+                    elif '水' in ocr_result[0] or self.auto.find_element('app/features/modules/water_bomb/assets/images/live.png',
                                                                          'image', crop=(
                                     1470 / 2560, 1290 / 1440, 1640 / 2560, 1364 / 1440),
                                                                          match_method=cv2.TM_CCOEFF_NORMED,
@@ -423,7 +423,7 @@ class WaterBombModule:
                 return True
             if self.auto.find_image_and_count(
                     self.auto.get_crop_form_first_screenshot(crop=(440 / 1920, 332 / 1080, 1510 / 1920, 878 / 1080)),
-                    'app/features/assets/water_bomb/steal_select.png', threshold=self.count_threshold,
+                    'app/features/modules/water_bomb/assets/images/steal_select.png', threshold=self.count_threshold,
                     is_log=self.is_log) == len(
                 items_list):
                 select_flag = True
@@ -441,14 +441,14 @@ class WaterBombModule:
                 continue
             if not select_flag:
                 if top_left and bottom_right:
-                    if self.auto.find_element('app/features/assets/water_bomb/steal_select.png', 'image', crop=(
+                    if self.auto.find_element('app/features/modules/water_bomb/assets/images/steal_select.png', 'image', crop=(
                             top_left[0] / 1920, top_left[1] / 1080, bottom_right[0] / 1920, bottom_right[1] / 1080),
                                               is_log=self.is_log, threshold=self.template_threshold,
                                               match_method=cv2.TM_CCOEFF_NORMED):
                         index += 1
                         if index >= len(items_list):
                             return True
-                path = f'app/features/assets/water_bomb/{items_list[index]}_steal.png'
+                path = f'app/features/modules/water_bomb/assets/images/{items_list[index]}_steal.png'
                 result = self.auto.find_element(path, 'image', crop=(440 / 1920, 332 / 1080, 1510 / 1920, 878 / 1080),
                                                 is_log=self.is_log, threshold=self.template_threshold,
                                                 match_method=cv2.TM_CCOEFF_NORMED)
@@ -472,7 +472,7 @@ class WaterBombModule:
     def select_and_steal(self, steal_item):
         """选择物品然后偷"""
         timeout = Timer(20).start()
-        path = f'app/features/assets/water_bomb/{steal_item}_steal.png'
+        path = f'app/features/modules/water_bomb/assets/images/{steal_item}_steal.png'
         select_flag = False
 
         self.scroll_to_bottom()
@@ -497,7 +497,7 @@ class WaterBombModule:
         """根据物品名使用可以直接使用的道具"""
         timeout = Timer(20).start()
         appear_use_button = False
-        path = f'app/features/assets/water_bomb/{item_name}.png'
+        path = f'app/features/modules/water_bomb/assets/images/{item_name}.png'
         while True:
             self.auto.take_screenshot()
 
@@ -531,7 +531,7 @@ class WaterBombModule:
 
     def update_extra_status(self):
         """检查当前对面是否被铐上手铐"""
-        if self.auto.find_element('app/features/assets/water_bomb/is_handcuffs.png', 'image',
+        if self.auto.find_element('app/features/modules/water_bomb/assets/images/is_handcuffs.png', 'image',
                                   threshold=self.template_threshold,
                                   crop=(980 / 1920, 30 / 1080, 1250 / 1920, 150 / 1080), is_log=self.is_log,
                                   match_method=cv2.TM_CCOEFF_NORMED):
@@ -551,13 +551,13 @@ class WaterBombModule:
             (943 / 1920, 131 / 1080, 1237 / 1920, 186 / 1080))
         # enemy_hp_screenshot = self.auto.resize_image(enemy_hp_screenshot, (self.auto.scale_x, self.auto.scale_y))
         self.current_player_hp = self.auto.find_image_and_count(player_hp_screenshot,
-                                                                'app/features/assets/water_bomb/hp.png',
+                                                                'app/features/modules/water_bomb/assets/images/hp.png',
                                                                 threshold=self.count_threshold, is_log=self.is_log)
-        no_hp = self.auto.find_image_and_count(player_hp_screenshot, 'app/features/assets/water_bomb/no_hp.png',
+        no_hp = self.auto.find_image_and_count(player_hp_screenshot, 'app/features/modules/water_bomb/assets/images/no_hp.png',
                                                threshold=self.count_threshold, is_log=self.is_log)
         self.max_hp = self.current_player_hp + no_hp
         self.current_enemy_hp = self.auto.find_image_and_count(enemy_hp_screenshot,
-                                                               'app/features/assets/water_bomb/hp.png',
+                                                               'app/features/modules/water_bomb/assets/images/hp.png',
                                                                threshold=self.count_threshold, is_log=self.is_log)
 
         # 更新两种子弹状态
@@ -565,7 +565,7 @@ class WaterBombModule:
         blank_bullet_list = []
 
         is_num = True
-        if self.auto.find_element(f'app/features/assets/water_bomb/q.png', 'image',
+        if self.auto.find_element(f'app/features/modules/water_bomb/assets/images/q.png', 'image',
                                   crop=(2000 / 2560, 1280 / 1440, 2137 / 2560, 1397 / 1440), is_log=self.is_log,
                                   threshold=self.template_threshold,
                                   extract=[(255, 255, 255), 128],
@@ -576,7 +576,7 @@ class WaterBombModule:
             is_num = False
         if is_num:
             for i in range(0, 5):
-                if self.auto.find_element(f'app/features/assets/water_bomb/{i}.png', 'image',
+                if self.auto.find_element(f'app/features/modules/water_bomb/assets/images/{i}.png', 'image',
                                           crop=(2000 / 2560, 1280 / 1440, 2137 / 2560, 1397 / 1440),
                                           threshold=self.template_threshold,
                                           is_log=self.is_log,
@@ -585,7 +585,7 @@ class WaterBombModule:
                     self.remaining_live_bullet = i
                     break
             for i in range(0, 5):
-                if self.auto.find_element(f'app/features/assets/water_bomb/{i}.png', 'image',
+                if self.auto.find_element(f'app/features/modules/water_bomb/assets/images/{i}.png', 'image',
                                           crop=(2132 / 2560, 1300 / 1440, 2300 / 2560, 1397 / 1440),
                                           threshold=self.template_threshold,
                                           is_log=self.is_log,
@@ -622,14 +622,14 @@ class WaterBombModule:
         """根据区域获取道具"""
         current_items = []
         path_list = [
-            'app/features/assets/water_bomb/advanced_barrel.png',
-            'app/features/assets/water_bomb/unload_puppet.png',
-            'app/features/assets/water_bomb/gem_of_life.png',
-            'app/features/assets/water_bomb/reset_hammer.png',
-            'app/features/assets/water_bomb/handcuffs.png',
-            'app/features/assets/water_bomb/reverse_magic.png',
-            'app/features/assets/water_bomb/hand_of_kaito.png',
-            'app/features/assets/water_bomb/insight_sunglasses.png'
+            'app/features/modules/water_bomb/assets/images/advanced_barrel.png',
+            'app/features/modules/water_bomb/assets/images/unload_puppet.png',
+            'app/features/modules/water_bomb/assets/images/gem_of_life.png',
+            'app/features/modules/water_bomb/assets/images/reset_hammer.png',
+            'app/features/modules/water_bomb/assets/images/handcuffs.png',
+            'app/features/modules/water_bomb/assets/images/reverse_magic.png',
+            'app/features/modules/water_bomb/assets/images/hand_of_kaito.png',
+            'app/features/modules/water_bomb/assets/images/insight_sunglasses.png'
         ]
 
         crop_screenshot = self.auto.get_crop_form_first_screenshot(crop)
@@ -671,5 +671,6 @@ class WaterBombModule:
         # print(status_dict)
         win_prob, strategy = self.round_fight.optimal_strategy(status)
         return win_prob, strategy
+
 
 
