@@ -41,7 +41,7 @@ class DrinkModule:
             else:
                 count = 1
                 while self.drink_times > 0:
-                    self.logger.info(_(f"开始第{count}次喝酒"))
+                    self.logger.info(_(f"开始第{count}次猜心对局"))
                     if self.mode == 0:
                         self.play_mode1()
                     else:
@@ -50,12 +50,12 @@ class DrinkModule:
                     count += 1
                     if self.drink_times > 0:
                         self.again()
-                self.logger.info(_(f"已完成{count - 1}次喝酒"))
+                self.logger.info(_(f"已完成{count - 1}次猜心对局"))
         # self.again()
 
     def enter_drink(self):
         """
-        进入并开始喝酒
+        进入并开始猜心对局
         :return:
         """
         timeout = Timer(30).start()
@@ -264,5 +264,3 @@ class DrinkModule:
             if timeout.reached():
                 self.logger.error(_("重进对局超时"))
                 break
-
-

@@ -17,6 +17,7 @@ from app.framework.i18n.template_render import extract_template_fields
 from app.framework.i18n.template_render import extract_template_field_details
 
 SUPPORTED_LANGS = ["en", "zh_CN", "zh_HK"]
+REQUIRED_LANGS = ["en", "zh_CN"]
 HAN_RE = re.compile(r"[\u4e00-\u9fff]")
 LATIN_RE = re.compile(r"[A-Za-z]")
 FORMAT_TOKEN_RE = re.compile(r"{([^{}]+)}")
@@ -131,7 +132,7 @@ def _audit_owner(base: Path, owner_name: str, *, module_id_map: dict[str, str] |
     source_map = _load_json(base / "source_map.json")
     template_meta = _load_template_meta(base / "template_meta.json")
 
-    missing_files = [lang for lang, path in paths.items() if not path.exists()]
+    missing_files = [lang for lang in REQUIRED_LANGS if not paths[lang].exists()]
 
     all_keys: set[str] = set(source_map.keys())
     for m in maps.values():
@@ -266,7 +267,7 @@ def _audit_owner(base: Path, owner_name: str, *, module_id_map: dict[str, str] |
             "event_status_display_with_title",
         }
         for suffix in required_suffixes:
-            for lang in SUPPORTED_LANGS:
+            for lang in REQUIRED_LANGS:
                 expected_key = f"module.event_tips.ui.{suffix}"
                 if expected_key not in maps.get(lang, {}):
                     event_status_resource_missing_count += 1

@@ -11,11 +11,14 @@ ROOT = Path(__file__).resolve().parents[1]
 MODULES_ROOT = ROOT / "app" / "features" / "modules"
 FRAMEWORK_I18N = ROOT / "app" / "framework" / "i18n"
 LANGS = ("en", "zh_CN", "zh_HK")
+REQUIRED_LANGS = ("en", "zh_CN")
+OPTIONAL_LANGS = ("zh_HK",)
 
 HAN_RE = re.compile(r"[\u4e00-\u9fff]")
 LATIN_RE = re.compile(r"[A-Za-z]")
 NON_ALNUM_RE = re.compile(r"[^a-z0-9]+")
 HASHLIKE_SUFFIX_RE = re.compile(r"^(?:[0-9a-f]{8,}|h[0-9a-f]{6,}|txt_[0-9a-f]{8,}|tmpl_[0-9a-f]{8,})$")
+SYNTHETIC_CN_SUFFIX_RE = re.compile(r"^cn_text_\d+(?:_\d+)?$")
 
 
 def _load_json(path: Path) -> dict:
@@ -36,6 +39,14 @@ def _load_json(path: Path) -> dict:
 def _save_json(path: Path, data: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(dict(sorted(data.items())), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def _remove_legacy_zh_tw_file(i18n_dir: Path) -> bool:
+    zh_tw = i18n_dir / "zh_TW.json"
+    if zh_tw.exists():
+        zh_tw.unlink(missing_ok=True)
+        return True
+    return False
 
 
 def _classify_value_lang(value: str) -> str | None:
@@ -177,6 +188,28 @@ def _key_semantic_score(key: str, template: str) -> tuple[int, int, int, int]:
     spec_count, field_count = _template_spec_score(template)
     generic_field_penalty = template.count("{value_") + template.count("{value}")
     return (is_semantic, spec_count, field_count, -generic_field_penalty)
+
+
+def _static_key_priority(key: str) -> tuple[int, int, int, int]:
+    """Pick a stable winner among duplicate static keys."""
+    suffix = key.rsplit(".", 1)[-1]
+    is_synthetic_cn = bool(SYNTHETIC_CN_SUFFIX_RE.fullmatch(suffix))
+    is_hashlike = bool(HASHLIKE_SUFFIX_RE.fullmatch(suffix))
+    # semantic key > hashlike key > synthetic cn_text key
+    if not is_synthetic_cn and not is_hashlike:
+        kind_score = 2
+    elif is_hashlike:
+        kind_score = 1
+    else:
+        kind_score = 0
+    # avoid numbered tail variants like *_2 when a base key exists
+    numbered_tail = 0 if re.search(r"_\d+$", suffix) else 1
+    return (kind_score, numbered_tail, -len(suffix), 1 if ".log." in key else 0)
+
+
+def _is_nonsemantic_static_key(key: str) -> bool:
+    suffix = key.rsplit(".", 1)[-1]
+    return bool(SYNTHETIC_CN_SUFFIX_RE.fullmatch(suffix) or HASHLIKE_SUFFIX_RE.fullmatch(suffix))
 
 
 def _normalize_owner_keys(owner: str, maps: dict[str, dict[str, str]], source_map: dict[str, str], template_meta: dict[str, dict], stats: dict[str, int]) -> tuple[dict[str, dict[str, str]], dict[str, str], dict[str, dict]]:
@@ -330,6 +363,41 @@ def _normalize_owner_keys(owner: str, maps: dict[str, dict[str, str]], source_ma
             template_meta.pop(drop_key, None)
             stats["hashlike_merged"] += 1
 
+    # 5) merge duplicated static keys with same source value under same context prefix.
+    static_groups: dict[tuple[str, str, str], list[str]] = defaultdict(list)
+    for key, src in source_map.items():
+        if src not in {"en", "zh_CN"}:
+            continue
+        if key in template_meta:
+            continue
+        source_val = maps.get(src, {}).get(key)
+        if not isinstance(source_val, str) or not source_val:
+            continue
+        context_prefix = key.rsplit(".", 1)[0]
+        static_groups[(src, context_prefix, source_val)].append(key)
+
+    for (_src, _prefix, _source_val), keys in static_groups.items():
+        if len(keys) < 2:
+            continue
+        nonsemantic_keys = {k for k in keys if _is_nonsemantic_static_key(k)}
+        # Keep semantic aliases; only collapse synthetic/hash-like duplicates.
+        if not nonsemantic_keys:
+            continue
+        ordered = sorted(keys, key=_static_key_priority, reverse=True)
+        keep_key = ordered[0]
+        for drop_key in ordered[1:]:
+            if drop_key not in nonsemantic_keys:
+                continue
+            for lang in LANGS:
+                keep_val = maps[lang].get(keep_key)
+                drop_val = maps[lang].get(drop_key)
+                if keep_val is None and drop_val is not None:
+                    maps[lang][keep_key] = drop_val
+                maps[lang].pop(drop_key, None)
+            source_map.pop(drop_key, None)
+            template_meta.pop(drop_key, None)
+            stats["static_duplicate_merged"] += 1
+
     return maps, source_map, template_meta
 
 
@@ -393,11 +461,19 @@ def main() -> int:
     changed_files = 0
     for owner, payload in owner_data.items():
         i18n_dir = payload["dir"]
+        if _remove_legacy_zh_tw_file(i18n_dir):
+            changed_files += 1
         for lang in LANGS:
             path = i18n_dir / f"{lang}.json"
             before = _load_json(path)
             after = payload["maps"][lang]
-            if before != after:
+            if lang in OPTIONAL_LANGS and not path.exists() and not after:
+                continue
+            if lang in OPTIONAL_LANGS and path.exists() and not after:
+                path.unlink(missing_ok=True)
+                changed_files += 1
+                continue
+            if before != after or (lang in REQUIRED_LANGS and not path.exists()):
                 _save_json(path, after)
                 changed_files += 1
         sm_path = i18n_dir / "source_map.json"
@@ -420,6 +496,7 @@ def main() -> int:
     print(f"owner_drift_moved={stats['owner_drift_moved']}")
     print(f"dynamic_template_spec_loss_duplicate_count={stats['dynamic_template_spec_loss_duplicate_count']}")
     print(f"hashlike_merged={stats['hashlike_merged']}")
+    print(f"static_duplicate_merged={stats['static_duplicate_merged']}")
     return 0
 
 

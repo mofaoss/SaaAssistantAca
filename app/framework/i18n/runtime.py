@@ -1,11 +1,13 @@
 ﻿from __future__ import annotations
 
 import hashlib
+import importlib
 import inspect
 import json
 import logging
 import re
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -494,6 +496,10 @@ def _render_dynamic_candidate_message(message: TranslatableMessage, *, key: str,
         return None
 
     translated_template = _CATALOGS.get(target_lang, {}).get(key)
+    if translated_template is None and target_lang == "zh_HK":
+        zh_cn_template = _CATALOGS.get("zh_CN", {}).get(key)
+        if zh_cn_template is not None:
+            translated_template = _zh_hk_fallback_text(zh_cn_template)
     if translated_template is None:
         translated_template = _CATALOGS.get(DEFAULT_SOURCE_LANG, {}).get(key)
     if translated_template is None:
@@ -537,12 +543,35 @@ def _safe_format(value: str, kwargs: dict[str, Any]) -> str:
         return value
 
 
+@lru_cache(maxsize=1)
+def _build_opencc_s2t_converter():
+    try:
+        OpenCC = importlib.import_module("opencc").OpenCC
+        return OpenCC("s2t")
+    except Exception:
+        return None
+
+
+def _zh_hk_fallback_text(text: str) -> str:
+    converter = _build_opencc_s2t_converter()
+    if converter is None:
+        return text
+    try:
+        return converter.convert(text)
+    except Exception:
+        return text
+
+
 def _render_dynamic_message(message: TranslatableMessage, *, key: str, target_lang: str) -> str:
     source_template = message.template_skeleton or message.source_text
     payload = message.kwargs or {}
     original_rendered = message.source_text
 
     translated_template = _CATALOGS.get(target_lang, {}).get(key)
+    if translated_template is None and target_lang == "zh_HK":
+        translated_template = _CATALOGS.get("zh_CN", {}).get(key)
+        if translated_template is not None:
+            translated_template = _zh_hk_fallback_text(translated_template)
     if translated_template is None:
         translated_template = _CATALOGS.get(message.source_lang, {}).get(key)
     # Context-aware fallback: allow ui/log catalogs to share the same dynamic msgid
@@ -553,12 +582,20 @@ def _render_dynamic_message(message: TranslatableMessage, *, key: str, target_la
             _CATALOGS.get(target_lang, {}).get(log_key)
             or _CATALOGS.get(message.source_lang, {}).get(log_key)
         )
+        if translated_template is None and target_lang == "zh_HK":
+            translated_template = _CATALOGS.get("zh_CN", {}).get(log_key)
+            if translated_template is not None:
+                translated_template = _zh_hk_fallback_text(translated_template)
     if translated_template is None and ".log." in key:
         ui_key = key.replace(".log.", ".ui.", 1)
         translated_template = (
             _CATALOGS.get(target_lang, {}).get(ui_key)
             or _CATALOGS.get(message.source_lang, {}).get(ui_key)
         )
+        if translated_template is None and target_lang == "zh_HK":
+            translated_template = _CATALOGS.get("zh_CN", {}).get(ui_key)
+            if translated_template is not None:
+                translated_template = _zh_hk_fallback_text(translated_template)
     if translated_template is None:
         _telemetry_warn("dynamic_template_missing", key)
         translated_template = source_template
@@ -633,6 +670,10 @@ def translate_message(message: TranslatableMessage, *, context: str, target_lang
         return message.source_text
 
     translated = _CATALOGS.get(target_lang, {}).get(key)
+    if translated is None and target_lang == "zh_HK":
+        zh_cn_value = _CATALOGS.get("zh_CN", {}).get(key)
+        if zh_cn_value is not None:
+            translated = _zh_hk_fallback_text(zh_cn_value)
     if translated is None:
         translated = _CATALOGS.get(message.source_lang, {}).get(key)
     if translated is None:

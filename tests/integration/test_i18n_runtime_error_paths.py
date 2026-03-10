@@ -78,12 +78,13 @@ def test_external_status_normalization_outputs_localized_chinese(monkeypatch):
     monkeypatch.setattr(runtime, "_LOADED", True)
     monkeypatch.setattr(runtime, "_resolve_lang", lambda: "zh_CN")
 
-    value = format_event_status_display("多诺-巅峰对决", "3d(s) left")
-    value2 = format_event_status_display("多诺-巅峰对决", "remaining 3 ds")
-    finished = format_event_status_display("异星守护", "finished")
-    assert value == "多诺-巅峰对决：剩余 3 天"
-    assert value2 == "多诺-巅峰对决：剩余 3 天"
-    assert finished == "异星守护：已结束"
+    cases = [
+        ("多诺-巅峰对决", "3d(s) left", "剩余 3 天"),
+        ("多诺-巅峰对决", "remaining 3 ds", "剩余 3 天"),
+        ("异星守护", "finished", "已结束"),
+    ]
+    for title, raw_status, expected_status in cases:
+        assert format_event_status_display(title, raw_status) == f"{title}：{expected_status}"
 
 
 def test_external_unparsed_status_bypasses_static_enforcement(monkeypatch):

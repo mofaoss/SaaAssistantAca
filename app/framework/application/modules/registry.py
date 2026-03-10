@@ -9,14 +9,14 @@ _DEFAULT_ZH_TITLE_FALLBACK: dict[str, str] = {
     "task_login": "自动登录",
     "task_supplies": "领取补给",
     "task_shop": "商店购买",
-    "task_stamina": "领取体力",
+    "task_stamina": "体力扫荡",
     "task_shards": "角色碎片",
-    "task_chasm": "神经模拟",
+    "task_chasm": "精神拟境",
     "task_reward": "领取奖励",
-    "task_operation": "行动任务",
+    "task_operation": "常规训练",
     "task_weapon": "武器升级",
-    "task_shard_exchange": "碎片兑换",
-    "task_close_game": "关闭游戏",
+    "task_shard_exchange": "信源碎片",
+    "task_close_game": "执行关闭",
 }
 
 

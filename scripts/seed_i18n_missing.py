@@ -12,6 +12,7 @@ if str(ROOT) not in sys.path:
 from app.framework.i18n.runtime import classify_source_language
 from app.framework.i18n.template_render import extract_template_field_details
 SUPPORTED_LANGS = ["en", "zh_CN", "zh_HK"]
+REQUIRED_LANGS = {"en", "zh_CN"}
 SOURCE_LANGS = {"en", "zh_CN"}
 
 
@@ -112,7 +113,13 @@ def _sync_owner(base_dir: Path) -> tuple[int, int]:
         path = base_dir / f"{lang}.json"
         before = _load(path)
         after = maps[lang]
-        if before != after:
+        if lang not in REQUIRED_LANGS and not path.exists() and not after:
+            continue
+        if lang not in REQUIRED_LANGS and path.exists() and not after:
+            path.unlink(missing_ok=True)
+            changed_files += 1
+            continue
+        if before != after or (lang in REQUIRED_LANGS and not path.exists()):
             _save(path, after)
             changed_files += 1
 

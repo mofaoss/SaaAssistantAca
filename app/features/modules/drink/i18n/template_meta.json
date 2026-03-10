@@ -2,8 +2,8 @@
   "module.drink.log.cn_text_0001_8": {
     "kind": "dynamic_template",
     "template_id": "69e4560784a2742c",
-    "msgid": "已完成_value_1_次喝酒",
-    "source_template": "已完成{value_1}次喝酒",
+    "msgid": "已完成_value_1_次猜心对局",
+    "source_template": "已完成{value_1}次猜心对局",
     "fields": [
       "value_1"
     ],
@@ -30,8 +30,8 @@
   "module.drink.log.cn_text_0002_8": {
     "kind": "dynamic_template",
     "template_id": "56fbffbe35e9fc04",
-    "msgid": "开始第_count_次喝酒",
-    "source_template": "开始第{count}次喝酒",
+    "msgid": "开始第_count_次猜心对局",
+    "source_template": "开始第{count}次猜心对局",
     "fields": [
       "count"
     ],
