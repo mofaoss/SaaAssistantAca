@@ -14,7 +14,6 @@ from qfluentwidgets import Flyout, FlyoutView, InfoBar, InfoBarPosition
 
 from app.framework.core.interfaces.game_environment import IGameEnvironment
 from app.framework.infra.automation.timer import Timer
-from app.framework.infra.config.app_config import config
 from app.framework.infra.system.windows import get_hwnd
 from app.framework.ui.shared.text import ui_text
 from app.framework.core.module_system import module
@@ -34,14 +33,13 @@ _last_launch_ts = 0.0
     host="periodic",
 )
 class EnterGameModule:
-    def __init__(self, auto, logger):
+    def __init__(self, auto, logger, isLog=False):
         self.auto = auto
         self.logger = logger
+        self.is_log = bool(isLog)
         self.enter_game_flag = False
-        self.is_log = True
 
     def run(self):
-        self.is_log = config.isLog.value
         self.handle_game()
         back_to_home(self.auto, self.logger)
 
@@ -103,10 +101,10 @@ class EnterGameModule:
                 break
 
 
-def is_snowbreak_running(server_interface: int | None = None):
+def is_snowbreak_running(server_interface: int | None = None, app_config=None):
     if server_interface is None:
         try:
-            server_interface = int(config.server_interface.value)
+            server_interface = int(app_config.server_interface.value) if app_config is not None else 0
         except Exception:
             server_interface = 0
 
@@ -237,6 +235,7 @@ def launch_game_with_guard(
     start_path: str | None = None,
     game_channel: int | None = None,
     is_game_running: Callable[[], Any] | None = None,
+    app_config=None,
     logger=None,
     cooldown_seconds: int = 15,
 ) -> dict[str, Any]:
@@ -244,11 +243,13 @@ def launch_game_with_guard(
     global _last_launch_ts
 
     if start_path is None:
-        start_path = config.LineEdit_game_directory.value
+        if app_config is None:
+            return {"ok": False, "error": "missing app_config for game directory"}
+        start_path = app_config.LineEdit_game_directory.value
     if game_channel is None:
-        game_channel = int(config.server_interface.value)
+        game_channel = int(app_config.server_interface.value) if app_config is not None else 0
     if is_game_running is None:
-        is_game_running = lambda: is_snowbreak_running(game_channel)
+        is_game_running = lambda: is_snowbreak_running(game_channel, app_config=app_config)
 
     start_path = os.path.normpath(str(start_path or ""))
     if not start_path or start_path == "./":
@@ -339,14 +340,15 @@ def launch_game_with_guard(
 class EnterGameService(IGameEnvironment):
     """Unified enter-game service for game environment, launch, and UI actions."""
 
-    def __init__(self, is_non_chinese_ui: bool):
+    def __init__(self, is_non_chinese_ui: bool, app_config=None):
         self._is_non_chinese_ui = bool(is_non_chinese_ui)
+        self._app_config = app_config
 
     def is_running(self) -> bool:
-        return bool(is_snowbreak_running())
+        return bool(is_snowbreak_running(app_config=self._app_config))
 
     def launch(self, logger=None) -> dict[str, Any]:
-        return launch_game_with_guard(logger=logger)
+        return launch_game_with_guard(logger=logger, app_config=self._app_config)
 
     def launch_game(self, logger=None) -> dict[str, Any]:
         return self.launch(logger=logger)

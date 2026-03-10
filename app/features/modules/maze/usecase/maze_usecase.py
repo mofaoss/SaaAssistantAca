@@ -1,6 +1,5 @@
 import time
 
-from app.framework.infra.config.app_config import config
 from app.framework.infra.automation.timer import Timer
 
 from app.framework.core.module_system import module
@@ -13,16 +12,13 @@ from app.framework.core.module_system import module
     host="on_demand",
 )
 class MazeModule:
-    def __init__(self, auto, logger):
+    def __init__(self, auto, logger, isLog=False, ComboBox_mode_maze=0):
         self.auto = auto
         self.logger = logger
-        self.is_log = False
-        self.run_mode = None
+        self.is_log = bool(isLog)
+        self.run_mode = int(ComboBox_mode_maze)
 
     def run(self):
-        self.is_log = config.isLog.value
-        self.run_mode = config.ComboBox_mode_maze.value
-
         self.fight()
 
     def fight(self):

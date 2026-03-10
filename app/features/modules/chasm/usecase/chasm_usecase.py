@@ -1,7 +1,6 @@
 import time
 from datetime import datetime, timedelta
 
-from app.framework.infra.config.app_config import config
 from app.framework.infra.automation.timer import Timer
 from app.features.utils.home_navigation import back_to_home
 
@@ -15,16 +14,15 @@ from app.framework.core.module_system import module
     host="periodic",
 )
 class ChasmModule:
-    def __init__(self, auto, logger):
+    def __init__(self, auto, logger, isLog=False):
         self.auto = auto
         self.logger = logger
-        self.is_log = False
+        self.is_log = bool(isLog)
 
     def run(self):
         # if not self.is_in_time_range():
         #     self.logger.warning('当前未开放拟境')
         # else:
-        self.is_log = config.isLog.value
         back_to_home(self.auto, self.logger)
         if not self.chasm():
             back_to_home(self.auto, self.logger)

@@ -1,6 +1,5 @@
 import time
 
-from app.framework.infra.config.app_config import config
 from app.framework.infra.automation.timer import Timer
 from app.features.utils.home_navigation import back_to_home
 
@@ -20,15 +19,14 @@ from app.framework.core.module_system import module
     host="periodic",
 )
 class OperationModule:
-    def __init__(self, auto, logger):
+    def __init__(self, auto, logger, isLog=False, SpinBox_action_times=1, ComboBox_run=0):
         self.auto = auto
         self.logger = logger
-        self.is_log = False
-        self.times = 1
+        self.is_log = bool(isLog)
+        self.times = int(SpinBox_action_times)
+        self.run_mode = int(ComboBox_run)
 
     def run(self):
-        self.is_log = config.isLog.value
-        self.times = config.SpinBox_action_times.value
         back_to_home(self.auto, self.logger)
 
         self.enter_train()
@@ -78,7 +76,7 @@ class OperationModule:
                             is_move = True
                             continue
                     else:
-                        if config.ComboBox_run.value == 0:
+                        if self.run_mode == 0:
                             self.auto.press_key("shift")
                             time.sleep(6)
                         else:

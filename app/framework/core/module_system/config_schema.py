@@ -9,6 +9,8 @@ RUNTIME_PARAMS = {
     "auto",
     "automation",
     "logger",
+    "app_config",
+    "config_provider",
     "cancel_token",
     "task_context",
 }

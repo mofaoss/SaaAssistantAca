@@ -6,7 +6,6 @@ import cv2
 import numpy as np
 from rapidfuzz import process
 
-from app.framework.infra.config.app_config import config
 from app.framework.infra.events.signal_bus import signalBus
 from app.framework.infra.vision.vision import count_color_blocks
 from app.framework.infra.automation.timer import Timer
@@ -20,31 +19,85 @@ from app.framework.core.module_system import module
     en_name="Fishing",
     host="on_demand",
 )
+def run_fishing(
+    LineEdit_fish_upper: str = "25,255,255",
+    LineEdit_fish_lower: str = "20,220,245",
+    LineEdit_fish_key: str = "space",
+    isLog: bool = False,
+    CheckBox_is_limit_time: bool = False,
+    SpinBox_fish_times: int = 1,
+    ComboBox_lure_type: int = 0,
+    ComboBox_fishing_mode: int = 0,
+    CheckBox_is_save_fish: bool = False,
+    fish_key_list=None,
+    automation=None,
+    logger=None,
+    app_config=None,
+):
+    module = FishingModule(
+        automation,
+        logger,
+        fish_upper_text=LineEdit_fish_upper,
+        fish_lower_text=LineEdit_fish_lower,
+        fish_key_text=LineEdit_fish_key,
+        is_log=isLog,
+        use_time_judge=CheckBox_is_limit_time,
+        fish_times=int(SpinBox_fish_times),
+        lure_type_index=int(ComboBox_lure_type),
+        fishing_mode=int(ComboBox_fishing_mode),
+        save_fish=bool(CheckBox_is_save_fish),
+        fish_key_list=fish_key_list,
+        app_config=app_config,
+    )
+    module.run()
+
+
 class FishingModule:
-    def __init__(self, auto, logger):
+    def __init__(
+        self,
+        auto,
+        logger,
+        *,
+        fish_upper_text: str,
+        fish_lower_text: str,
+        fish_key_text: str,
+        is_log: bool,
+        use_time_judge: bool,
+        fish_times: int,
+        lure_type_index: int,
+        fishing_mode: int,
+        save_fish: bool,
+        fish_key_list,
+        app_config=None,
+    ):
         self.auto = auto
         self.logger = logger
         self.bite_time = None
         self.start_time = None
-        self.is_use_time_judge = None
+        self.is_use_time_judge = bool(use_time_judge)
         self.previous_yellow_block_count = 0
         self.previous_pixels = 0
         self.save_path = os.path.abspath("./fish")
-        self.press_key = None
+        self.press_key = fish_key_text
         self.upper_yellow = None
         self.lower_yellow = None
         self.no_key = False
         self.is_select_fish = False
 
-        self.is_log = False
+        self.is_log = bool(is_log)
+        self.fish_upper_text = fish_upper_text
+        self.fish_lower_text = fish_lower_text
+        self.fish_times = max(1, int(fish_times))
+        self.lure_type_index = max(0, int(lure_type_index))
+        self.fishing_mode = max(0, int(fishing_mode))
+        self.save_fish = bool(save_fish)
+        self.fish_key_list = fish_key_list or ['shift', 'space', 'ctrl']
+        self.app_config = app_config
 
     def run(self):
         # 每次钓鱼前更新各种设置参数
-        self.upper_yellow = np.array([int(value) for value in config.LineEdit_fish_upper.value.split(',')])
-        self.lower_yellow = np.array([int(value) for value in config.LineEdit_fish_lower.value.split(',')])
-        self.press_key = config.LineEdit_fish_key.value
-        self.is_log = config.isLog.value
-        self.is_use_time_judge = config.CheckBox_is_limit_time.value
+        self.upper_yellow = np.array([int(value) for value in str(self.fish_upper_text).split(',')])
+        self.lower_yellow = np.array([int(value) for value in str(self.fish_lower_text).split(',')])
         self.start_time = time.time()
 
         if np.any(self.upper_yellow < self.lower_yellow):
@@ -52,7 +105,7 @@ class FishingModule:
             return
 
         self.is_select_fish = False
-        for i in range(config.SpinBox_fish_times.value):
+        for i in range(self.fish_times):
             self.logger.info(f"开始第 {i + 1} 次钓鱼")
             try:
                 self.enter_fish()
@@ -69,7 +122,7 @@ class FishingModule:
         """
         timeout = Timer(15).start()
         enter_flag = False
-        lure_type_index = config.ComboBox_lure_type.value
+        lure_type_index = self.lure_type_index
         lure_type_list = ['万能', '普通', '豪华', '至尊', '重量级', '巨型', '重量级', '巨型']
         while True:
             self.auto.take_screenshot()
@@ -124,7 +177,7 @@ class FishingModule:
     def select_lure(self):
         open_lure = False
         lure_type_list = ['万能', '普通', '豪华', '至尊', '重量级', '巨型', '重量级', '巨型']
-        lure_type_index = config.ComboBox_lure_type.value
+        lure_type_index = self.lure_type_index
         timeout = Timer(20).start()
         while True:
             self.auto.take_screenshot()
@@ -160,7 +213,7 @@ class FishingModule:
         while True:
             self.auto.take_screenshot(crop=(1130 / 1920, 240 / 1080, 1500 / 1920, 570 / 1080), is_interval=False)
 
-            if config.ComboBox_fishing_mode.value == 0:
+            if self.fishing_mode == 0:
                 # blocks_num = self.count_yellow_blocks(self.auto.current_screenshot)
                 blocks_num = count_color_blocks(self.auto.current_screenshot, self.lower_yellow, self.upper_yellow)
                 if blocks_num >= 2:
@@ -209,7 +262,7 @@ class FishingModule:
             if self.auto.find_element('本次获得', 'text', crop=(835 / 1920, 288 / 1080, 1076 / 1920, 377 / 1080),
                                       is_log=self.is_log):
                 self.logger.info("钓鱼佬永不空军！")
-                if config.CheckBox_is_save_fish.value:
+                if self.save_fish:
                     save_flag = True
                     time.sleep(1)
                     continue
@@ -273,7 +326,7 @@ class FishingModule:
                                                      is_log=self.is_log,
                                                      is_screenshot=True, extract=[(222, 230, 236), 128])
         # 根据文本内容模糊匹配键盘按键
-        key_list = config.fish_key_list.value
+        key_list = self.fish_key_list
         try:
             text = text_results[0][0]
             best_match = process.extractOne(text, key_list)
@@ -281,7 +334,8 @@ class FishingModule:
             key = best_match[0]
             self.press_key = key
             signalBus.updateFishKey.emit(key)
-            config.set(config.LineEdit_fish_key, key)
+            if self.app_config is not None and hasattr(self.app_config, "set") and hasattr(self.app_config, "LineEdit_fish_key"):
+                self.app_config.set(getattr(self.app_config, "LineEdit_fish_key"), key)
         except Exception as e:
             self.logger.error(f"未识别出按键文字，请手动设置{e}")
             return False

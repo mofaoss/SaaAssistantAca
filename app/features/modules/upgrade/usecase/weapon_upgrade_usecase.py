@@ -21,7 +21,6 @@ import cv2
 import numpy as np
 
 from app.framework.core.module_system import module
-from app.framework.infra.config.app_config import config
 from app.framework.infra.automation.timer import Timer
 from app.features.utils.home_navigation import back_to_home
 
@@ -33,18 +32,17 @@ from app.features.utils.home_navigation import back_to_home
     host="periodic",
 )
 class WeaponUpgradeModule:
-    def __init__(self, auto, logger):
+    def __init__(self, auto, logger, isLog=True, enable_weapon_upgrade=True):
         self.auto = auto
         self.logger = logger
-        self.is_log = True
+        self.is_log = bool(isLog)
 
-        # 基准分辨率
+        # ?????
         self.base_w = 1280
         self.base_h = 720
 
-        # 读取用户的勾选状态
-        self.config_data = config.toDict()
-        self.enable_weapon_upgrade = self.config_data.get("enable_weapon_upgrade", True)
+        # ?????????
+        self.enable_weapon_upgrade = bool(enable_weapon_upgrade)
 
     def _roi(self, x, y, w, h):
         return (x / self.base_w, y / self.base_h, (x + w) / self.base_w, (y + h) / self.base_h)

@@ -99,6 +99,8 @@ class CheckResult:
 
 
 def _build_ctor_kwargs(cls: type) -> dict[str, Any]:
+    from app.framework.infra.config.app_config import config
+
     sig = inspect.signature(cls.__init__)
     kwargs: dict[str, Any] = {}
     for name, param in sig.parameters.items():
@@ -111,6 +113,11 @@ def _build_ctor_kwargs(cls: type) -> dict[str, Any]:
             kwargs[name] = DummyAuto()
         elif "logger" in lname or lname in {"log"}:
             kwargs[name] = DummyLogger()
+        elif name in {"config_provider", "app_config"}:
+            kwargs[name] = config
+        elif hasattr(config, name):
+            node = getattr(config, name)
+            kwargs[name] = getattr(node, "value", node)
         elif param.default is not inspect._empty:
             continue
         else:
@@ -120,8 +127,19 @@ def _build_ctor_kwargs(cls: type) -> dict[str, Any]:
 
 def _run_module_worker(module_path: str, class_name: str, queue: mp.Queue):
     try:
+        cls = None
         mod = importlib.import_module(module_path)
-        cls = getattr(mod, class_name)
+        cls = getattr(mod, class_name, None)
+        if cls is None:
+            # Fallback for dynamically generated adapter classes (declarative function modules).
+            from app.framework.application.modules import get_on_demand_module_specs, get_periodic_module_specs
+
+            for spec in [*get_periodic_module_specs(), *get_on_demand_module_specs(include_passive=True)]:
+                if spec.module_class is not None and spec.module_class.__name__ == class_name:
+                    cls = spec.module_class
+                    break
+        if cls is None:
+            raise AttributeError(f"module '{module_path}' has no attribute '{class_name}'")
         kwargs = _build_ctor_kwargs(cls)
         instance = cls(**kwargs)
 

@@ -1,20 +1,17 @@
 import cv2
 
 from app.framework.core.module_system import module
-from app.framework.infra.config.app_config import config
 from app.framework.core.task_engine.base_task import BaseTask
 
 
 class AutoFModule(BaseTask):
-    def __init__(self, auto, logger):
+    def __init__(self, auto, logger, isLog=False):
         super().__init__()
         self.auto = auto
         self.logger = logger
-
-        self.is_log = False
+        self.is_log = bool(isLog)
 
     def run(self):
-        self.is_log = config.isLog.value
         while True:
             self.auto.take_screenshot()
             if self.auto.find_element("app/features/assets/fishing/collect.png", "image",

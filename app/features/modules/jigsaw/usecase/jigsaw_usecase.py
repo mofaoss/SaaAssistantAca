@@ -1,6 +1,5 @@
 import copy
 
-from app.framework.infra.config.app_config import config
 from app.framework.infra.events.signal_bus import signalBus
 
 boards = {
@@ -228,10 +227,12 @@ pieces = [
 
 
 class JigsawModule:
-    def __init__(self, auto, logger):
+    def __init__(self, auto, logger, isLog=False, SpinBox_max_solutions=5, pieces_num=None):
         self.auto = auto
         self.logger = logger
-        self.is_log = False
+        self.is_log = bool(isLog)
+        self.max_solutions = int(SpinBox_max_solutions)
+        self.pieces_num_config = pieces_num or {}
         self.board_cols = None
         self.board_rows = None
         self.eight_piece_placed = None
@@ -250,29 +251,27 @@ class JigsawModule:
             "10": 0,
             "11": 0,
         }
-        self.piece_solution = []  # 存储已成功填满的方案
-        self.used_pieces = []  # 存储单次方案中已放置的块编号，以及它的旋转状态，放置位置
+        self.piece_solution = []  # ??????????
+        self.used_pieces = []  # ????????????????????????????
         self.piece_priority = []
-        self.solutions_score = [0] * config.SpinBox_max_solutions.value  # 存储每个方案的得分
-        self.board_top_left = []  # 拼图板左上角坐标
-        self.board_bottom_right = []  # 拼图板右下角坐标
+        self.solutions_score = [0] * self.max_solutions  # ?????????
+        self.board_top_left = []  # ????????
+        self.board_bottom_right = []  # ????????
 
     def run(self):
-        self.is_log = config.isLog.value
-
         for i in range(3):
             self.identify_board()
             if self.board:
                 self.update_pieces_num()
                 self.update_priority()
-                self.fill_board(config.SpinBox_max_solutions.value)
+                self.fill_board(self.max_solutions)
                 if self.piece_solution:
                     # best_solution = self.give_score_and_display_best()
                     self.give_score_and_display_best()
                     break
-                    # if len(self.piece_solution) < config.SpinBox_max_solutions.value:
+                    # if len(self.piece_solution) < self.max_solutions:
                     #     logger.warning(
-                    #         f'目前总共只有{len(self.piece_solution)}种能填满全部格子的方案，不足{config.SpinBox_max_solutions.value}')
+                    #         f'目前总共只有{len(self.piece_solution)}种能填满全部格子的方案，不足{self.max_solutions}')
                     # if self.place_jigsaw(best_solution):
                     #     if self.after_place():
                     #         if auto.click_element("继续", "text", include=True, max_retries=3, action="move_click"):
@@ -298,7 +297,7 @@ class JigsawModule:
         # 初始化
         self.piece_solution = []
         self.used_pieces = []
-        self.solutions_score = [0] * config.SpinBox_max_solutions.value
+        self.solutions_score = [0] * self.max_solutions
         self.board_bottom_right = []
         self.board_top_left = []
 
@@ -451,8 +450,7 @@ class JigsawModule:
         dfs(0)
 
     def update_pieces_num(self):
-        config_data = config.toDict()
-        piece_counts = config_data["pieces_num"]
+        piece_counts = self.pieces_num_config
         for key, value in piece_counts.items():
             piece_id = key.split("_")[-1]
             self.piece_counts[piece_id] = int(value)

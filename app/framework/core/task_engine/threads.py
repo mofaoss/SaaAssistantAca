@@ -1,5 +1,7 @@
 # coding:utf-8
+import inspect
 import sys
+import types
 from typing import Callable
 
 from PySide6.QtCore import QThread, Signal
@@ -26,6 +28,7 @@ class TaskQueueThread(QThread):
         task_registry: dict,
         *,
         home_sync: Callable[[object, object], bool] | None = None,
+        runtime_config=None,
         parent=None,
     ):
         super().__init__(parent)
@@ -33,6 +36,7 @@ class TaskQueueThread(QThread):
         self.logger = logger_instance
         self.task_registry = task_registry
         self.home_sync = home_sync or (lambda _auto, _logger: True)
+        self.runtime_config = runtime_config or config
         self.session = RuntimeAutomationSession(self.logger)
         self._is_running = True
         self._interrupted_reason = None
@@ -47,6 +51,59 @@ class TaskQueueThread(QThread):
                 self.session.stop()
             except Exception as e:
                 self.logger.warning(ui_text(f"停止自动任务时发生异常，已忽略：{e}", f"Exception occurred while stopping automatic task, ignored: {e}"))
+
+    @staticmethod
+    def _bind_runtime_config_to_module(module_class: type, runtime_config):
+        module_name = getattr(module_class, "__module__", "")
+        module_obj = sys.modules.get(module_name)
+        if isinstance(module_obj, types.ModuleType):
+            setattr(module_obj, "config", runtime_config)
+
+    @staticmethod
+    def _instantiate_module(module_class: type, auto, logger, runtime_config):
+        TaskQueueThread._bind_runtime_config_to_module(module_class, runtime_config)
+        try:
+            return module_class(**TaskQueueThread._build_ctor_kwargs(module_class, auto, logger, runtime_config))
+        except Exception:
+            # Fallback to legacy positional init style.
+            pass
+        return module_class(auto, logger)
+
+    @staticmethod
+    def _read_config_value(runtime_config, key: str):
+        if runtime_config is None:
+            return None
+        if not hasattr(runtime_config, key):
+            return None
+        raw = getattr(runtime_config, key)
+        return getattr(raw, "value", raw)
+
+    @staticmethod
+    def _build_ctor_kwargs(module_class: type, auto, logger, runtime_config) -> dict:
+        sig = inspect.signature(module_class)
+        kwargs = {}
+        for name, param in sig.parameters.items():
+            if name == "self":
+                continue
+            if name in {"auto", "automation"}:
+                kwargs[name] = auto
+                continue
+            if name == "logger":
+                kwargs[name] = logger
+                continue
+            if name in {"config_provider", "app_config"}:
+                kwargs[name] = runtime_config
+                continue
+
+            cfg_value = TaskQueueThread._read_config_value(runtime_config, name)
+            if cfg_value is not None:
+                kwargs[name] = cfg_value
+                continue
+            if param.default is not inspect._empty:
+                kwargs[name] = param.default
+                continue
+            kwargs[name] = None
+        return kwargs
 
     def run(self):
         self.is_running_signal.emit("start")
@@ -80,7 +137,7 @@ class TaskQueueThread(QThread):
 
                 if task_success:
                     module_class = meta["module_class"]
-                    module = module_class(auto, self.logger)
+                    module = self._instantiate_module(module_class, auto, self.logger, self.runtime_config)
                     module.run()
 
                     if requires_home_sync and self._is_running:
@@ -123,9 +180,10 @@ class ModuleTaskThread(QThread):
 
     is_running = Signal(bool)
 
-    def __init__(self, module, logger_instance):
+    def __init__(self, module, logger_instance, runtime_config=None):
         super().__init__()
         self.logger = logger_instance
+        self.runtime_config = runtime_config or config
         self.session = RuntimeAutomationSession(self.logger)
         self.module = None
         self._prepare_module(module)
@@ -133,6 +191,13 @@ class ModuleTaskThread(QThread):
     def _prepare_module(self, module):
         if not self.session.prepare():
             return
+        TaskQueueThread._bind_runtime_config_to_module(module, self.runtime_config)
+        try:
+            kwargs = TaskQueueThread._build_ctor_kwargs(module, self.session.auto, self.logger, self.runtime_config)
+            self.module = module(**kwargs)
+            return
+        except Exception:
+            pass
         self.module = module(self.session.auto, self.logger)
 
     def stop(self):

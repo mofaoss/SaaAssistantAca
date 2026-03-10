@@ -169,16 +169,15 @@ Recommended calling order:
 
 1. `auto.take_screenshot()`
 2. `auto.find_element(...)` to determine the state
-3. `auto.move_click(...)` / `auto.press_key(...)` to perform an action
+3. `auto.click_element(...)` or `auto.move_click(...)` / `auto.press_key(...)` to perform an action
 4. `Timer` for timeout fallback
 
 ## 5.2 Click Limitation (Very Important)
 
-In the current Snowbreak environment, all mouse clicks must use:
+In the current Snowbreak environment:
 
-- `auto.move_click(...)`
-
-Do not rely on `auto.click_element(...)` as the final click action.
+- `auto.mouse_click(...)` is ineffective and should not be used.
+- Valid click paths are `auto.click_element(...)` and `auto.move_click(...)`.
 
 ## 5.3 Config Reading
 

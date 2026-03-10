@@ -35,6 +35,12 @@ def build_module_kwargs(meta, global_config, runtime_context: dict):
             kwargs[name] = value
             continue
 
+        # Fallback: read from root config item by parameter name.
+        value, ok = _try_read_config_value(global_config, name)
+        if ok:
+            kwargs[name] = value
+            continue
+
         if param.default is not inspect._empty:
             kwargs[name] = param.default
             continue

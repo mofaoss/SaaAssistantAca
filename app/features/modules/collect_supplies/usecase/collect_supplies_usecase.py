@@ -1,11 +1,10 @@
-import time
+﻿import time
 from datetime import datetime
 
 from PySide6.QtCore import Qt
 from qfluentwidgets import InfoBar, InfoBarPosition
 
 from app.framework.ui.shared.text import ui_text
-from app.framework.infra.config.app_config import config
 from app.framework.infra.config.data_models import parse_config_update_data
 from app.features.utils.network import get_cloudflare_data
 from app.framework.infra.automation.timer import Timer
@@ -21,26 +20,49 @@ from app.framework.core.module_system import module
     host="periodic",
 )
 class CollectSuppliesModule:
-    def __init__(self, auto=None, logger=None, *, redeem_codes_usecase=None, redeem_codes_view=None):
+    def __init__(
+        self,
+        auto=None,
+        logger=None,
+        *,
+        app_config=None,
+        isLog=False,
+        CheckBox_mail=False,
+        CheckBox_fish_bait=False,
+        CheckBox_dormitory=False,
+        CheckBox_redeem_code=False,
+        update_data='',
+        used_codes=None,
+        import_codes=None,
+        redeem_codes_usecase=None,
+        redeem_codes_view=None,
+    ):
         self.auto = auto
         self.logger = logger
+        self.app_config = app_config
+        self.is_log = bool(isLog)
+        self.enable_mail = bool(CheckBox_mail)
+        self.enable_fish_bait = bool(CheckBox_fish_bait)
+        self.enable_dormitory = bool(CheckBox_dormitory)
+        self.enable_redeem_code = bool(CheckBox_redeem_code)
+        self.update_data = update_data
+        self.used_codes = list(used_codes or [])
+        self.import_codes = list(import_codes or [])
         self.redeem_codes_usecase = redeem_codes_usecase
         self.redeem_codes_view = redeem_codes_view
-        self.is_log = False
         super().__init__()
 
     def run(self):
-        self.is_log = config.isLog.value
         # 确保在主页面
         back_to_home(self.auto, self.logger)
 
-        if config.CheckBox_mail.value:
+        if self.enable_mail:
             self.receive_mail()
-        if config.CheckBox_fish_bait.value:
+        if self.enable_fish_bait:
             self.receive_fish_bait()
-        if config.CheckBox_dormitory.value:
+        if self.enable_dormitory:
             self.receive_dormitory()
-        if config.CheckBox_redeem_code.value:
+        if self.enable_redeem_code:
             self.redeem_code()
 
         self.friends_power()
@@ -273,18 +295,18 @@ class CollectSuppliesModule:
             active_codes = []
 
             # 检查配置数据是否存在且格式正确
-            config_data = parse_config_update_data(config.update_data.value)
+            config_data = parse_config_update_data(self.update_data)
             if not config_data:
                 self.logger.warning("配置数据为空或格式不正确，无法获取兑换码")
                 return active_codes
 
-            used_codes = config.used_codes.value or []  # 确保不为None
+            used_codes = self.used_codes or []  # 确保不为None
 
             for code in config_data.data.redeemCodes:
                 # 如果没被使用过才加入兑换
                 if code.code not in used_codes:
                     active_codes.append(code.code)
-            import_codes = config.import_codes.value or []  # 确保不为None
+            import_codes = self.import_codes or []  # 确保不为None
             # 加入用户导入
             for code in import_codes:
                 if code not in used_codes:
@@ -322,10 +344,12 @@ class CollectSuppliesModule:
                                            is_log=self.is_log):
                     break
                 # 加入已使用的兑换码列表
-                old_used_codes = config.used_codes.value or []
+                old_used_codes = self.used_codes or []
                 new_used_codes = old_used_codes.copy()
                 new_used_codes.append(codes[index])
-                config.set(config.used_codes, new_used_codes)
+                self.used_codes = new_used_codes
+                if self.app_config is not None and hasattr(self.app_config, "used_codes"):
+                    self.app_config.set(self.app_config.used_codes, new_used_codes)
                 index += 1
                 time.sleep(1)
                 continue

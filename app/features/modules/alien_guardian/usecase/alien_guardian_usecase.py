@@ -1,6 +1,5 @@
 import time
 
-from app.framework.infra.config.app_config import config
 from app.framework.infra.automation.timer import Timer
 
 from app.framework.core.module_system import module
@@ -13,9 +12,10 @@ from app.framework.core.module_system import module
     host="on_demand",
 )
 class AlienGuardianModule:
-    def __init__(self, auto, logger):
+    def __init__(self, auto, logger, ComboBox_mode=0):
         self.auto = auto
         self.logger = logger
+        self.mode = int(ComboBox_mode)
         self.priority = [
             # 优先的伙伴
             "零度射线",
@@ -40,7 +40,7 @@ class AlienGuardianModule:
     def run(self):
         # self.select_friends()
         # 无尽模式
-        if config.ComboBox_mode.value == 0:
+        if self.mode == 0:
             self.fight_endless()
         # 闯关模式
         else:

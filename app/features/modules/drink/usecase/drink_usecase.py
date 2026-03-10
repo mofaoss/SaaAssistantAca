@@ -1,6 +1,5 @@
 import time
 
-from app.framework.infra.config.app_config import config
 from app.features.utils.randoms import random_rectangle_point
 from app.framework.infra.automation.timer import Timer
 
@@ -14,23 +13,26 @@ from app.framework.core.module_system import module
     host="on_demand",
 )
 class DrinkModule:
-    def __init__(self, auto, logger):
+    def __init__(
+        self,
+        auto,
+        logger,
+        isLog=False,
+        SpinBox_drink_times=1,
+        ComboBox_card_mode=0,
+        CheckBox_is_speed_up=False,
+    ):
         super().__init__()
-        self.mode = None
-        self.drink_times = None
+        self.mode = int(ComboBox_card_mode)
+        self.drink_times = int(SpinBox_drink_times)
         self.auto = auto
         self.logger = logger
         self.enter_success = False
         self.select_list = ['分析员', '析员', '天降鸿运', '多喝热水']
-        self.is_speed_up = None
-
-        self.is_log = False
+        self.is_speed_up = bool(CheckBox_is_speed_up)
+        self.is_log = bool(isLog)
 
     def run(self):
-        self.is_log = config.isLog.value
-        self.drink_times = config.SpinBox_drink_times.value
-        self.mode = config.ComboBox_card_mode.value
-        self.is_speed_up = config.CheckBox_is_speed_up.value
         self.enter_drink()
         if self.enter_success:
             if self.drink_times == -1:
@@ -92,7 +94,7 @@ class DrinkModule:
             if not enter_select:
                 if self.auto.find_element("奖励", 'text', crop=(2014 / 2560, 1327 / 1440, 2099 / 2560, 1379 / 1440),
                                           is_log=self.is_log):
-                    mode = config.ComboBox_card_mode.value
+                    mode = self.mode
                     if mode == 1:
                         pos = random_rectangle_point(((int(882 / self.auto.scale_x), int(380 / self.auto.scale_y)),
                                                       (int(1000 / self.auto.scale_x), int(415 / self.auto.scale_y))),

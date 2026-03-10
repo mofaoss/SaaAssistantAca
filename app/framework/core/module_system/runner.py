@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import sys
 
 from app.framework.core.module_system.injector import build_module_kwargs
 
@@ -39,9 +40,12 @@ def make_module_class(meta):
             runtime_context = {
                 "automation": self.auto,
                 "logger": self.logger,
+                "app_config": config,
+                "config_provider": config,
             }
             run_module(meta, config, runtime_context)
 
     FunctionModuleAdapter.__name__ = f"{meta.id.title().replace('_', '')}ModuleAdapter"
+    setattr(sys.modules[__name__], FunctionModuleAdapter.__name__, FunctionModuleAdapter)
     meta.generated_module_class = FunctionModuleAdapter
     return FunctionModuleAdapter

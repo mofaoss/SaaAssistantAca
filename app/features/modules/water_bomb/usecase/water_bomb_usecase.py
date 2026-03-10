@@ -2,7 +2,6 @@ import time
 
 import cv2
 
-from app.framework.infra.config.app_config import config
 from app.framework.infra.automation.timer import Timer
 from app.features.modules.water_bomb.decision import Round, Status
 
@@ -16,11 +15,19 @@ from app.framework.core.module_system import module
     host="on_demand",
 )
 class WaterBombModule:
-    def __init__(self, auto, logger):
+    def __init__(
+        self,
+        auto,
+        logger,
+        Slider_count_threshold=70,
+        Slider_template_threshold=70,
+        SpinBox_water_win_times=1,
+        isLog=False,
+    ):
         self.auto = auto
         self.logger = logger
-        self.is_log = False
-        self.end_win = 1
+        self.is_log = bool(isLog)
+        self.end_win = int(SpinBox_water_win_times)
         self.current_win = 0
         self.max_hp = 2  # 最大生命上限
         self.current_player_hp = 2  # 我方hp
@@ -53,17 +60,12 @@ class WaterBombModule:
         self.special_items = ['reset_hammer', 'hand_of_kaito']
         self.shoot_action = ['shoot_enemy', 'shoot_self']
 
-        self.count_threshold = 0.7
-        self.template_threshold = 0.7
+        self.count_threshold = float(Slider_count_threshold) / 100
+        self.template_threshold = float(Slider_template_threshold) / 100
 
         self.round_fight = Round()
 
     def run(self):
-        self.count_threshold = config.Slider_count_threshold.value / 100
-        self.template_threshold = config.Slider_template_threshold.value / 100
-        self.end_win = config.SpinBox_water_win_times.value
-        self.is_log = config.isLog.value
-
         self.enter_and_start()
         self.fight()
 

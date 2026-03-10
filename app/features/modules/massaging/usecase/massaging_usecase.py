@@ -1,6 +1,5 @@
 import time
 
-from app.framework.infra.config.app_config import config
 from app.framework.infra.automation.timer import Timer
 
 from app.framework.core.module_system import module
@@ -13,15 +12,14 @@ from app.framework.core.module_system import module
 #     host="on_demand",
 # )
 class MassagingModule:
-    def __init__(self, auto, logger):
+    def __init__(self, auto, logger, isLog=False, ComboBox_wife=0):
         super().__init__()
         self.auto = auto
         self.logger = logger
-
-        self.is_log = False
+        self.is_log = bool(isLog)
+        self.wife_num = int(ComboBox_wife)
 
     def run(self):
-        self.is_log = config.isLog.value
         # self.enter_massaging()
         self.start_massaging()
 
@@ -45,7 +43,7 @@ class MassagingModule:
 
             if self.auto.find_element('管理本', 'text', crop=(86 / 2560, 50 / 1440, 410 / 2560, 110 / 1440),
                                       is_log=self.is_log):
-                wife_num = config.ComboBox_wife.value
+                wife_num = self.wife_num
                 click_pos = (
                     int((wife_pos[0] + 370 * wife_num) / self.auto.scale_x), int(wife_pos[1] / self.auto.scale_y))
                 self.auto.click_element_with_pos(click_pos)

@@ -1,6 +1,5 @@
 import time
 
-from app.framework.infra.config.app_config import config
 from app.framework.infra.config.app_config import is_non_chinese_ui_language
 from app.features.modules.shopping.item_constants import (
     get_item_key_to_name_map,
@@ -21,25 +20,32 @@ from app.framework.core.module_system import module
     host="periodic",
 )
 class ShoppingModule:
-    def __init__(self, auto, logger):
+    def __init__(
+        self,
+        auto,
+        logger,
+        isLog=False,
+        home_interface_shopping=None,
+        home_interface_shopping_person=None,
+        home_interface_shopping_weapon=None,
+    ):
         self.auto = auto
         self.logger = logger
         self.is_non_chinese_ui = is_non_chinese_ui_language()
-        self.is_log = False
-        self.config_data = config.toDict()
-        self.commodity_dic = self.config_data["home_interface_shopping"]
-        self.person_dic = self.config_data["home_interface_shopping_person"]
-        self.weapon_dic = self.config_data["home_interface_shopping_weapon"]
+        self.is_log = bool(isLog)
+        self.commodity_dic = home_interface_shopping or {}
+        self.person_dic = home_interface_shopping_person or {}
+        self.weapon_dic = home_interface_shopping_weapon or {}
 
-        # 统一从 constants 获取数据，避免硬编码
+        # ??? constants ??????????
         person_map, weapon_map = get_item_key_to_name_map(is_non_chinese=False)
         self.person_dic_re_zh = person_map
         self.weapon_dic_re_zh = weapon_map
 
-        # 商城物品同样从 constants 获取
+        # ??????? constants ??
         self.name_dic_zh = get_shop_item_key_to_name_map(is_non_chinese=False)
 
-        # 用于UI显示的多语言映射
+        # ??UI????????
         self.target_to_display = get_shop_item_zh_name_to_display_name_map(self.is_non_chinese_ui)
 
         self.scroll_fallback_points = [
@@ -53,7 +59,6 @@ class ShoppingModule:
         return en_text if self.is_non_chinese_ui else zh_text
 
     def run(self):
-        self.is_log = config.isLog.value
         back_to_home(self.auto, self.logger)
         self.open_store()
         self.buy()

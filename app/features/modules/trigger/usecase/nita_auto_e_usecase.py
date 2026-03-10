@@ -1,18 +1,16 @@
 import time
 import numpy as np
 
-from app.framework.infra.config.app_config import config
 from app.framework.infra.vision.vision import count_color_blocks
 from app.framework.core.task_engine.base_task import BaseTask
 
 
 class NitaAutoEModule(BaseTask):
-    def __init__(self, auto, logger):
+    def __init__(self, auto, logger, isLog=False):
         super().__init__()
         self.auto = auto
         self.logger = logger
-
-        self.is_log = False
+        self.is_log = bool(isLog)
         self.upper_blue = np.array([109, 170, 255])
         self.lower_blue = np.array([104, 85, 200])
 
@@ -20,7 +18,6 @@ class NitaAutoEModule(BaseTask):
         self.lower_green = np.array([27, 102, 175])
 
     def run(self):
-        self.is_log = config.isLog.value
         while True:
             self.auto.take_screenshot()
             if self.auto.find_element("12", "text", is_log=self.is_log,

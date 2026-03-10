@@ -4,6 +4,7 @@ from __future__ import annotations
 from app.framework.core.module_system import discover_modules
 from app.framework.core.interfaces.main_window_bridge import MainWindowFeatureBridge
 from app.framework.core.task_engine.threads import ModuleTaskThread
+from app.framework.infra.config.app_config import config
 from app.framework.ui.views.on_demand_tasks_page import OnDemandTasksPage
 from app.framework.ui.views.periodic_tasks_page import PeriodicTasksPage
 
@@ -36,7 +37,7 @@ class SnowbreakMainWindowBridge(MainWindowFeatureBridge):
         discover_modules("app.features.modules")
 
     def create_home_interface(self, window):
-        enter_game_service = EnterGameService(window._is_non_chinese_ui)
+        enter_game_service = EnterGameService(window._is_non_chinese_ui, app_config=config)
         return PeriodicTasksPage(
             "Periodic Tasks",
             window,

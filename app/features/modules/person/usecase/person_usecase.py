@@ -2,7 +2,6 @@ import math
 import re
 import time
 
-from app.framework.infra.config.app_config import config
 from app.framework.infra.automation.timer import Timer
 from app.features.utils.home_navigation import back_to_home
 
@@ -16,21 +15,31 @@ from app.framework.core.module_system import module
     host="periodic",
 )
 class PersonModule:
-    def __init__(self, auto, logger):
+    def __init__(
+        self,
+        auto,
+        logger,
+        isLog=False,
+        all_characters=0,
+        CheckBox_is_use_chip=False,
+        home_interface_person=None,
+    ):
         self.auto = auto
         self.logger = logger
         self.power_times = None
-        self.config_data = config.toDict()
-        self.select_person_dic = self.config_data["home_interface_person"]
-        self.character_list = [self.select_person_dic["LineEdit_c1"], self.select_person_dic["LineEdit_c2"],
-                               self.select_person_dic["LineEdit_c3"], self.select_person_dic["LineEdit_c4"]]
-        all_characters = config.all_characters.value
-        self.pages = math.ceil(all_characters / 4) + 1
+        self.select_person_dic = home_interface_person or {}
+        self.character_list = [
+            self.select_person_dic.get("LineEdit_c1", ""),
+            self.select_person_dic.get("LineEdit_c2", ""),
+            self.select_person_dic.get("LineEdit_c3", ""),
+            self.select_person_dic.get("LineEdit_c4", ""),
+        ]
+        self.pages = math.ceil(int(all_characters) / 4) + 1
+        self.use_chip_enabled = bool(CheckBox_is_use_chip)
         self.no_chip = False
-        self.is_log = False
+        self.is_log = bool(isLog)
 
     def run(self):
-        self.is_log = config.isLog.value
         back_to_home(self.auto, self.logger)
         self.enter_person()
         for character in self.character_list:
@@ -107,7 +116,7 @@ class PersonModule:
             # 先尝试使用记忆嵌片
             self.update_power_times()
             # 如果没有嵌片，则尝试使用
-            if self.power_times == 0 and config.CheckBox_is_use_chip.value:
+            if self.power_times == 0 and self.use_chip_enabled:
                 if not self.use_chip():
                     # 没有记忆嵌片
                     if self.no_chip:

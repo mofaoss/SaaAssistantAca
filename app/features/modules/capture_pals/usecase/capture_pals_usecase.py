@@ -2,7 +2,6 @@ import time
 from dataclasses import dataclass
 
 import cv2
-from app.framework.infra.config.app_config import config
 from app.framework.infra.automation.timer import Timer
 
 from app.framework.core.module_system import module
@@ -50,12 +49,34 @@ class CapturePalsModule:
     _RETRY_PER_ACTION = 5
     _DEFAULT_TICK = 0.2
 
-    def __init__(self, auto, logger):
+    def __init__(
+        self,
+        auto,
+        logger,
+        isLog=False,
+        CheckBox_capture_pals_partner=True,
+        CheckBox_capture_pals_adventure=True,
+        CheckBox_capture_pals_sync=False,
+        SpinBox_capture_pals_partner_fixed_interval=35.0,
+        SpinBox_capture_pals_partner_patrol_interval=2.0,
+        SpinBox_capture_pals_adventure_fixed_interval=300.0,
+        SpinBox_capture_pals_adventure_patrol_interval=1200.0,
+        ComboBox_capture_pals_partner_mode=0,
+        ComboBox_capture_pals_adventure_mode=0,
+    ):
         self.auto = auto
         self.logger = logger
-
-        self.is_log = False
+        self.is_log = bool(isLog)
         self.stop_requested = False
+        self.enable_partner = bool(CheckBox_capture_pals_partner)
+        self.enable_adventure = bool(CheckBox_capture_pals_adventure)
+        self.sync_enabled = bool(CheckBox_capture_pals_sync)
+        self.partner_fixed_interval = float(SpinBox_capture_pals_partner_fixed_interval)
+        self.partner_patrol_interval = float(SpinBox_capture_pals_partner_patrol_interval)
+        self.adventure_fixed_interval = float(SpinBox_capture_pals_adventure_fixed_interval)
+        self.adventure_patrol_interval = float(SpinBox_capture_pals_adventure_patrol_interval)
+        self.partner_mode = int(ComboBox_capture_pals_partner_mode)
+        self.adventure_mode = int(ComboBox_capture_pals_adventure_mode)
 
         # ===== collect =====
         self.collect_image = "app/features/assets/fishing/collect.png"
@@ -179,8 +200,6 @@ class CapturePalsModule:
     # 入口
     # =========================================================
     def run(self):
-        self.is_log = config.isLog.value
-
         state = self.wait_for_start_page(timeout_sec=120.0)
         if state == "TIMEOUT":
             self.logger.error("启动失败：超时仍未检测到初始页面。请手动进入抓帕鲁选岛页面或进入地图后再启动。")
@@ -192,21 +211,21 @@ class CapturePalsModule:
                 self.logger.error("已在地图内但退出失败，请检查退出按钮图片/确认按钮crop")
                 return
 
-        enable_partner = config.CheckBox_capture_pals_partner.value
-        enable_adventure = config.CheckBox_capture_pals_adventure.value
-        sync_enabled = config.CheckBox_capture_pals_sync.value
+        enable_partner = self.enable_partner
+        enable_adventure = self.enable_adventure
+        sync_enabled = self.sync_enabled
 
-        self.partner_profile.fixed_interval_sec = float(config.SpinBox_capture_pals_partner_fixed_interval.value)
-        self.partner_profile.patrol_refresh_interval_sec = float(config.SpinBox_capture_pals_partner_patrol_interval.value)
-        self.adventure_profile.fixed_interval_sec = float(config.SpinBox_capture_pals_adventure_fixed_interval.value)
-        self.adventure_profile.patrol_refresh_interval_sec = float(config.SpinBox_capture_pals_adventure_patrol_interval.value)
+        self.partner_profile.fixed_interval_sec = self.partner_fixed_interval
+        self.partner_profile.patrol_refresh_interval_sec = self.partner_patrol_interval
+        self.adventure_profile.fixed_interval_sec = self.adventure_fixed_interval
+        self.adventure_profile.patrol_refresh_interval_sec = self.adventure_patrol_interval
 
         if not enable_partner and not enable_adventure:
             self.logger.error("未选择任何岛屿，无法开始抓帕鲁")
             return
 
-        partner_mode = int(config.ComboBox_capture_pals_partner_mode.value) if enable_partner else 0
-        adventure_mode = int(config.ComboBox_capture_pals_adventure_mode.value) if enable_adventure else 0
+        partner_mode = self.partner_mode if enable_partner else 0
+        adventure_mode = self.adventure_mode if enable_adventure else 0
 
         if sync_enabled and enable_partner and enable_adventure:
             self.logger.info("启用：同步抓帕鲁（两岛独立模式 + 到上限后自动只刷未完成岛）")

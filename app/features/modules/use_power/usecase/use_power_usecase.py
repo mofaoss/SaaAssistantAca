@@ -4,7 +4,6 @@ from pathlib import Path
 
 import win32gui
 
-from app.framework.infra.config.app_config import config
 from app.framework.infra.config.data_models import parse_config_update_data
 from app.features.utils.randoms import random_rectangle_point
 from app.framework.infra.automation.timer import Timer
@@ -20,22 +19,36 @@ from app.framework.core.module_system import module
     host="periodic",
 )
 class UsePowerModule:
-    def __init__(self, auto, logger):
+    def __init__(
+        self,
+        auto,
+        logger,
+        isLog=False,
+        CheckBox_is_use_power=False,
+        ComboBox_power_day=0,
+        ComboBox_power_usage=0,
+        update_data='',
+        task_name='',
+    ):
         self.auto = auto
         self.logger = logger
         self.day_num = 0
-        self.is_log = False
+        self.is_log = bool(isLog)
+        self.use_power_enabled = bool(CheckBox_is_use_power)
+        self.power_day = int(ComboBox_power_day)
+        self.power_usage = int(ComboBox_power_usage)
+        self.update_data = update_data
+        self.task_name = task_name
 
     def run(self):
-        self.is_log = config.isLog.value
 
         back_to_home(self.auto, self.logger)
-        if config.CheckBox_is_use_power.value:
-            self.day_num = config.ComboBox_power_day.value + 1
+        if self.use_power_enabled:
+            self.day_num = self.power_day + 1
             self.check_power()
-        if config.ComboBox_power_usage.value == 0:
+        if self.power_usage == 0:
             self.by_maneuver()
-        elif config.ComboBox_power_usage.value == 1:
+        elif self.power_usage == 1:
             self.by_routine_logistics()
             self.by_maneuver(only_collect=True)
 
@@ -46,7 +59,7 @@ class UsePowerModule:
         :param name: "stuff" or "chasm"
         :return: (x,y)
         """
-        config_data = parse_config_update_data(config.update_data.value)
+        config_data = parse_config_update_data(self.update_data)
         if not config_data:
             self.logger.error("配置数据为空或格式不正确")
             return None, None
@@ -198,7 +211,7 @@ class UsePowerModule:
     def wait_activity_task_tab(self, timeout_seconds=10):
         """等待活动页面任务入口稳定显示"""
         timeout_animation = Timer(timeout_seconds).start()
-        task_name = config.task_name.value
+        task_name = self.task_name
         while True:
             self.auto.take_screenshot()
             if task_name and self.auto.find_element(task_name, 'text', crop=(0, 1280 / 1440, 1, 1),
@@ -226,7 +239,7 @@ class UsePowerModule:
 
     def open_activity_reward_page(self, max_attempts=3):
         """打开活动任务奖励页面并确认进入，失败时自动重试"""
-        task_name = config.task_name.value
+        task_name = self.task_name
         for attempt in range(1, max_attempts + 1):
             self.auto.take_screenshot()
             in_home = self.is_in_home()
@@ -285,7 +298,7 @@ class UsePowerModule:
         enter_maneuver_flag = False  # 是否进入活动页面
         reward_status_logged = False
 
-        config_data = parse_config_update_data(config.update_data.value)
+        config_data = parse_config_update_data(self.update_data)
         if not config_data:
             self.logger.error("配置数据为空或格式不正确")
             return
@@ -394,7 +407,7 @@ class UsePowerModule:
                         if not self.auto.find_element('领取', 'text', crop=(0, 937 / 1080, 266 / 1920, 1),
                                                       is_log=self.is_log):
                             break
-                    task_name = config.task_name.value
+                    task_name = self.task_name
                     clicked_task = self.auto.click_element('任务', 'text', crop=(0, 1280 / 1440, 1, 1),
                                                           is_log=self.is_log)
                     if not clicked_task and task_name:
