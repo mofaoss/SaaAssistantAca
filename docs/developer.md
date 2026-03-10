@@ -1,4 +1,4 @@
-# SAA 开发者手册（当前架构版）
+﻿# SAA 开发者手册（当前架构版）
 
 > English 文档仍可参考 `docs/developer_en.md`，但本文件优先代表当前代码现状。
 
@@ -229,7 +229,7 @@ app/features/modules/<module_name>/
 ```bash
 python -m compileall app
 python scripts/smoke_modules.py
-python scripts/smoke_release.py
+python scripts/release_preflight.py --startup-seconds 8 --no-report
 ```
 
 PR 描述建议包含：

@@ -101,6 +101,22 @@
 >
 > SAA文档站:https://saadocs.netlify.app/ (部分过时)
 
+### 🔧开发者 i18n 自动化
+
+为减少学习成本，项目已内置 i18n 自动检查流程。开发者只需要写 `_()`，建议执行一次：
+
+```bash
+python scripts/install_git_hooks.py
+```
+
+启用后每次 `git commit` 会自动执行：
+
+```bash
+python scripts/i18n_check.py
+```
+
+仓库 CI 也会在 PR/Push 时自动运行同样的 i18n 校验。
+
 
 ### ✨ 运行
 

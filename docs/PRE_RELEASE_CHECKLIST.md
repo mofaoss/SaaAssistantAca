@@ -1,4 +1,4 @@
-# Pre-Release Checklist
+﻿# Pre-Release Checklist
 
 ## Architecture
 - [ ] No references to legacy `app/common/*`
@@ -11,9 +11,9 @@
 - [ ] No unresolved imports in touched modules
 
 ## Runtime Smoke
-- [ ] `python scripts/release_cleanup_pack.py` passes
+- [ ] `python scripts/release_preflight.py --clean` passes
 - [ ] Report exists: `release/preflight_report.md`
-- [ ] `python scripts/smoke_release.py` passes (optional secondary check)
+- [ ] `python scripts/release_preflight.py --startup-seconds 8 --no-report` passes (optional secondary check)
 
 ## Manual Sanity
 - [ ] Main window opens

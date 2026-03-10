@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # coding:utf-8
 from __future__ import annotations
 
@@ -37,32 +37,24 @@ def run(cmd: list[str], timeout: int = 180) -> tuple[int, str, str]:
 def remove_path(path: Path) -> str:
     if not path.exists():
         return f"skip: `{path.relative_to(ROOT)}` not found"
-
     if path.is_dir():
         shutil.rmtree(path, ignore_errors=True)
         return f"removed dir: `{path.relative_to(ROOT)}`"
-
     path.unlink(missing_ok=True)
     return f"removed file: `{path.relative_to(ROOT)}`"
 
 
 def clean_workspace(clean_logs: bool) -> list[str]:
     actions: list[str] = []
-
-    for p in TARGET_DIRS:
-        actions.append(remove_path(p))
-
+    for path in TARGET_DIRS:
+        actions.append(remove_path(path))
     for pycache in ROOT.rglob("__pycache__"):
         actions.append(remove_path(pycache))
-
     for pyc in ROOT.rglob("*.pyc"):
         actions.append(remove_path(pyc))
-
     if clean_logs:
-        log_dir = ROOT / "runtime" / "log"
-        actions.append(remove_path(log_dir))
+        actions.append(remove_path(ROOT / "runtime" / "log"))
         actions.append(remove_path(ROOT / "runtime" / "appdata" / "crash.log"))
-
     return actions
 
 
@@ -71,7 +63,8 @@ def compile_checks() -> tuple[bool, list[str]]:
 
     code, out, err = run([sys.executable, "-m", "compileall", "app"], timeout=240)
     outputs.append("`python -m compileall app`")
-    outputs.append(out.strip())
+    if out.strip():
+        outputs.append(out.strip())
     if err.strip():
         outputs.append(err.strip())
     if code != 0:
@@ -98,7 +91,6 @@ def runtime_check(startup_seconds: int) -> tuple[bool, list[str]]:
         stderr=subprocess.PIPE,
         text=True,
     )
-
     try:
         time.sleep(startup_seconds)
         code = proc.poll()
@@ -106,14 +98,18 @@ def runtime_check(startup_seconds: int) -> tuple[bool, list[str]]:
 
         if "Traceback" in out or "Traceback" in err:
             outputs.append("runtime traceback detected")
-            outputs.append(out.strip())
-            outputs.append(err.strip())
+            if out.strip():
+                outputs.append(out.strip())
+            if err.strip():
+                outputs.append(err.strip())
             return False, outputs
 
         if code is not None and code != 0:
             outputs.append(f"`python SAA.py` exited with non-zero code: {code}")
-            outputs.append(out.strip())
-            outputs.append(err.strip())
+            if out.strip():
+                outputs.append(out.strip())
+            if err.strip():
+                outputs.append(err.strip())
             return False, outputs
 
         outputs.append(f"`python SAA.py` startup smoke passed ({startup_seconds}s)")
@@ -156,19 +152,25 @@ def write_report(clean_actions: list[str], compile_logs: list[str], runtime_logs
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Pre-release cleanup pack for SaaAssistantAca")
-    parser.add_argument("--clean-logs", action="store_true", help="remove `log/` and `crash.log`")
-    parser.add_argument("--startup-seconds", type=int, default=10, help="seconds to wait for SAA.py startup smoke")
+    parser = argparse.ArgumentParser(description="Unified release preflight checks")
+    parser.add_argument("--clean", action="store_true", help="clean build artifacts and caches before checks")
+    parser.add_argument("--clean-logs", action="store_true", help="also remove runtime logs when --clean is enabled")
+    parser.add_argument("--startup-seconds", type=int, default=10, help="seconds to wait for startup smoke")
+    parser.add_argument("--no-report", action="store_true", help="skip writing markdown report")
     args = parser.parse_args()
 
-    clean_actions = clean_workspace(clean_logs=args.clean_logs)
+    clean_actions: list[str] = []
+    if args.clean:
+        clean_actions = clean_workspace(clean_logs=args.clean_logs)
+
     compile_ok, compile_logs = compile_checks()
     runtime_ok, runtime_logs = runtime_check(startup_seconds=max(3, args.startup_seconds))
     ok = compile_ok and runtime_ok
 
-    write_report(clean_actions, compile_logs, runtime_logs, ok)
+    if not args.no_report:
+        write_report(clean_actions, compile_logs, runtime_logs, ok)
+        print(f"Report: {REPORT_FILE}")
 
-    print(f"Report: {REPORT_FILE}")
     print(f"Result: {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1
 

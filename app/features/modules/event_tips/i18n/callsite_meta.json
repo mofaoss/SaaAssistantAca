@@ -161,6 +161,27 @@
     "col": 31,
     "context": "log"
   },
+  "app/features/modules/event_tips/usecase/event_tips_usecase.py:244:31": {
+    "kind": "dynamic_template",
+    "key": "module.event_tips.log.error_occurred_while_updating_controls_e",
+    "msgid": "error_occurred_while_updating_controls_e",
+    "source_template": "Error occurred while updating controls: {e}",
+    "fields": [
+      "e"
+    ],
+    "field_details": {
+      "e": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "module",
+    "owner_module": "event_tips",
+    "file_path": "app/features/modules/event_tips/usecase/event_tips_usecase.py",
+    "line": 244,
+    "col": 31,
+    "context": "log"
+  },
   "app/features/modules/event_tips/usecase/event_tips_usecase.py:39:18": {
     "kind": "static_literal",
     "key": "module.event_tips.ui.status_finished",

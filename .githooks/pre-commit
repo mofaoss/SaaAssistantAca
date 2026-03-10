@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+# Auto-run i18n pipeline checks before each commit.
+set -eu
+
+PYTHON_BIN="${PYTHON:-python}"
+
+echo "[pre-commit] running i18n_check.py ..."
+"$PYTHON_BIN" scripts/i18n_check.py
+
+echo "[pre-commit] i18n check passed."

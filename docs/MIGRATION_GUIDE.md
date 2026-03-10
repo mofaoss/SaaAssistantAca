@@ -1,4 +1,4 @@
-# Migration Guide (No Compatibility Track)
+﻿# Migration Guide (No Compatibility Track)
 
 ## Removed Legacy Layout
 - `app/view` -> `app/presentation/views`
@@ -50,5 +50,5 @@
 ## Verification Commands
 - `python -m compileall app`
 - `python -m py_compile SAA.py`
-- `python scripts/smoke_release.py`
-- `python scripts/release_cleanup_pack.py`
+- `python scripts/release_preflight.py --startup-seconds 8 --no-report`
+- `python scripts/release_preflight.py --clean`

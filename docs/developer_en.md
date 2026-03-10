@@ -1,4 +1,4 @@
-# SAA Developer Guide (Current Architecture)
+﻿# SAA Developer Guide (Current Architecture)
 
 > The Chinese document `docs/developer.md` takes precedence in representing the current state of the code.
 
@@ -229,7 +229,7 @@ Run at least:
 ```bash
 python -m compileall app
 python scripts/smoke_modules.py
-python scripts/smoke_release.py
+python scripts/release_preflight.py --startup-seconds 8 --no-report
 ```
 
 Must satisfy:
