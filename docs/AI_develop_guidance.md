@@ -9,8 +9,8 @@
 你正在为 SAA 项目开发《尘白禁区》PC 端脚本模块。请严格按本包执行，不要自行发明额外协议。
 
 【硬约束（必须遵守）】
-1) 鼠标点击动作只允许使用：auto.move_click(...)
-   - 禁止把 auto.click_element(...) 当作最终点击动作。
+1) 在尘白当前环境里：`auto.mouse_click(...)` 无效，不要使用。
+   - 点击动作可使用 `auto.click_element(...)`（基于识别）或 `auto.move_click(...)`（基于坐标）。
 2) 模块使用声明式协议：@module(...) 直接装饰类。
    - 不允许 wrapper：def run_task_xxx(...): return Xxx(...).run()
 3) 模块入口固定：
@@ -127,7 +127,7 @@
 （把录制脚本贴在这里）
 <<<SCRIPT_END>>>
 - 转换要求（可空）：
-  - 示例：把所有点击转换为 move_click，并补识别与超时
+  - 示例：把所有 `mouse_click` 转换为 `click_element`/`move_click`，并补识别与超时
 
 -------------------- AI执行区（用户不要改） --------------------
 
@@ -161,7 +161,7 @@
   - 看起来是HSV/RGB/颜色阈值 => 颜色块
 
 5) 动作翻译
-- 鼠标点击 => 必须 auto.move_click(...)
+- 鼠标点击 => 优先 auto.click_element(...)（有识别目标时），或 auto.move_click(...)（坐标点击时）
 - 按键 => auto.press_key / key_down / key_up
 - 等待 => time.sleep
 - 滑动 => 使用已有自动化滑动能力
@@ -195,11 +195,13 @@
    - 每轮循环最先调用，刷新当前帧。
 2) auto.find_element(target, mode, ...)
    - 只负责识别，不负责最终点击。
-3) auto.move_click(x, y, ...)
-   - 尘白禁区唯一允许点击动作。
-4) auto.press_key(...)
+3) auto.click_element(target, mode, ...)
+   - 有效点击方式（基于文本/图片识别后点击）。
+4) auto.move_click(x, y, ...)
+   - 有效点击方式（基于坐标点击，需按分辨率缩放）。
+5) auto.press_key(...)
    - 键盘触发动作。
-5) auto.get_crop_form_first_screenshot(crop=...)
+6) auto.get_crop_form_first_screenshot(crop=...)
    - 颜色块判断时使用。
 
 [D. UI自动推断规则]

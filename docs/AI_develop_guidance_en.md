@@ -10,8 +10,8 @@ You are implementing a PC automation module for "Snowbreak: Containment Zone" in
 Follow this packet strictly. Do not invent extra protocols.
 
 [Hard Constraints - Mandatory]
-1) Mouse click actions must use: auto.move_click(...)
-   - Do NOT use auto.click_element(...) as the final click action.
+1) In current Snowbreak runtime, `auto.mouse_click(...)` is ineffective. Do not use it.
+   - Valid click actions are `auto.click_element(...)` (recognition-based) and `auto.move_click(...)` (coordinate-based).
 2) Modules use declarative protocol: @module(...) directly on the class.
    - Wrapper pattern is not allowed: def run_task_xxx(...): return Xxx(...).run()
 3) Module entry shape is fixed:
@@ -128,7 +128,7 @@ Filling rules (time-saving):
 (paste script here)
 <<<SCRIPT_END>>>
 - Conversion requirement (optional):
-  - Example: convert all clicks to move_click, and add recognition + timeout
+  - Example: convert all `mouse_click` calls to `click_element`/`move_click`, and add recognition + timeout
 
 -------------------- AI Execution Section (Do NOT modify) --------------------
 
@@ -162,7 +162,7 @@ You must translate every item from User Input Section into project code without 
   - HSV/RGB/color-threshold style => color block
 
 5) Action translation
-- click => must be auto.move_click(...)
+- click => prefer auto.click_element(...) (when target is known), or auto.move_click(...) (for coordinate click)
 - key action => auto.press_key / key_down / key_up
 - wait => time.sleep
 - swipe => use existing automation swipe capability
@@ -196,11 +196,13 @@ You must translate every item from User Input Section into project code without 
    - first call inside each loop iteration
 2) auto.find_element(target, mode, ...)
    - recognition only, not final click
-3) auto.move_click(x, y, ...)
-   - only allowed click action for Snowbreak
-4) auto.press_key(...)
+3) auto.click_element(target, mode, ...)
+   - valid click path (recognition-based)
+4) auto.move_click(x, y, ...)
+   - valid click path (coordinate-based, apply resolution scaling)
+5) auto.press_key(...)
    - keyboard action
-5) auto.get_crop_form_first_screenshot(crop=...)
+6) auto.get_crop_form_first_screenshot(crop=...)
    - color block detection
 
 [D. UI Auto-Inference]

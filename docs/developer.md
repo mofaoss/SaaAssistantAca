@@ -169,16 +169,15 @@ app/features/modules/<module_name>/
 
 1. `auto.take_screenshot()`
 2. `auto.find_element(...)` 判定状态
-3. `auto.move_click(...)` / `auto.press_key(...)` 执行动作
+3. `auto.click_element(...)` 或 `auto.move_click(...)` / `auto.press_key(...)` 执行动作
 4. `Timer` 超时兜底
 
 ## 5.2 点击限制（非常重要）
 
-在尘白当前环境，鼠标点击统一使用：
+在尘白当前环境：
 
-- `auto.move_click(...)`
-
-不要把 `auto.click_element(...)` 当最终点击动作依赖。
+- `auto.mouse_click(...)` 无效，不要使用。
+- 有效点击方式是 `auto.click_element(...)` 与 `auto.move_click(...)`。
 
 ## 5.3 配置读取
 
@@ -248,7 +247,7 @@ PR 描述建议包含：
 2. 忘记在 `decorators.py` 补默认映射，页面挂载失败。
 3. 死循环无超时，导致线程无法回收。
 4. 路径写旧目录，启动时报 `Cannot open file ...`。
-5. 点击未走 `move_click`，实际游戏内动作失效。
+5. 误用 `mouse_click`，导致实际游戏内点击无效。
 
 ---
 
