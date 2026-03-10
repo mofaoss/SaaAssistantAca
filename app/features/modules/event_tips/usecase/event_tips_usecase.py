@@ -4,7 +4,7 @@ from PySide6.QtCore import Qt
 from qfluentwidgets import BodyLabel, InfoBar, InfoBarPosition, ProgressBar
 
 from app.features.utils.network import calculate_time_difference, get_date_from_api
-from app.framework.i18n import _
+from app.framework.i18n import _, qt
 
 
 class EventTipsUseCase:
@@ -69,18 +69,18 @@ class EventTipsUseCase:
 
             days, total_day, status = value
             if status == -1:
-                body_label.setText(_(f'{key} finished', msgid='finished'))
+                body_label.setText(qt(_(f'{key} finished', msgid='finished')))
                 sort_weight = 99999
                 progress_bar.setValue(0)
             elif status == 1:
                 body_label.setText(
-                    _(f'{key} in {days}d(s)', msgid='starts_in')
+                    qt(_(f'{key} in {days}d(s)', msgid='starts_in'))
                 )
                 sort_weight = 10000 + days
                 progress_bar.setValue(0)
             else:
                 body_label.setText(
-                    _(f'{key}: {days}d(s) left', msgid='left_days')
+                    qt(_(f'{key}: {days}d(s) left', msgid='left_days'))
                 )
                 sort_weight = days
                 normalized_percent = int((days / max_total_days) * 100)

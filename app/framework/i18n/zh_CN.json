@@ -162,5 +162,6 @@
   "framework.ui.996710620": "996710620",
   "framework.ui.content": "content",
   "framework.ui.logo": "LOGO",
-  "framework.log.periodic_no_active_schedules": "?? No active schedules."
+  "framework.log.periodic_no_active_schedules": "?? No active schedules.",
+  "framework.log.hotkey_pressed": "Hotkey pressed"
 }

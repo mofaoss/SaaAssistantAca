@@ -222,7 +222,7 @@ class MainWindow(FluentWindow, BaseInterface):
         return "other"
 
     def _on_global_hotkey_pressed(self):
-        logger.info(_("??????????????"))
+        logger.info(_("Hotkey pressed", msgid="hotkey_pressed"))
         action = resolve_f8_action(
             global_is_running=self.global_is_running,
             context=self._resolve_hotkey_context(),

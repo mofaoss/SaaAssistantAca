@@ -16,6 +16,7 @@
   "framework.log.feature_bridge_not_configured": "en",
   "framework.log.game_window_does_not_meet_16_9_ratio_please_adju": "en",
   "framework.log.game_window_ratio_is_not_16_9": "en",
+  "framework.log.hotkey_pressed": "en",
   "framework.log.local_configuration_data_format_is_incorrect_usi": "en",
   "framework.log.periodic_no_active_schedules": "en",
   "framework.log.system_tray_icon_is_null_tray_may_be_invisible": "en",

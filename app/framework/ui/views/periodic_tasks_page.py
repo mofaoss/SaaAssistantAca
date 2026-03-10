@@ -395,7 +395,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
             header = "<b>📅 当前已激活的自动执行日程表：</b>" if not self._is_non_chinese_ui else "<b>📅 Active Schedules:</b>"
             self.logger.info(_(f"{header}<br/>" + "<br/>".join(schedule_logs), msgid="periodic_active_schedule_output"))
         else:
-            self.logger.info(_("?? No active schedules.", msgid="periodic_no_active_schedules"))
+            self.logger.info(_("\U0001F4C5 No active schedules.", msgid="periodic_no_active_schedules"))
 
     def _auto_adjust_after_use_action(self, sequence=None):
         # 检查当前是否在全局执行状态

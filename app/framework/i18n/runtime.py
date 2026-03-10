@@ -45,7 +45,6 @@ def _contains_latin_letters(text: str) -> bool:
     return bool(re.search(r"[A-Za-z]", text))
 
 def _contains_unsupported_non_ascii(text: str) -> bool:
-    has_han = _contains_han(text)
     for ch in text:
         code = ord(ch)
         if code < 128:
@@ -54,14 +53,12 @@ def _contains_unsupported_non_ascii(text: str) -> bool:
             continue
         if 0x3000 <= code <= 0x303F or 0xFF00 <= code <= 0xFFEF:
             continue
-        if has_han:
-            # Reject explicit Japanese/Korean scripts, allow other symbols in Chinese text.
-            if 0x3040 <= code <= 0x30FF or 0x31F0 <= code <= 0x31FF:
-                return True
-            if 0x1100 <= code <= 0x11FF or 0x3130 <= code <= 0x318F or 0xAC00 <= code <= 0xD7AF:
-                return True
-            continue
-        return True
+        # Reject explicit Japanese/Korean scripts, allow symbols/emoji.
+        if 0x3040 <= code <= 0x30FF or 0x31F0 <= code <= 0x31FF:
+            return True
+        if 0x1100 <= code <= 0x11FF or 0x3130 <= code <= 0x318F or 0xAC00 <= code <= 0xD7AF:
+            return True
+        continue
     return False
 
 
@@ -155,6 +152,17 @@ def _(
         owner_scope=owner_scope,
         owner_module=owner_module,
     )
+
+
+def qt(value: Any) -> str | None:
+    """Qt boundary adapter: convert translatable/lazy values to concrete strings."""
+    if value is None:
+        return None
+    if isinstance(value, TranslatableMessage):
+        return str(value)
+    if isinstance(value, str):
+        return value
+    return str(value)
 
 
 def _owner_prefix(message: TranslatableMessage) -> str:
