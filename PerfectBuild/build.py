@@ -154,6 +154,8 @@ class PerfectBuild:
             f"--output-dir={output_dir}",
             "--windows-uac-admin",
             "--windows-console-mode=disable",
+            # Ensure dynamically discovered modules under app.features.modules are bundled.
+            "--include-package=app.features.modules",
             # 添加文件
             "--noinclude-qt-plugins=qml,webengine,network,multimedia,sql,test,sensorkit,position,location,bluetooth,nfc,serialport,websockets,printsupport,dbus,xml,pdf",
         ]
