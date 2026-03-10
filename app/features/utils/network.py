@@ -2,6 +2,7 @@ import re
 import traceback
 from datetime import datetime
 from typing import Optional, Dict, Any
+from app.framework.i18n.runtime import _
 
 import requests
 from bs4 import BeautifulSoup
@@ -356,7 +357,7 @@ def handle_update_logic_fallback(data, online_data, parent):
     if not config.update_data.value:
         config.set(config.update_data, data)
         if config.isLog.value:
-            parent.logger.info(f'获取到更新信息：{online_data}')
+            parent.logger.info(_(f'获取到更新信息：{online_data}'))
         catId = online_data["updateData"]["linkCatId"]
         linkId = online_data["updateData"]["linkId"]
         url = f"https://www.cbjq.com/api.php?op=search_api&action=get_article_detail&catid={catId}&id={linkId}"
@@ -393,7 +394,7 @@ def handle_update_logic_fallback(data, online_data, parent):
 
 
 def handle_cloudflare_error(error_msg, parent):
-    parent.logger.error(f'通过cloudflare在线更新出错: {error_msg}')
+    parent.logger.error(_(f'通过cloudflare在线更新出错: {error_msg}'))
     _refresh_tips(parent)
 
 

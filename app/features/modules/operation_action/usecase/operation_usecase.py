@@ -1,4 +1,5 @@
 import time
+from app.framework.i18n.runtime import _
 
 from app.framework.infra.automation.timer import Timer
 from app.features.utils.home_navigation import back_to_home
@@ -6,8 +7,8 @@ from app.features.utils.home_navigation import back_to_home
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@on_demand_module("Operation", module_id="action")
-@periodic_module("Operation", module_id="task_operation")
+@on_demand_module("Operation")
+@periodic_module("Operation")
 class OperationModule:
     def __init__(self, auto, logger, isLog=False, SpinBox_action_times=1, ComboBox_run=0):
         self.auto = auto
@@ -88,7 +89,7 @@ class OperationModule:
                 time.sleep(2)
 
             if timeout.reached():
-                self.logger.error("执行常规训练超时")
+                self.logger.error(_("执行常规训练超时"))
                 break
 
     def enter_train(self):
@@ -110,7 +111,7 @@ class OperationModule:
                                            time_out=1.2)
                     scroll_no_progress_count += 1
                     if scroll_no_progress_count >= 6:
-                        self.logger.error("进入常规行动时连续滚轮无进展，已停止以避免后台卡死")
+                        self.logger.error(_("进入常规行动时连续滚轮无进展，已停止以避免后台卡死"))
                         break
                 else:
                     scroll_no_progress_count = 0
@@ -126,5 +127,5 @@ class OperationModule:
                     continue
 
             if timeout.reached():
-                self.logger.error("进入常规行动超时")
+                self.logger.error(_("进入常规行动超时"))
                 break

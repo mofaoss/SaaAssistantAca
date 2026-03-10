@@ -1,6 +1,7 @@
 import math
 import re
 import time
+from app.framework.i18n.runtime import _
 
 from app.framework.infra.automation.timer import Timer
 from app.features.utils.home_navigation import back_to_home
@@ -8,7 +9,7 @@ from app.features.utils.home_navigation import back_to_home
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@periodic_module("Character Shards", module_id="task_shards")
+@periodic_module("Character Shards")
 class PersonModule:
     def __init__(
         self,
@@ -76,7 +77,7 @@ class PersonModule:
             self.auto.take_screenshot()
 
             if timeout.reached():
-                self.logger.error("刷取角色碎片超时")
+                self.logger.error(_("刷取角色碎片超时"))
                 break
 
             if fight_flag and self.auto.find_element('完成', 'text',
@@ -130,7 +131,7 @@ class PersonModule:
                     time.sleep(0.5)
                     continue
                 else:
-                    self.logger.warning(f"未找到对应速战，检查是否已刷取或是否解锁{person_name}的速战")
+                    self.logger.warning(_(f"未找到对应速战，检查是否已刷取或是否解锁{person_name}的速战"))
                     break
             else:
                 self.scroll_page()
@@ -148,11 +149,11 @@ class PersonModule:
         if pos:
             # 适配屏幕缩放
             if min_distance < 250 / self.auto.scale_x:
-                self.logger.info(f"找到对应的“速战”：({pos},{min_distance})")
+                self.logger.info(_(f"找到对应的“速战”：({pos},{min_distance})"))
                 return pos
             else:
-                self.logger.warning(
-                    f"“速战”距离大于{250 / self.auto.scale_x}：({pos},{min_distance})，不是{person_name}的速战")
+                self.logger.warning(_(
+                    f"“速战”距离大于{250 / self.auto.scale_x}：({pos},{min_distance})，不是{person_name}的速战"))
                 return None
         return pos
 
@@ -168,13 +169,13 @@ class PersonModule:
 
             # 1. 检查是否提示“没有该类道具”（即碎片/嵌片已经彻底用光）
             if self.auto.find_element('没有该类道具', 'text', crop=(821 / 1920, 511 / 1080, 1092 / 1920, 568 / 1080), is_log=self.is_log):
-                self.logger.warning("记忆嵌片已用尽")
+                self.logger.warning(_("记忆嵌片已用尽"))
                 self.no_chip = True
                 return False
 
             # 2. 检查是否在补充对话框内（通过识别“是否”关键字）
             if self.auto.find_element("是否", "text", crop=(588 / 1920, 309 / 1080, 1324 / 1920, 384 / 1080), is_log=self.is_log):
-                self.logger.info("已打开补充对话框，准备使用 2 片记忆嵌片")
+                self.logger.info(_("已打开补充对话框，准备使用 2 片记忆嵌片"))
 
                 # 核心修改：固定点击加号 2 次（1235, 624 为对话框内加号的坐标）
                 for _ in range(2):
@@ -199,7 +200,7 @@ class PersonModule:
 
             # 4. 如果在列表界面，点击右上角的“+”号打开补充对话框
             if self.auto.find_element("故事", "text", crop=(786 / 1920, 985 / 1080, 1022 / 1920, 1069 / 1080), is_log=self.is_log):
-                self.logger.info("点击右上角加号补充体力")
+                self.logger.info(_("点击右上角加号补充体力"))
                 # 1574, 50 为右上角加号的坐标
                 self.auto.click_element_with_pos(pos=(int(1574 / self.auto.scale_x), int(50 / self.auto.scale_y)))
                 time.sleep(1)
@@ -207,7 +208,7 @@ class PersonModule:
 
             # 5. 超时判断
             if timeout.reached():
-                self.logger.error("使用记忆嵌片超时")
+                self.logger.error(_("使用记忆嵌片超时"))
                 self.auto.press_key('esc')
                 return False
 
@@ -247,7 +248,7 @@ class PersonModule:
                     text = first[0] if isinstance(first[0], str) else ""
 
             if not text:
-                self.logger.warning(f"OCR结果为空或结构异常: {result}")
+                self.logger.warning(_(f"OCR结果为空或结构异常: {result}"))
                 self.power_times = None
                 return
 
@@ -259,9 +260,9 @@ class PersonModule:
             )
             times = self.detect_times(norm)
             if times is not None:
-                self.logger.info(f"记忆嵌片更新成功：{times}")
+                self.logger.info(_(f"记忆嵌片更新成功：{times}"))
             else:
-                self.logger.info(f"记忆嵌片更新失败：{norm}")
+                self.logger.info(_(f"记忆嵌片更新失败：{norm}"))
             self.power_times = times
 
         except Exception as e:

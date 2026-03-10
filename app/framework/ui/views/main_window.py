@@ -13,6 +13,7 @@ from PySide6.QtGui import QIcon, QImage, QPixmap, QAction
 from PySide6.QtWidgets import QApplication, QFrame, QSystemTrayIcon, QMenu
 from qfluentwidgets import FluentIcon as FIF, SystemThemeListener, MessageBox, InfoBar, InfoBarPosition
 from qfluentwidgets import NavigationItemPosition, FluentWindow, setThemeColor
+from app.framework.i18n.runtime import _
 
 from app.framework.infra.config.app_config import config
 from app.framework.infra.config.app_config import is_non_chinese_ui_language, is_traditional_ui_language
@@ -158,7 +159,7 @@ class MainWindow(FluentWindow, BaseInterface):
         self.tray_icon = QSystemTrayIcon(self)
         icon = self._resolve_app_icon()
         if icon.isNull():
-            logger.warning("system tray icon is null; tray may be invisible")
+            logger.warning(_("system tray icon is null; tray may be invisible"))
         self.tray_icon.setIcon(icon)
         self.tray_icon.setToolTip(self._ui_text("安卡小助手", "SaaAssistantAca"))
 
@@ -221,7 +222,7 @@ class MainWindow(FluentWindow, BaseInterface):
         return "other"
 
     def _on_global_hotkey_pressed(self):
-        logger.info("MainWindow: 检测到全局快捷键 F8 被按下")
+        logger.info(_("??????????????"))
         action = resolve_f8_action(
             global_is_running=self.global_is_running,
             context=self._resolve_hotkey_context(),
@@ -466,12 +467,12 @@ class MainWindow(FluentWindow, BaseInterface):
 
             if self.homeInterface.CheckBox_open_game_directly.isChecked():
                 if config.LineEdit_game_directory.value == './':
-                    logger.warning(f"未配置游戏路径，请先根据教程配置路径")
+                    logger.warning(_(f"未配置游戏路径，请先根据教程配置路径"))
                 else:
-                    logger.info(f"开始自动运行日常")
+                    logger.info(_(f"开始自动运行日常"))
                     self.homeInterface.on_start_button_click()
             else:
-                logger.warning(f'未勾选"自动打开游戏"')
+                logger.warning(_(f'未勾选"自动打开游戏"'))
 
         self._finish_splash_screen()
         if config.checkUpdateAtStartUp.value:
@@ -575,7 +576,7 @@ class MainWindow(FluentWindow, BaseInterface):
 
     def init_ocr(self):
         if self._feature_bridge is None:
-            logger.warning("feature_bridge is not configured")
+            logger.warning(_("feature_bridge is not configured"))
             return
         self.ocr_module = self._feature_bridge.initialize_ocr_module()
 
@@ -793,7 +794,7 @@ class MainWindow(FluentWindow, BaseInterface):
             if best and best.get("download_url"):
                 w.start_unified_download(best["download_url"])
             else:
-                logger.warning("未能获取到有效的更新下载链接")
+                logger.warning(_("未能获取到有效的更新下载链接"))
 
     def showScreenshot(self, screenshot):
         def ndarray_to_qpixmap(ndarray):
@@ -849,7 +850,7 @@ def setup_global_exception_hook():
             with open(APPDATA_DIR / "crash.log", "a", encoding="utf-8") as f:
                 f.write(f"\n[{datetime.datetime.now()}] \n{error_msg}\n")
         except Exception as log_error:
-            logger.error(f"写入 crash.log 失败: {log_error}")
+            logger.error(_(f"写入 crash.log 失败: {log_error}"))
 
         # 2. 调用主窗口弹窗警报
         try:
@@ -858,7 +859,7 @@ def setup_global_exception_hook():
             if main_win:
                 MessageBox("系统崩溃保护", f"程序发生了未捕获的严重异常，已将报错存入 crash.log，请截图反馈群管：\n\n{exc_value}", main_win).exec()
         except Exception as dialog_error:
-            logger.error(f"崩溃弹窗失败: {dialog_error}")
+            logger.error(_(f"崩溃弹窗失败: {dialog_error}"))
 
     sys.excepthook = handle_exception
 

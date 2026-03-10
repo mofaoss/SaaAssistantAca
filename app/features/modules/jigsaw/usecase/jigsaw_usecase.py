@@ -1,4 +1,5 @@
 import copy
+from app.framework.i18n.runtime import _
 
 from app.framework.infra.events.signal_bus import signalBus
 
@@ -286,10 +287,10 @@ class JigsawModule:
                     #     logger.error("未能正确拼完，可以按照给出的最优方案手动拼完")
                     #     break
                 else:
-                    self.logger.warning("没有找到能填满全部格子的方案")
+                    self.logger.warning(_("没有找到能填满全部格子的方案"))
                     break
             else:
-                self.logger.error("未识别出对应的地图")
+                self.logger.error(_("未识别出对应的地图"))
                 break
 
     def identify_board(self):
@@ -403,14 +404,14 @@ class JigsawModule:
                         # 需要用.copy()浅拷贝创建一个新列表对象，不然更新不成功，会一直append最开始的第一个
                         self.piece_solution.append(self.used_pieces.copy())
                         self.display_solution_board.append(copy.deepcopy(self.board))
-                        self.logger.info(f"成功找到第{len(self.piece_solution)}个方案")
+                        self.logger.info(_(f"成功找到第{len(self.piece_solution)}个方案"))
                         # print(self.display_solution_board)
                 else:
                     if not any(0 in r for r in self.board):
                         # 需要用.copy()浅拷贝创建一个新列表对象，不然更新不成功，会一直append最开始的第一个
                         self.piece_solution.append(self.used_pieces.copy())
                         self.display_solution_board.append(copy.deepcopy(self.board))
-                        self.logger.info(f"成功找到第{len(self.piece_solution)}个方案")
+                        self.logger.info(_(f"成功找到第{len(self.piece_solution)}个方案"))
                         # print(self.display_solution_board)
                 if len(self.piece_solution) >= max_solutions:
                     return True  # 已达到指定方案数量，停止搜索
@@ -484,11 +485,11 @@ class JigsawModule:
                 result_score += score_dic[piece[0]]
             self.solutions_score[index] = result_score
             result_score = 0
-            self.logger.info(f"-------方案{index + 1}，得分：{self.solutions_score[index]}-------")
+            self.logger.info(_(f"-------方案{index + 1}，得分：{self.solutions_score[index]}-------"))
             for r in self.display_solution_board[index]:
                 print(r)
         best_score_index = self.solutions_score.index(max(self.solutions_score))
-        self.logger.info(f"最优方案为：方案{best_score_index + 1}")
+        self.logger.info(_(f"最优方案为：方案{best_score_index + 1}"))
         signalBus.jigsawDisplaySignal.emit(self.display_solution_board[best_score_index])
         return self.piece_solution[best_score_index]
 

@@ -13,6 +13,7 @@ import zipfile
 import requests
 from PySide6.QtCore import QThread, Signal
 from urllib.parse import urlparse
+from app.framework.i18n.runtime import _
 
 from packaging.version import parse as parse_version
 from app.framework.infra.runtime.paths import TEMP_DIR, ensure_runtime_dirs
@@ -201,16 +202,16 @@ def get_github_release_channels(
                     return result
 
             elif response.status_code in (403, 429):
-                logger.error(f"GitHub API {response.status_code} Rate Limit hit! Using fallback.")
+                logger.error(_(f"GitHub API {response.status_code} Rate Limit hit! Using fallback."))
             else:
-                logger.error(f"GitHub API Error {response.status_code}: {response.text}")
+                logger.error(_(f"GitHub API Error {response.status_code}: {response.text}"))
 
         except Exception as e:
-            logger.error(f"GitHub API Connection Error: {e}")
+            logger.error(_(f"GitHub API Connection Error: {e}"))
 
     # 3. Fallback: If API failed, try to use expired config cache
     if "data" in cached_obj and cached_obj["data"].get("latest"):
-        logger.warning("Falling back to expired config cache due to API failure.")
+        logger.warning(_("Falling back to expired config cache due to API failure."))
         return cached_obj["data"]
 
     return result
@@ -350,7 +351,7 @@ class UpdateDownloadThread(QThread):
                 try:
                     os.remove(self.filepath)
                 except OSError as exc:
-                    logger.warning("failed to remove existing update package: %s", exc)
+                    logger.warning(_("failed to remove existing update package: %s"), exc)
 
             # === 1. 原生高速下载 (支持 125MB 大文件流式写入和代理) ===
             proxies = _resolve_proxies(None)

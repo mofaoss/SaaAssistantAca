@@ -1,5 +1,6 @@
 import time
 from dataclasses import dataclass
+from app.framework.i18n.runtime import _
 
 import cv2
 from app.framework.infra.automation.timer import Timer
@@ -28,7 +29,7 @@ class _SyncState:
         return float(self.profile.patrol_refresh_interval_sec if self.mode == 1 else self.profile.fixed_interval_sec)
 
 
-@on_demand_module("Capture Pals", module_id="capture_pals")
+@on_demand_module("Capture Pals")
 class CapturePalsModule:
     """
     尘白抓帕鲁模块
@@ -197,13 +198,13 @@ class CapturePalsModule:
     def run(self):
         state = self.wait_for_start_page(timeout_sec=120.0)
         if state == "TIMEOUT":
-            self.logger.error("启动失败：超时仍未检测到初始页面。请手动进入抓帕鲁选岛页面或进入地图后再启动。")
+            self.logger.error(_("启动失败：超时仍未检测到初始页面。请手动进入抓帕鲁选岛页面或进入地图后再启动。"))
             return
 
         if state == "IN_MAP":
-            self.logger.info("检测到已在地图内，先退出回选岛页面以保证流程一致")
+            self.logger.info(_("检测到已在地图内，先退出回选岛页面以保证流程一致"))
             if not self.exit_map_to_island_select():
-                self.logger.error("已在地图内但退出失败，请检查退出按钮图片/确认按钮crop")
+                self.logger.error(_("?????????????????????????????"))
                 return
 
         enable_partner = self.enable_partner
@@ -216,14 +217,14 @@ class CapturePalsModule:
         self.adventure_profile.patrol_refresh_interval_sec = self.adventure_patrol_interval
 
         if not enable_partner and not enable_adventure:
-            self.logger.error("未选择任何岛屿，无法开始抓帕鲁")
+            self.logger.error(_("未选择任何岛屿，无法开始抓帕鲁"))
             return
 
         partner_mode = self.partner_mode if enable_partner else 0
         adventure_mode = self.adventure_mode if enable_adventure else 0
 
         if sync_enabled and enable_partner and enable_adventure:
-            self.logger.info("启用：同步抓帕鲁（两岛独立模式 + 到上限后自动只刷未完成岛）")
+            self.logger.info(_("启用：同步抓帕鲁（两岛独立模式 + 到上限后自动只刷未完成岛）"))
             self.sync_capture_loop(partner_mode, adventure_mode)
             return
 
@@ -251,7 +252,7 @@ class CapturePalsModule:
 
             now = time.monotonic()
             if now - warned_at >= 2.0:
-                self.logger.warning("未检测到初始页面（伙伴岛选岛页/地图内任务图标）。请手动进入抓帕鲁初始页面后保持不动。")
+                self.logger.warning(_("未检测到初始页面（伙伴岛选岛页/地图内任务图标）。请手动进入抓帕鲁初始页面后保持不动。"))
                 warned_at = now
 
             self.sleep_with_log(1.0)
@@ -262,10 +263,10 @@ class CapturePalsModule:
     # 定点 / 巡逻
     # =========================================================
     def capture_fixed_loop(self, island: IslandProfile):
-        self.logger.info(f"开始：{island.name} 定点抓帕鲁，间隔={island.fixed_interval_sec:.1f}s")
+        self.logger.info(_(f"开始：{island.name} 定点抓帕鲁，间隔={island.fixed_interval_sec:.1f}s"))
 
         if not self.enter_map(island):
-            self.logger.error(f"{island.name}：进入地图失败，终止该岛抓帕鲁")
+            self.logger.error(_(f"{island.name}：进入地图失败，终止该岛抓帕鲁"))
             return
 
         self.sleep_with_log(island.enter_wait_sec)
@@ -275,18 +276,18 @@ class CapturePalsModule:
             result = self.capture_once(island)
 
             if result == "CAP_REACHED":
-                self.logger.warning(f"{island.name}：检测到每日抓帕鲁上限，停止该岛定点抓帕鲁")
+                self.logger.warning(_(f"{island.name}：检测到每日抓帕鲁上限，停止该岛定点抓帕鲁"))
                 break
 
             if result == "NO_COLLECT_HINT":
                 no_collect_streak += 1
-                self.logger.warning(
+                self.logger.warning(_(
                     f"{island.name}：本轮未找到F抓帕鲁提示，可能在等待刷新。连续次数={no_collect_streak}/{self.FIXED_NO_COLLECT_MAX}"
-                )
+                ))
                 if no_collect_streak >= self.FIXED_NO_COLLECT_MAX:
-                    self.logger.error(
+                    self.logger.error(_(
                         f"{island.name}：连续多个刷新周期都未出现F提示，可能站位/点位不正确。请调整位置后重试。停止定点模式。"
-                    )
+                    ))
                     break
             else:
                 no_collect_streak = 0
@@ -294,12 +295,12 @@ class CapturePalsModule:
             self.sleep_with_log(island.fixed_interval_sec, f"{island.name} 等待刷新")
 
     def capture_patrol_loop(self, island: IslandProfile):
-        self.logger.info(f"开始：{island.name} 巡逻抓帕鲁，刷新间隔={island.patrol_refresh_interval_sec:.1f}s")
+        self.logger.info(_(f"开始：{island.name} 巡逻抓帕鲁，刷新间隔={island.patrol_refresh_interval_sec:.1f}s"))
 
         no_collect_streak = 0
         while self.auto.running:
             if not self.enter_map(island):
-                self.logger.error(f"{island.name}：进入地图失败，终止该岛巡逻抓帕鲁")
+                self.logger.error(_(f"{island.name}：进入地图失败，终止该岛巡逻抓帕鲁"))
                 break
 
             self.sleep_with_log(island.enter_wait_sec)
@@ -307,22 +308,22 @@ class CapturePalsModule:
             result = self.capture_once(island)
 
             if result == "CAP_REACHED":
-                self.logger.warning(f"{island.name}：检测到每日抓帕鲁上限，停止该岛巡逻抓帕鲁")
+                self.logger.warning(_(f"{island.name}：检测到每日抓帕鲁上限，停止该岛巡逻抓帕鲁"))
                 break
 
             if result == "NO_COLLECT_HINT":
                 no_collect_streak += 1
-                self.logger.warning(
+                self.logger.warning(_(
                     f"{island.name}：本轮未找到F抓帕鲁提示，连续次数={no_collect_streak}/{self.PATROL_NO_COLLECT_MAX}"
-                )
+                ))
                 if no_collect_streak >= self.PATROL_NO_COLLECT_MAX:
-                    self.logger.error(f"{island.name}：连续多轮找不到抓帕鲁提示，可能站位/路线不对。停止该模式。")
+                    self.logger.error(_(f"{island.name}：连续多轮找不到抓帕鲁提示，可能站位/路线不对。停止该模式。"))
                     break
             else:
                 no_collect_streak = 0
 
             if not self.exit_map_to_island_select():
-                self.logger.error(f"{island.name}：退出地图失败，停止")
+                self.logger.error(_(f"{island.name}：退出地图失败，停止"))
                 break
 
             self.sleep_with_log(island.patrol_refresh_interval_sec, f"{island.name} 巡逻刷新等待")
@@ -335,10 +336,10 @@ class CapturePalsModule:
         adventure = _SyncState("adventure", self.adventure_profile, int(adventure_mode))
 
         sync_every_sec = max(partner.period_sec(), adventure.period_sec())
-        self.logger.info(
+        self.logger.info(_(
             f"同步抓帕鲁：自动同步周期 sync_every_sec≈{sync_every_sec:.0f}s "
             f"(partner≈{partner.period_sec():.0f}s, adventure≈{adventure.period_sec():.0f}s)"
-        )
+        ))
 
         # ==========================================
         # 内部辅助函数
@@ -353,18 +354,18 @@ class CapturePalsModule:
             """返回 True 表示该岛已完结/异常，需要立即停止"""
             if result == "CAP_REACHED":
                 st.done = True
-                self.logger.warning(f"{st.profile.name}：检测到每日抓帕鲁上限（同步模式将不再前往该岛）")
+                self.logger.warning(_(f"{st.profile.name}：检测到每日抓帕鲁上限（同步模式将不再前往该岛）"))
                 return True
 
             if result == "NO_COLLECT_HINT":
                 st.no_collect_streak += 1
                 limit = self.PATROL_NO_COLLECT_MAX if st.mode == 1 else self.FIXED_NO_COLLECT_MAX
-                self.logger.warning(
+                self.logger.warning(_(
                     f"{st.profile.name}：未找到F抓帕鲁提示，连续次数={st.no_collect_streak}/{limit}"
-                )
+                ))
                 if st.no_collect_streak >= limit:
                     st.error = True
-                    self.logger.error(f"{st.profile.name}：连续多轮未出现F提示，标记异常。")
+                    self.logger.error(_(f"{st.profile.name}：连续多轮未出现F提示，标记异常。"))
                     return True
             else:
                 st.no_collect_streak = 0
@@ -380,12 +381,12 @@ class CapturePalsModule:
             self._refresh()
             if not self.is_on_island_select_page_no_refresh():
                 if not leave_to_select(try_fix_pos=False):
-                    self.logger.error("同步抓帕鲁：切换/进入前退出地图失败")
+                    self.logger.error(_("同步抓帕鲁：切换/进入前退出地图失败"))
                     st.error = True
                     return False
 
             if not self.enter_map(st.profile):
-                self.logger.error(f"同步抓帕鲁：进入{st.profile.name}失败")
+                self.logger.error(_(f"同步抓帕鲁：进入{st.profile.name}失败"))
                 st.error = True
                 return False
 
@@ -405,7 +406,7 @@ class CapturePalsModule:
             # 退出（如果是定点模式，则需要修正位移）
             need_fix = (st.mode == 0)
             if not leave_to_select(try_fix_pos=need_fix):
-                self.logger.error(f"{st.profile.name}：插入任务后退出失败")
+                self.logger.error(_(f"{st.profile.name}：插入任务后退出失败"))
                 return False
 
             return True
@@ -414,7 +415,7 @@ class CapturePalsModule:
         # 启动策略
         # ==========================================
         long_st, short_st = (partner, adventure) if partner.period_sec() >= adventure.period_sec() else (adventure, partner)
-        self.logger.info(f"启动策略：优先处理长周期 [{long_st.profile.name}]，然后常驻 [{short_st.profile.name}]")
+        self.logger.info(_(f"启动策略：优先处理长周期 [{long_st.profile.name}]，然后常驻 [{short_st.profile.name}]"))
 
         # 1. 先跑一次长周期的岛 (利用 run_side_task 直接完成进+抓+退)
         if available(long_st):
@@ -426,11 +427,11 @@ class CapturePalsModule:
             if available(long_st):
                 current, other = long_st, short_st
             else:
-                self.logger.error("同步抓帕鲁：无可用岛屿，结束")
+                self.logger.error(_("同步抓帕鲁：无可用岛屿，结束"))
                 return
         else:
             if not enter_island(short_st):
-                self.logger.error("同步抓帕鲁：初始进入常驻岛失败")
+                self.logger.error(_("同步抓帕鲁：初始进入常驻岛失败"))
                 return
             current, other = short_st, long_st
 
@@ -441,14 +442,14 @@ class CapturePalsModule:
         # ==========================================
         while self.auto.running:
             if all_finished_or_error():
-                self.logger.warning("同步抓帕鲁：所有任务完成或异常，结束")
+                self.logger.warning(_("同步抓帕鲁：所有任务完成或异常，结束"))
                 return
 
             # A. 检查当前岛是否还可用
             if not available(current):
                 current, other = other, current # 交换
                 if not available(current):
-                    self.logger.warning("同步抓帕鲁：无剩余可用岛，结束")
+                    self.logger.warning(_("同步抓帕鲁：无剩余可用岛，结束"))
                     return
                 # 交换后需要进入新岛
                 if not enter_island(current):
@@ -476,7 +477,7 @@ class CapturePalsModule:
                     return
 
                 if need_switch:
-                    self.logger.info(f"同步周期到达：插入 [{other.profile.name}]")
+                    self.logger.info(_(f"同步周期到达：插入 [{other.profile.name}]"))
                     run_side_task(other) # 进 -> 抓 -> 退
                     last_switch = time.time()
 
@@ -492,7 +493,7 @@ class CapturePalsModule:
                 # === 当前是定点模式 ===
                 # 默认留在地图内
                 if need_switch:
-                    self.logger.info(f"同步周期到达：插入 [{other.profile.name}]")
+                    self.logger.info(_(f"同步周期到达：插入 [{other.profile.name}]"))
 
                     # 1. 退出当前定点岛 (关键：这里要修正位移！)
                     if not leave_to_select(try_fix_pos=True):
@@ -525,7 +526,7 @@ class CapturePalsModule:
             self._refresh()
 
             if self.is_in_map_no_refresh():
-                self.logger.info(f"{island.name}：已进入地图（任务图标已出现）")
+                self.logger.info(_(f"{island.name}：已进入地图（任务图标已出现）"))
                 return True
 
             # 点击岛（最多 N 次）
@@ -538,12 +539,12 @@ class CapturePalsModule:
 
             # 等待任务图标出现（用短 wait，循环交回 timeout 控制）
             if self._wait_until(lambda: self.is_in_map_no_refresh(), timeout_sec=3.0, tick=1.0):
-                self.logger.info(f"{island.name}：已进入地图")
+                self.logger.info(_(f"{island.name}：已进入地图"))
                 return True
 
-        self.logger.error(
+        self.logger.error(_(
             f"{island.name}：进入地图超时（检查：岛按钮 crop、开始按钮 crop、任务图标 crop/threshold，以及是否确实处于选岛界面）"
-        )
+        ))
         return False
 
     def exit_map_to_island_select(self, perform_fix_pos: bool = False) -> bool:
@@ -558,14 +559,14 @@ class CapturePalsModule:
 
             # 若已在选岛，直接成功
             if self.is_on_island_select_page_no_refresh():
-                self.logger.info("已回到选岛界面")
+                self.logger.info(_("已回到选岛界面"))
                 return True
 
             # 只在地图内才执行退出链
             if self.is_in_map_no_refresh():
                 # ===== [新增] 位移修正逻辑 =====
                 if perform_fix_pos:
-                    self.logger.info("定点模式退出前位移修正: A(0.33s) -> Wait(0.2s) -> S(0.033s)")
+                    self.logger.info(_("Position correction before exit in fixed mode: A(0.33s) -> Wait(0.2s) -> S(0.033s)"))
                     self.auto.press_key("a", press_time=0.33)
                     self.sleep_with_log(0.2)
                     self.auto.press_key("s", press_time=0.033)
@@ -580,7 +581,7 @@ class CapturePalsModule:
                 self.auto.press_key("esc")
                 self.sleep_with_log(1.5)
 
-                self.logger.info("尝试点击退出地图按钮")
+                self.logger.info(_("尝试点击退出地图按钮"))
                 self._refresh()
                 self._click_image_repeat_if_present(
                     self.btn_exit_map_image,
@@ -590,7 +591,7 @@ class CapturePalsModule:
                     sleep_sec=1.0,
                 )
 
-                self.logger.info("尝试点击确认退出按钮")
+                self.logger.info(_("尝试点击确认退出按钮"))
                 self._refresh()
                 self._click_image_repeat_if_present(
                     self.btn_exit_confirm_image,
@@ -603,7 +604,7 @@ class CapturePalsModule:
             # 等一等再判定是否回到选岛（可中断）
             self.sleep_with_log(1.0)
 
-        self.logger.error("退出地图超时（检查：退出按钮图片/crop/threshold、确认按钮crop、选岛判定）")
+        self.logger.error(_("???????????????????????????????????????"))
         return False
 
     def _wait_collect_state(self, want_present: bool, timeout_sec: float, interval: float = 0.1, stable_count: int = 3) -> bool:
@@ -638,15 +639,15 @@ class CapturePalsModule:
 
         disappeared = self._press_f_until_disappear(self.MAX_FAILED_F_ATTEMPTS, disappear_timeout=1.5, stable_count=3)
         if not disappeared:
-            self.logger.warning(f"{island.name}：按F后图标未消失（尝试{self.MAX_FAILED_F_ATTEMPTS}次），疑似到上限或交互失败")
+            self.logger.warning(_(f"{island.name}：按F后图标未消失（尝试{self.MAX_FAILED_F_ATTEMPTS}次），疑似到上限或交互失败"))
             return "CAP_REACHED"
 
         reappeared = self._wait_collect_state(True, timeout_sec=6.5, interval=0.15, stable_count=3)
         if reappeared:
-            self.logger.warning(f"{island.name}：F提示消失后又重新出现，疑似达到每日抓帕鲁上限")
+            self.logger.warning(_(f"{island.name}：F提示消失后又重新出现，疑似达到每日抓帕鲁上限"))
             return "CAP_REACHED"
 
-        self.logger.info(f"{island.name}：成功抓到帕鲁")
+        self.logger.info(_(f"{island.name}：成功抓到帕鲁"))
         return "OK"
 
     def is_collect_hint_present(self) -> bool:
@@ -669,7 +670,7 @@ class CapturePalsModule:
         if sec <= 0:
             return
         if msg:
-            self.logger.info(f"{msg}：{sec:.1f}s")
+            self.logger.info(_(f"{msg}：{sec:.1f}s"))
 
         end = time.monotonic() + float(sec)
         while True:

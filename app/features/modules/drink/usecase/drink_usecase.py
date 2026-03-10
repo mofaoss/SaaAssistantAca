@@ -1,4 +1,5 @@
 import time
+from app.framework.i18n.runtime import _
 
 from app.features.utils.randoms import random_rectangle_point
 from app.framework.infra.automation.timer import Timer
@@ -6,7 +7,7 @@ from app.framework.infra.automation.timer import Timer
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@on_demand_module("Card Match", module_id="drink")
+@on_demand_module("Card Match")
 class DrinkModule:
     def __init__(
         self,
@@ -40,7 +41,7 @@ class DrinkModule:
             else:
                 count = 1
                 while self.drink_times > 0:
-                    self.logger.info(f"开始第{count}次喝酒")
+                    self.logger.info(_(f"开始第{count}次喝酒"))
                     if self.mode == 0:
                         self.play_mode1()
                     else:
@@ -49,7 +50,7 @@ class DrinkModule:
                     count += 1
                     if self.drink_times > 0:
                         self.again()
-                self.logger.info(f"已完成{count - 1}次喝酒")
+                self.logger.info(_(f"已完成{count - 1}次喝酒"))
         # self.again()
 
     def enter_drink(self):
@@ -65,7 +66,7 @@ class DrinkModule:
             if self.auto.find_element('玩法', 'text', crop=(1000 / 2560, 682 / 1440, 1555 / 2560, 750 / 1440),
                                       is_log=self.is_log):
                 self.enter_success = False
-                self.logger.warning("玩法未解锁")
+                self.logger.warning(_("玩法未解锁"))
                 break
 
             if self.auto.click_element(self.select_list, 'text',
@@ -129,7 +130,7 @@ class DrinkModule:
                 continue
 
             if timeout.reached():
-                self.logger.error("进入酒馆超时")
+                self.logger.error(_("进入酒馆超时"))
                 break
 
     def play_mode1(self):
@@ -161,7 +162,7 @@ class DrinkModule:
                     continue
 
             if timeout.reached():
-                self.logger.error("酒馆对局超时")
+                self.logger.error(_("酒馆对局超时"))
                 break
 
     def play_mode2(self):
@@ -239,7 +240,7 @@ class DrinkModule:
                     continue
 
             if timeout.reached():
-                self.logger.error("酒馆对局超时")
+                self.logger.error(_("酒馆对局超时"))
                 break
 
     def again(self):
@@ -261,7 +262,7 @@ class DrinkModule:
                 continue
 
             if timeout.reached():
-                self.logger.error("重进对局超时")
+                self.logger.error(_("重进对局超时"))
                 break
 
 

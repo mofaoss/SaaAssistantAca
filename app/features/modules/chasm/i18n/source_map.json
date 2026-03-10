@@ -1,3 +1,7 @@
 {
+  "module.chasm.log.当前未开放拟境": "zh_CN",
+  "module.chasm.log.精神拟境超时": "zh_CN",
+  "module.chasm.log.领取拟境奖励超时": "zh_CN",
+  "module.dummy.title": "en",
   "module.task_chasm.title": "en"
 }

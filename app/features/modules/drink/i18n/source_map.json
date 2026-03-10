@@ -1,3 +1,8 @@
 {
-  "module.drink.title": "en"
+  "module.drink.log.玩法未解锁": "zh_CN",
+  "module.drink.log.进入酒馆超时": "zh_CN",
+  "module.drink.log.酒馆对局超时": "zh_CN",
+  "module.drink.log.重进对局超时": "zh_CN",
+  "module.drink.title": "en",
+  "module.dummy.title": "en"
 }

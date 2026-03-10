@@ -1,3 +1,9 @@
 {
+  "module.dummy.title": "en",
+  "module.person.log.使用记忆嵌片超时": "zh_CN",
+  "module.person.log.刷取角色碎片超时": "zh_CN",
+  "module.person.log.已打开补充对话框_准备使用_2_片记忆嵌片": "zh_CN",
+  "module.person.log.点击右上角加号补充体力": "zh_CN",
+  "module.person.log.记忆嵌片已用尽": "zh_CN",
   "module.task_shards.title": "en"
 }

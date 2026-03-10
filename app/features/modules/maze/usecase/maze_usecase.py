@@ -1,11 +1,12 @@
 import time
+from app.framework.i18n.runtime import _
 
 from app.framework.infra.automation.timer import Timer
 
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@on_demand_module("Maze", module_id="maze")
+@on_demand_module("Maze")
 class MazeModule:
     def __init__(self, auto, logger, isLog=False, ComboBox_mode_maze=0):
         self.auto = auto
@@ -30,7 +31,7 @@ class MazeModule:
             # 达到99次上限
             if self.auto.find_element('已达上限', 'text', crop=(697 / 1920, 507 / 1080, 1250 / 1920, 575 / 1080),
                                       is_log=self.is_log):
-                self.logger.warning('今日的迷宫次数已经一滴都不剩了')
+                self.logger.warning(_('今日的迷宫次数已经一滴都不剩了'))
                 break
             if self.auto.find_element(['击败', '目标'], 'text', crop=(43 / 1920, 114 / 1080, 330 / 1920, 180 / 1080),
                                       is_log=self.is_log):
@@ -97,7 +98,7 @@ class MazeModule:
                 continue
 
             if timeout.reached():
-                self.logger.error("迷宫超时")
+                self.logger.error(_("迷宫超时"))
                 break
 
 

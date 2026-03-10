@@ -1,6 +1,7 @@
 import ctypes
 import time
 from contextlib import contextmanager
+from app.framework.i18n.runtime import _
 
 import win32api
 import win32con
@@ -183,14 +184,14 @@ class WindowTracker:
 
     def align_target_to_cursor(self, x: int, y: int) -> bool:
         if not self._is_hwnd_valid():
-            self.logger.error("窗口追踪失败：无效窗口句柄")
+            self.logger.error(_("窗口追踪失败：无效窗口句柄"))
             return False
 
         try:
             with self._per_monitor_dpi_context():
                 root_hwnd = self._resolve_root_hwnd()
                 if not root_hwnd or not win32gui.IsWindow(root_hwnd):
-                    self.logger.error("窗口追踪失败：无法获取顶层窗口句柄")
+                    self.logger.error(_("窗口追踪失败：无法获取顶层窗口句柄"))
                     return False
 
                 self._ensure_origin_rect()
@@ -201,7 +202,7 @@ class WindowTracker:
                 height = current_rect[3] - current_rect[1]
                 if width <= 0 or height <= 0:
                     if not self._recover_window(root_hwnd):
-                        self.logger.warning("窗口追踪失败：窗口尺寸异常，恢复失败，已跳过本次移动")
+                        self.logger.warning(_("窗口追踪失败：窗口尺寸异常，恢复失败，已跳过本次移动"))
                     return False
                 self._last_good_rect = current_rect
 
@@ -222,7 +223,7 @@ class WindowTracker:
                         height = current_rect[3] - current_rect[1]
                         if width <= 0 or height <= 0:
                             if not self._recover_window(root_hwnd):
-                                self.logger.warning("窗口追踪失败：尺寸纠正后仍异常，恢复失败")
+                                self.logger.warning(_("窗口追踪失败：尺寸纠正后仍异常，恢复失败"))
                             return False
                         self._last_good_rect = current_rect
 
@@ -261,7 +262,7 @@ class WindowTracker:
                 moved_height = moved_rect[3] - moved_rect[1]
                 if moved_width <= 0 or moved_height <= 0:
                     if not self._recover_window(root_hwnd):
-                        self.logger.warning("窗口追踪检测到窗口尺寸异常，回滚失败")
+                        self.logger.warning(_("窗口追踪检测到窗口尺寸异常，回滚失败"))
                     return False
 
                 if self._locked_width and self._locked_height and (
@@ -280,14 +281,14 @@ class WindowTracker:
                     moved_height = moved_rect[3] - moved_rect[1]
                     if moved_width <= 0 or moved_height <= 0:
                         if not self._recover_window(root_hwnd):
-                            self.logger.warning("窗口追踪检测到跨屏缩放异常，修复失败")
+                            self.logger.warning(_("窗口追踪检测到跨屏缩放异常，修复失败"))
                         return False
 
                 self._last_good_rect = moved_rect
                 self._is_offscreen_hidden = False
             return True
         except Exception as e:
-            self.logger.error(f"窗口追踪失败：{repr(e)}")
+            self.logger.error(_(f"窗口追踪失败：{repr(e)}"))
             return False
 
     def hide_window_offscreen(self) -> bool:
@@ -333,7 +334,7 @@ class WindowTracker:
                 self._is_offscreen_hidden = True
             return True
         except Exception as e:
-            self.logger.warning(f"窗口移出可视区失败：{repr(e)}")
+            self.logger.warning(_(f"窗口移出可视区失败：{repr(e)}"))
             return False
 
     def restore_window_position(self):
@@ -367,7 +368,7 @@ class WindowTracker:
                     self._locked_height = target_height
                 self.restore_tracking_visual_mode()
         except Exception as e:
-            self.logger.warning(f"窗口归位失败：{repr(e)}")
+            self.logger.warning(_(f"窗口归位失败：{repr(e)}"))
         finally:
             self._origin_rect = None
             self._session_started = False

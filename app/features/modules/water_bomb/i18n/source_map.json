@@ -1,3 +1,15 @@
 {
+  "module.dummy.title": "en",
+  "module.water_bomb.log.使用重置之锤超时": "zh_CN",
+  "module.water_bomb.log.偷道具失败": "zh_CN",
+  "module.water_bomb.log.偷道具超时": "zh_CN",
+  "module.water_bomb.log.开枪失败": "zh_CN",
+  "module.water_bomb.log.心动水弹对战超时": "zh_CN",
+  "module.water_bomb.log.看破墨镜后处理未识别到任何文字": "zh_CN",
+  "module.water_bomb.log.看破墨镜后处理超时": "zh_CN",
+  "module.water_bomb.log.胜率为0_选择重开": "zh_CN",
+  "module.water_bomb.log.进入心动水弹界面超时": "zh_CN",
+  "module.water_bomb.log.重开超时": "zh_CN",
+  "module.water_bomb.log.重置之锤使用失败": "zh_CN",
   "module.water_bomb.title": "en"
 }

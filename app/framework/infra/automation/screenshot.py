@@ -2,6 +2,7 @@ import ctypes
 import logging
 import time
 import threading
+from app.framework.i18n.runtime import _
 
 import cv2
 import numpy as np
@@ -97,7 +98,7 @@ class Screenshot:
             # logger.info(f"找到窗口‘{title}’的句柄为：{hwnd}")
             return hwnd
         else:
-            self.logger.error(f"未找到窗口: {title}")
+            self.logger.error(_(f"未找到窗口: {title}"))
             return None
 
     def screenshot(self, hwnd, crop=(0, 0, 1, 1), is_starter=True, is_interval=True):

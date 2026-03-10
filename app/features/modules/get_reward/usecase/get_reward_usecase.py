@@ -1,4 +1,5 @@
 import time
+from app.framework.i18n.runtime import _
 
 from app.framework.infra.automation.timer import Timer
 from app.features.utils.home_navigation import back_to_home
@@ -6,7 +7,7 @@ from app.features.utils.home_navigation import back_to_home
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@periodic_module("Claim Rewards", module_id="task_reward")
+@periodic_module("Claim Rewards")
 class GetRewardModule:
     def __init__(self, auto, logger, isLog=False):
         self.auto = auto
@@ -65,7 +66,7 @@ class GetRewardModule:
                 continue
 
             if timeout.reached():
-                self.logger.error("领取任务奖励超时")
+                self.logger.error(_("领取任务奖励超时"))
                 break
                 back_to_home(self.auto, self.logger)
 
@@ -113,7 +114,7 @@ class GetRewardModule:
                         continue
 
             if timeout.reached():
-                self.logger.error("领取凭证奖励超时")
+                self.logger.error(_("领取凭证奖励超时"))
                 break
         back_to_home(self.auto, self.logger)
 

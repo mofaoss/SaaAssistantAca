@@ -257,7 +257,10 @@ def _build_meta(
     _validate_english_declaration(name, field="module name")
     _validate_declaration_fields(fields)
 
-    resolved_id = module_id or infer_module_id(target)
+    inferred_id = infer_module_id(target)
+    if host == ModuleHost.PERIODIC and not inferred_id.startswith("task_"):
+        inferred_id = f"task_{inferred_id}"
+    resolved_id = module_id or inferred_id
     module_name = _module_name_from_target(target)
     resolved_order = int(_DEFAULT_ORDER.get(resolved_id, 100) if order is None else order)
     resolved_page_class_path = _infer_page_class_path(target, host)

@@ -22,11 +22,20 @@ def _contains_han(text: str) -> bool:
 
 
 def _contains_unsupported_non_ascii(text: str) -> bool:
+    has_han = _contains_han(text)
     for ch in text:
         code = ord(ch)
         if code < 128:
             continue
-        if "\u4e00" <= ch <= "\u9fff":
+        if 0x4E00 <= code <= 0x9FFF:
+            continue
+        if 0x3000 <= code <= 0x303F or 0xFF00 <= code <= 0xFFEF:
+            continue
+        if has_han:
+            if 0x3040 <= code <= 0x30FF or 0x31F0 <= code <= 0x31FF:
+                return True
+            if 0x1100 <= code <= 0x11FF or 0x3130 <= code <= 0x318F or 0xAC00 <= code <= 0xD7AF:
+                return True
             continue
         return True
     return False

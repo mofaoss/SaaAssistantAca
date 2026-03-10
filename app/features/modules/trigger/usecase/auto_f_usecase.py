@@ -20,7 +20,7 @@ class AutoFModule(BaseTask):
                 self.auto.press_key("f")
 
 
-@on_demand_module("Trigger", module_id="trigger")
+@on_demand_module("Trigger")
 class TriggerModule:
     def __init__(self, auto, logger):
         self.auto = auto

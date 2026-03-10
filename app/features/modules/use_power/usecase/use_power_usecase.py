@@ -1,6 +1,7 @@
 import re
 import time
 from pathlib import Path
+from app.framework.i18n.runtime import _
 
 import win32gui
 
@@ -12,7 +13,7 @@ from app.features.utils.home_navigation import back_to_home
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@periodic_module("Use Stamina", module_id="task_stamina")
+@periodic_module("Use Stamina")
 class UsePowerModule:
     def __init__(
         self,
@@ -56,7 +57,7 @@ class UsePowerModule:
         """
         config_data = parse_config_update_data(self.update_data)
         if not config_data:
-            self.logger.error("配置数据为空或格式不正确")
+            self.logger.error(_("配置数据为空或格式不正确"))
             return None, None
 
         update_data = config_data.data.updateData
@@ -199,7 +200,7 @@ class UsePowerModule:
                     time.sleep(0.5)
                     continue
             if timeout.reached():
-                self.logger.error("检查体力超时")
+                self.logger.error(_("检查体力超时"))
                 break
         back_to_home(self.auto, self.logger)
 
@@ -242,9 +243,9 @@ class UsePowerModule:
                 has_reward = self.auto.find_element('领取', 'text', crop=(0, 937 / 1080, 266 / 1920, 1),
                                                     is_log=self.is_log)
                 if has_reward:
-                    self.logger.info("已进入活动奖励页面，检测到可领取奖励")
+                    self.logger.info(_("已进入活动奖励页面，检测到可领取奖励"))
                 else:
-                    self.logger.info("已进入活动奖励页面，当前无可领取奖励")
+                    self.logger.info(_("已进入活动奖励页面，当前无可领取奖励"))
                 return True
 
             # 在活动页内，优先点任务标签/活动名
@@ -260,7 +261,7 @@ class UsePowerModule:
                                            offset=(-34 / self.auto.scale_x, 140 / self.auto.scale_y),
                                            is_log=self.is_log):
                     if not self.wait_activity_task_tab(timeout_seconds=8):
-                        self.logger.warning(f"第{attempt}次进入活动页面失败，准备重试")
+                        self.logger.warning(_(f"第{attempt}次进入活动页面失败，准备重试"))
                         continue
                     clicked_task = self.auto.click_element('任务', 'text', crop=(0, 1280 / 1440, 1, 1),
                                                            is_log=self.is_log)
@@ -269,19 +270,19 @@ class UsePowerModule:
                                                                is_log=self.is_log)
 
             if not clicked_task:
-                self.logger.warning(f"第{attempt}次未找到活动任务入口，准备重试")
+                self.logger.warning(_(f"第{attempt}次未找到活动任务入口，准备重试"))
                 continue
 
             if self.wait_activity_reward_page(timeout_seconds=8):
                 has_reward = self.auto.find_element('领取', 'text', crop=(0, 937 / 1080, 266 / 1920, 1),
                                                     is_log=self.is_log)
                 if has_reward:
-                    self.logger.info("已打开活动奖励页面，检测到可领取奖励")
+                    self.logger.info(_("已打开活动奖励页面，检测到可领取奖励"))
                 else:
-                    self.logger.info("已打开活动奖励页面，当前无可领取奖励")
+                    self.logger.info(_("已打开活动奖励页面，当前无可领取奖励"))
                 return True
 
-            self.logger.warning(f"第{attempt}次活动奖励页面未打开，准备重试")
+            self.logger.warning(_(f"第{attempt}次活动奖励页面未打开，准备重试"))
 
         return False
 
@@ -295,7 +296,7 @@ class UsePowerModule:
 
         config_data = parse_config_update_data(self.update_data)
         if not config_data:
-            self.logger.error("配置数据为空或格式不正确")
+            self.logger.error(_("配置数据为空或格式不正确"))
             return
 
         update_data = config_data.data.updateData
@@ -322,7 +323,7 @@ class UsePowerModule:
                         enter_maneuver_flag = True
                         continue
                     else:
-                        self.logger.warning("活动奖励页面未成功打开，继续重试")
+                        self.logger.warning(_("活动奖励页面未成功打开，继续重试"))
                         time.sleep(0.5)
                         continue
 
@@ -332,7 +333,7 @@ class UsePowerModule:
                     finish_flag = True
                     enter_maneuver_flag = True
                     self.auto.press_key('esc')
-                    self.logger.warning("材料本未解锁“深渊”难度")
+                    self.logger.warning(_("材料本未解锁“深渊”难度"))
                     time.sleep(0.5)
                     continue
                 if self.auto.click_element('速战', 'text', crop=(1368 / 1920, 963 / 1080, 1592 / 1920, 1),
@@ -378,7 +379,7 @@ class UsePowerModule:
                                            offset=(-34 / self.auto.scale_x, 140 / self.auto.scale_y),
                                            is_log=self.is_log):
                     if not self.wait_activity_task_tab(timeout_seconds=10):
-                        self.logger.error("进入活动页面超时")
+                        self.logger.error(_("进入活动页面超时"))
                     continue
             else:
                 if finish_flag:
@@ -391,9 +392,9 @@ class UsePowerModule:
                             has_reward = self.auto.find_element('领取', 'text', crop=(0, 937 / 1080, 266 / 1920, 1),
                                                                 is_log=self.is_log)
                             if has_reward:
-                                self.logger.info("活动奖励页面已就绪，检测到可领取奖励")
+                                self.logger.info(_("活动奖励页面已就绪，检测到可领取奖励"))
                             else:
-                                self.logger.info("活动奖励页面已就绪，当前无可领取奖励")
+                                self.logger.info(_("活动奖励页面已就绪，当前无可领取奖励"))
                             reward_status_logged = True
                     if enter_task:
                         if self.auto.click_element('领取', 'text', crop=(0, 937 / 1080, 266 / 1920, 1),
@@ -412,7 +413,7 @@ class UsePowerModule:
                         if self.wait_activity_reward_page(timeout_seconds=8):
                             enter_task = True
                         else:
-                            self.logger.warning("等待活动任务奖励页面超时，重试打开任务")
+                            self.logger.warning(_("等待活动任务奖励页面超时，重试打开任务"))
                         continue
                 else:
                     if self.auto.find_element("恢复感知", "text",
@@ -448,9 +449,9 @@ class UsePowerModule:
 
             if timeout.reached():
                 if only_collect:
-                    self.logger.error("领取活动物资超时")
+                    self.logger.error(_("领取活动物资超时"))
                 else:
-                    self.logger.error("刷活动体力超时")
+                    self.logger.error(_("刷活动体力超时"))
                 break
         back_to_home(self.auto, self.logger)
 
@@ -517,7 +518,7 @@ class UsePowerModule:
                     scroll_no_progress_count += 1
                     no_progress_count = 0
                     if scroll_no_progress_count >= 10:
-                        self.logger.warning("查找“浴火之战”连续滚动无进展，尝试重置页面")
+                        self.logger.warning(_("查找“浴火之战”连续滚动无进展，尝试重置页面"))
                         stage = stage_enter_action
                         scroll_no_progress_count = 0
                     continue
@@ -544,7 +545,7 @@ class UsePowerModule:
                     scroll_no_progress_count += 1
                     no_progress_count = 0
                     if scroll_no_progress_count >= 10:
-                        self.logger.warning("查找“深渊”连续滚动无进展，尝试重置页面")
+                        self.logger.warning(_("查找“深渊”连续滚动无进展，尝试重置页面"))
                         stage = stage_enter_action
                         scroll_no_progress_count = 0
                     continue
@@ -559,7 +560,7 @@ class UsePowerModule:
 
             no_progress_count += 1
             if no_progress_count >= 8:
-                self.logger.warning("常规后勤当前页面无进展，重试")
+                self.logger.warning(_("常规后勤当前页面无进展，重试"))
                 back_to_home(self.auto, self.logger)
                 time.sleep(0.4)
                 no_progress_count = 0
@@ -570,7 +571,7 @@ class UsePowerModule:
                     stage = stage_enter_action
 
             if timeout.reached():
-                self.logger.error("刷常规后勤超时")
+                self.logger.error(_("刷常规后勤超时"))
                 break
 
         self.auto.take_screenshot()

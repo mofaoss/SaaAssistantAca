@@ -1,3 +1,6 @@
 {
+  "module.dummy.title": "en",
+  "module.maze.log.今日的迷宫次数已经一滴都不剩了": "zh_CN",
+  "module.maze.log.迷宫超时": "zh_CN",
   "module.maze.title": "en"
 }

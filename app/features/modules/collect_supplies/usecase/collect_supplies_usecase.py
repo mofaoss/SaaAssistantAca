@@ -1,5 +1,6 @@
 import time
 from datetime import datetime
+from app.framework.i18n.runtime import _
 
 from PySide6.QtCore import Qt
 from qfluentwidgets import InfoBar, InfoBarPosition
@@ -13,7 +14,7 @@ from app.framework.core.module_system import on_demand_module, periodic_module
 from app.framework.i18n import _
 
 
-@periodic_module("Collect Supplies", module_id="task_supplies")
+@periodic_module("Collect Supplies")
 class CollectSuppliesModule:
     def __init__(
         self,
@@ -118,7 +119,7 @@ class CollectSuppliesModule:
                 continue
 
             if timeout.reached():
-                self.logger.error("领取好友体力超时")
+                self.logger.error(_("领取好友体力超时"))
                 break
         back_to_home(self.auto, self.logger)
 
@@ -157,7 +158,7 @@ class CollectSuppliesModule:
                 time.sleep(0.3)
                 continue
             if timeout.reached():
-                self.logger.error("购买每日物资配给箱超时")
+                self.logger.error(_("购买每日物资配给箱超时"))
                 break
                 back_to_home(self.auto, self.logger)
 
@@ -189,7 +190,7 @@ class CollectSuppliesModule:
                 continue
 
             if timeout.reached():
-                self.logger.error("领取邮箱资源超时")
+                self.logger.error(_("领取邮箱资源超时"))
                 break
                 back_to_home(self.auto, self.logger)
 
@@ -225,7 +226,7 @@ class CollectSuppliesModule:
                 continue
 
             if timeout.reached():
-                self.logger.error("领取鱼饵超时")
+                self.logger.error(_("领取鱼饵超时"))
                 break
                 back_to_home(self.auto, self.logger)
 
@@ -278,7 +279,7 @@ class CollectSuppliesModule:
                 time.sleep(1)
                 continue
             if timeout.reached():
-                self.logger.error("领取宿舍拼图超时")
+                self.logger.error(_("领取宿舍拼图超时"))
                 break
 
                 back_to_home(self.auto, self.logger)
@@ -292,7 +293,7 @@ class CollectSuppliesModule:
             # 检查配置数据是否存在且格式正确
             config_data = parse_config_update_data(self.update_data)
             if not config_data:
-                self.logger.warning("配置数据为空或格式不正确，无法获取兑换码")
+                self.logger.warning(_("配置数据为空或格式不正确，无法获取兑换码"))
                 return active_codes
 
             used_codes = self.used_codes or []  # 确保不为None
@@ -311,7 +312,7 @@ class CollectSuppliesModule:
         codes = get_codes()
 
         if not codes or len(codes) == 0:
-            self.logger.info("没有需要兑换的码")
+            self.logger.info(_("没有需要兑换的码"))
             return
 
         index = 0
@@ -324,7 +325,7 @@ class CollectSuppliesModule:
 
             if self.auto.find_element(['礼品', '兑换'], 'text', crop=(823 / 1920, 294 / 1080, 1105 / 1920, 409 / 1080),
                                       is_log=self.is_log):
-                self.logger.info("开始兑换 " + codes[index])
+                self.logger.info(_("Start redeeming code {code}", msgid="redeem_code_start", code=codes[index]))
                 # 点击 文本框
                 self.auto.click_element_with_pos((int(960 / self.auto.scale_x), int(506 / self.auto.scale_y)))
                 # 输入兑换码
@@ -350,7 +351,7 @@ class CollectSuppliesModule:
                 continue
 
             if index >= len(codes):
-                self.logger.info("兑换码已全部兑换")
+                self.logger.info(_("兑换码已全部兑换"))
                 self.auto.press_key('esc')
                 break
             if self.auto.click_element(['前往', '兑换'], 'text',
@@ -376,7 +377,7 @@ class CollectSuppliesModule:
                 continue
 
             if timeout.reached():
-                self.logger.error("兑换兑换码超时")
+                self.logger.error(_("兑换兑换码超时"))
                 break
         back_to_home(self.auto, self.logger)
 

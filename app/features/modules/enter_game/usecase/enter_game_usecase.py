@@ -7,6 +7,7 @@ import threading
 import time
 from pathlib import Path
 from typing import Any, Callable
+from app.framework.i18n.runtime import _
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QFileDialog
@@ -26,7 +27,7 @@ _last_game_process = None
 _last_launch_ts = 0.0
 
 
-@periodic_module("Auto Login", module_id="task_login")
+@periodic_module("Auto Login")
 class EnterGameModule:
     def __init__(self, auto, logger, isLog=False):
         self.auto = auto
@@ -59,10 +60,10 @@ class EnterGameModule:
             if self.auto.click_element("更新", "text", include=False, crop=(0.5, 0.5, 1, 1), action="mouse_click", is_log=self.is_log):
                 time.sleep(2)
                 timeout.reset()
-                self.logger.info("需要更新")
+                self.logger.info(_("需要更新"))
                 continue
             if timeout.reached():
-                self.logger.error("启动器开始游戏超时")
+                self.logger.error(_("启动器开始游戏超时"))
                 break
 
     def handle_game(self):
@@ -76,7 +77,7 @@ class EnterGameModule:
             if self.auto.find_element("基地", "text", crop=(1598 / 1920, 678 / 1080, 1661 / 1920, 736 / 1080)) and self.auto.find_element(
                 "任务", "text", crop=(1452 / 1920, 327 / 1080, 1529 / 1920, 376 / 1080), is_log=self.is_log
             ):
-                self.logger.info("已进入游戏")
+                self.logger.info(_("已进入游戏"))
                 break
 
             if self.auto.click_element(["游戏", "开始"], "text", crop=(852 / 1920, 920 / 1080, 1046 / 1920, 981 / 1080), is_log=self.is_log):
@@ -92,7 +93,7 @@ class EnterGameModule:
                 continue
 
             if timeout.reached():
-                self.logger.error("进入游戏超时")
+                self.logger.error(_("进入游戏超时"))
                 break
 
 

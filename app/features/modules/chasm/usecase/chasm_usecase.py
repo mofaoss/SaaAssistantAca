@@ -1,5 +1,6 @@
 import time
 from datetime import datetime, timedelta
+from app.framework.i18n.runtime import _
 
 from app.framework.infra.automation.timer import Timer
 from app.features.utils.home_navigation import back_to_home
@@ -7,7 +8,7 @@ from app.features.utils.home_navigation import back_to_home
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@periodic_module("Neural Sim", module_id="task_chasm")
+@periodic_module("Neural Sim")
 class ChasmModule:
     def __init__(self, auto, logger, isLog=False):
         self.auto = auto
@@ -38,7 +39,7 @@ class ChasmModule:
                 break
             if self.auto.find_element(['拟境重构'], 'text', crop=(1516 / 1920, 145 / 1080, 1620 / 1920, 174 / 1080),
                                        is_log=self.is_log):
-                self.logger.warning('当前未开放拟境')
+                self.logger.warning(_('当前未开放拟境'))
                 return False
             if self.auto.click_element('确定', 'text', crop=(1888 / 2560, 980 / 1440, 2020 / 2560, 1059 / 1440),
                                        is_log=self.is_log):
@@ -85,7 +86,7 @@ class ChasmModule:
                 continue
 
             if timeout.reached():
-                self.logger.error("精神拟境超时")
+                self.logger.error(_("精神拟境超时"))
                 break
 
     def receive_reward(self):
@@ -96,11 +97,11 @@ class ChasmModule:
             if not self.auto.find_element("app/features/assets/chasm/reward.png", "image",
                                               threshold=0.65, crop=(62 / 1920, 857 / 1080, 193 / 1920, 973 / 1080),
                                               is_log=self.is_log):
-                self.logger.warning('当前未开放拟境')
+                self.logger.warning(_('当前未开放拟境'))
                 break
             if self.auto.find_element(['拟境重构'], 'text', crop=(1516 / 1920, 145 / 1080, 1620 / 1920, 174 / 1080),
                                        is_log=self.is_log):
-                self.logger.warning('当前未开放拟境')
+                self.logger.warning(_('当前未开放拟境'))
                 break
 
             if enter_flag:
@@ -124,7 +125,7 @@ class ChasmModule:
                     continue
 
             if timeout.reached():
-                self.logger.error("领取拟境奖励超时")
+                self.logger.error(_("领取拟境奖励超时"))
                 break
 
     @staticmethod

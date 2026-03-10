@@ -3,6 +3,7 @@ import inspect
 import sys
 import types
 from typing import Callable
+from app.framework.i18n.runtime import _
 
 from PySide6.QtCore import QThread, Signal
 
@@ -220,10 +221,10 @@ class ModuleTaskThread(QThread):
             self.module.run()
         except Exception as e:
             self.session.stop_ocr()
-            self.logger.warning(f"SubTask：{e}")
+            self.logger.warning(_(f"SubTask：{e}"))
         finally:
             try:
                 self.session.stop()
             except Exception as stop_error:
-                self.logger.warning(f"SubTask结束时恢复窗口位置失败：{stop_error}")
+                self.logger.warning(_(f"SubTask结束时恢复窗口位置失败：{stop_error}"))
             self.is_running.emit(False)

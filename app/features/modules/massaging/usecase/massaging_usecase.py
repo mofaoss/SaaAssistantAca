@@ -1,4 +1,5 @@
 import time
+from app.framework.i18n.runtime import _
 
 from app.framework.infra.automation.timer import Timer
 
@@ -47,7 +48,7 @@ class MassagingModule:
                 continue
 
             if timeout.reached():
-                self.logger.error("进入按摩超时")
+                self.logger.error(_("进入按摩超时"))
                 break
 
     def start_massaging(self):
@@ -85,5 +86,5 @@ class MassagingModule:
                 continue
 
             if timeout.reached():
-                self.logger.error("按摩超时")
+                self.logger.error(_("按摩超时"))
                 break

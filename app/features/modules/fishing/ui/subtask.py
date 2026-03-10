@@ -4,6 +4,7 @@ import numpy as np
 from PySide6.QtCore import QThread, Signal, Qt
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QDialog, QLabel, QVBoxLayout
+from app.framework.i18n.runtime import _
 
 from app.framework.infra.config.app_config import config
 from app.framework.core.task_engine.threads import ModuleTaskThread
@@ -20,7 +21,7 @@ class SubTask(ModuleTaskThread):
 class ColorPickDialog(QDialog):
     def __init__(self, img_np, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("请点击图像上的黄色完美收杆区域 (提取颜色)")
+        self.setWindowTitle(_("请点击图像上的黄色完美收杆区域 (提取颜色)"))
 
         # 【核心修复】：强制转换图像内存为连续的 C 风格内存块
         if not img_np.flags['C_CONTIGUOUS']:
@@ -66,7 +67,7 @@ class AdjustColor(QThread, BaseTask):
 
     def run(self):
         if not self.init_auto('game'):
-            self.logger.error("AdjustColor获取auto失败")
+            self.logger.error(_("?????????????"))
             return
         self.auto.take_screenshot()
         img_np = self.auto.get_crop_form_first_screenshot(crop=(1130 / 1920, 240 / 1080, 1500 / 1920, 570 / 1080), is_resize=False)
@@ -79,7 +80,7 @@ class AdjustColor(QThread, BaseTask):
         dialog = ColorPickDialog(img_np)
         if dialog.exec():  # 如果用户点击并成功提取了颜色
             hsv = dialog.picked_hsv
-            self.logger.info(f"选定的HSV值: {hsv}")
+            self.logger.info(_(f"选定的HSV值: {hsv}"))
             self.save_color_to_config(hsv)
             self.color_changed.emit()
 

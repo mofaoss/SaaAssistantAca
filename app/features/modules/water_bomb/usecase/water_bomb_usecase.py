@@ -1,4 +1,5 @@
 import time
+from app.framework.i18n.runtime import _
 
 import cv2
 
@@ -8,7 +9,7 @@ from app.features.modules.water_bomb.decision import Round, Status
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@on_demand_module("Water Bomb", module_id="water_bomb")
+@on_demand_module("Water Bomb")
 class WaterBombModule:
     def __init__(
         self,
@@ -96,7 +97,7 @@ class WaterBombModule:
                 self.auto.press_key('f')
                 continue
             if timeout.reached():
-                self.logger.error('进入心动水弹界面超时')
+                self.logger.error(_('进入心动水弹界面超时'))
                 break
 
     def fight(self):
@@ -116,7 +117,7 @@ class WaterBombModule:
                 continue
             if self.auto.click_element('重新开始', 'text', crop=(1670 / 1920, 954 / 1080, 1800 / 1920, 1000 / 1080),
                                        is_log=self.is_log, threshold=self.template_threshold):
-                self.logger.warning(f"对战失败，连胜中断")
+                self.logger.warning(_(f"对战失败，连胜中断"))
                 self.is_speed_up = False
                 self.current_win = 0
                 # 新一轮，重置计时器
@@ -127,9 +128,9 @@ class WaterBombModule:
             if self.auto.click_element('翻倍连战', 'text', crop=(1670 / 1920, 954 / 1080, 1800 / 1920, 1000 / 1080),
                                        is_log=self.is_log, threshold=self.template_threshold):
                 self.current_win += 1
-                self.logger.warning(f"对战胜利，当前连胜为：{self.current_win}")
+                self.logger.warning(_(f"对战胜利，当前连胜为：{self.current_win}"))
                 if self.current_win >= self.end_win:
-                    self.logger.info(f'已达成{self.end_win}连胜')
+                    self.logger.info(_(f'已达成{self.end_win}连胜'))
                     self.auto.press_key('esc')
                     break
                 self.is_speed_up = False
@@ -181,7 +182,7 @@ class WaterBombModule:
                         self.update_extra_status()
                         win_prob, current_strategy = self.get_action_and_probability()
                         self.logger.warning(self.get_status_dic())
-                        self.logger.info(f'当前最佳操作为：{current_strategy}, 胜率为：{win_prob}')
+                        self.logger.info(_(f'当前最佳操作为：{current_strategy}, 胜率为：{win_prob}'))
                         if win_prob == 0:
                             self.restart()
                             continue
@@ -218,20 +219,20 @@ class WaterBombModule:
                             if self.handle_hammer():
                                 pass
                             else:
-                                self.logger.error('重置之锤使用失败')
+                                self.logger.error(_('重置之锤使用失败'))
                         # 策略为使用偷
                         elif '.' in current_strategy:
                             if self.handle_steal(current_strategy):
                                 pass
                             else:
-                                self.logger.error('偷道具失败')
+                                self.logger.error(_('偷道具失败'))
                         # 策略为开枪
                         elif current_strategy in self.shoot_action:
                             if self.handle_shooting(current_strategy):
                                 # 射击完成后子弹状态必为-1
                                 self.bullet_type = -1
                             else:
-                                self.logger.error('开枪失败')
+                                self.logger.error(_('开枪失败'))
                     # 不管上一个操作有没有处理成功，都需要清空策略后再继续
                     current_strategy = ''
                 # npc回合
@@ -239,7 +240,7 @@ class WaterBombModule:
                     current_strategy = ''
                     continue
             if timeout.reached():
-                self.logger.error('心动水弹对战超时')
+                self.logger.error(_('心动水弹对战超时'))
                 break
 
     def restart(self):
@@ -272,10 +273,10 @@ class WaterBombModule:
                     continue
 
             if timeout.reached():
-                self.logger.error('重开超时')
+                self.logger.error(_('重开超时'))
                 break
         self.is_speed_up = False
-        self.logger.warning('胜率为0，选择重开')
+        self.logger.warning(_('胜率为0，选择重开'))
 
     def handle_shooting(self, person):
         """处理开枪策略下的逻辑"""
@@ -343,7 +344,7 @@ class WaterBombModule:
                     continue
 
             if timeout.reached():
-                self.logger.error(f'{person}超时')
+                self.logger.error(_(f'{person}超时'))
                 return False
 
     def handle_insight_sunglasses(self):
@@ -376,7 +377,7 @@ class WaterBombModule:
                         return
             else:
                 if break_flag:
-                    self.logger.error('看破墨镜后处理未识别到任何文字')
+                    self.logger.error(_('看破墨镜后处理未识别到任何文字'))
                     break
                 else:
                     break_flag = True
@@ -384,7 +385,7 @@ class WaterBombModule:
                     continue
 
             if timeout.reached():
-                self.logger.error('看破墨镜后处理超时')
+                self.logger.error(_('看破墨镜后处理超时'))
                 break
 
     def handle_steal(self, item_name):
@@ -462,7 +463,7 @@ class WaterBombModule:
                 time.sleep(1)
 
             if timeout.reached():
-                self.logger.error('使用重置之锤超时')
+                self.logger.error(_('使用重置之锤超时'))
                 return False
 
     def scroll_to_bottom(self):
@@ -489,7 +490,7 @@ class WaterBombModule:
                 return True
 
             if timeout.reached():
-                self.logger.error('偷道具超时')
+                self.logger.error(_('偷道具超时'))
                 return False
 
     def use_normal_item(self, item_name):
@@ -525,7 +526,7 @@ class WaterBombModule:
                 time.sleep(0.5)
 
             if timeout.reached():
-                self.logger.error(f'使用道具{item_name}超时')
+                self.logger.error(_(f'使用道具{item_name}超时'))
                 return False
 
     def update_extra_status(self):
@@ -597,9 +598,9 @@ class WaterBombModule:
         elif self.remaining_blank_bullet == 0:
             self.bullet_type = 1
 
-        self.logger.info(f"当前血量上限：{self.max_hp}")
-        self.logger.info(f"当前玩家血量：{self.current_player_hp}，对方血量：{self.current_enemy_hp}")
-        self.logger.info(f"当前水弹数量：{self.remaining_live_bullet}，空弹数量：{self.remaining_blank_bullet}")
+        self.logger.info(_(f"当前血量上限：{self.max_hp}"))
+        self.logger.info(_(f"当前玩家血量：{self.current_player_hp}，对方血量：{self.current_enemy_hp}"))
+        self.logger.info(_(f"当前水弹数量：{self.remaining_live_bullet}，空弹数量：{self.remaining_blank_bullet}"))
         # time.sleep(5)
 
     def update_items_list(self):
@@ -614,8 +615,8 @@ class WaterBombModule:
 
         self.player_items = self.get_items(crop=player_area)
         self.enemy_items = self.get_items(crop=enemy_area)
-        self.logger.info(f"玩家道具：{self.player_items}")
-        self.logger.info(f"对方道具：{self.enemy_items}")
+        self.logger.info(_(f"玩家道具：{self.player_items}"))
+        self.logger.info(_(f"对方道具：{self.enemy_items}"))
 
     def get_items(self, crop):
         """根据区域获取道具"""

@@ -19,13 +19,14 @@ foundation of their MIT-licensed pipeline files.
 import time
 import cv2
 import numpy as np
+from app.framework.i18n.runtime import _
 
 from app.framework.core.module_system import on_demand_module, periodic_module
 from app.framework.infra.automation.timer import Timer
 from app.features.utils.home_navigation import back_to_home
 
 
-@periodic_module("Weapon Upgrade", module_id="task_weapon")
+@periodic_module("Weapon Upgrade")
 class WeaponUpgradeModule:
     def __init__(self, auto, logger, isLog=True, enable_weapon_upgrade=True):
         self.auto = auto
@@ -68,10 +69,10 @@ class WeaponUpgradeModule:
 
     def run(self):
         if not self.enable_weapon_upgrade:
-            self.logger.info("用户未勾选【升级枪械】，跳过该任务。")
+            self.logger.info(_("用户未勾选【升级枪械】，跳过该任务。"))
             return
 
-        self.logger.info("开始武器强化流程...")
+        self.logger.info(_("开始武器强化流程..."))
         back_to_home(self.auto, self.logger)
 
         if self.open_inventory_and_sort():
@@ -91,11 +92,11 @@ class WeaponUpgradeModule:
 
     def open_inventory_and_sort(self):
         """打开背包 -> 排序 -> 选择枪械 -> 点击枪械培养 的一连串前置操作"""
-        self.logger.info("正在打开背包并筛选武器...")
+        self.logger.info(_("正在打开背包并筛选武器..."))
 
         # 1. 打开背包
         if not self._wait_and_click('背包', 'text', self._roi(1021, 625, 144, 119)):
-            self.logger.error("未找到背包按钮，中止。")
+            self.logger.error(_("未找到背包按钮，中止。"))
             return False
 
         # 2. 点击左下角排序按钮
@@ -119,7 +120,7 @@ class WeaponUpgradeModule:
 
         # 7. 点击枪械培养
         if self._wait_and_click('枪械培养', 'text', self._roi(620, 500, 122, 72)):
-            self.logger.info("成功进入枪械培养界面。")
+            self.logger.info(_("成功进入枪械培养界面。"))
             return True
 
         return False
@@ -136,12 +137,12 @@ class WeaponUpgradeModule:
 
             # 状态 1: 武器等级已满
             if self.auto.find_element('武器等级已满', 'text', crop=self._roi(986, 203, 128, 36), take_screenshot=False):
-                self.logger.info("武器等级已满，停止升级流程。")
+                self.logger.info(_("武器等级已满，停止升级流程。"))
                 break
 
             # 状态 2: 弹出了“等级提升”窗口
             if self.auto.find_element('等级提升', 'text', crop=self._roi(548, 175, 180, 124), take_screenshot=False):
-                self.logger.info("触发【等级提升】，点击空白处关闭弹窗...")
+                self.logger.info(_("触发【等级提升】，点击空白处关闭弹窗..."))
                 h, w = self.auto.first_screenshot.shape[:2]
                 self.auto.move_click(int(100 / self.base_w * w), int(100 / self.base_h * h))
                 time.sleep(1)
@@ -163,11 +164,11 @@ class WeaponUpgradeModule:
                 )
 
                 if is_ready_to_upgrade:
-                    self.logger.info("经验值已足够，点击【升级】按钮！")
+                    self.logger.info(_("经验值已足够，点击【升级】按钮！"))
                     self.auto.click_element('升级', 'text', crop=self._roi(1040, 600, 189, 141), take_screenshot=False, is_log=self.is_log)
                     time.sleep(2)  # 等待升级动画
                 else:
-                    self.logger.info("经验不足，持续添加强化材料...")
+                    self.logger.info(_("经验不足，持续添加强化材料..."))
                     for mat in mat_imgs:
                         if self.auto.click_element(mat, 'image', crop=self._roi(0, 20, 387, 192), take_screenshot=False):
                             break  # 点到任何一个材料就跳出，重新判定经验条
@@ -176,12 +177,12 @@ class WeaponUpgradeModule:
 
             # 状态 4: 如果没有看到材料，但是看到了 "+" 号
             if self.auto.click_element('app/features/assets/upgrade/选择材料.png', 'image', crop=self._roi(828, 386, 193, 189), take_screenshot=False, is_log=self.is_log):
-                self.logger.info("发现空的强化槽，点击【+】号打开材料选择面板...")
+                self.logger.info(_("发现空的强化槽，点击【+】号打开材料选择面板..."))
                 time.sleep(1)
                 continue
 
             if timeout.reached():
-                self.logger.error("武器升级流程达到最长执行时间 (超时)。")
+                self.logger.error(_("武器升级流程达到最长执行时间 (超时)。"))
                 break
 
 

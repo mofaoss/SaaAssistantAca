@@ -1,3 +1,15 @@
 {
-  "module.fishing.title": "en"
+  "module.dummy.title": "en",
+  "module.fishing.log.text": "en",
+  "module.fishing.log.到点_收杆": "zh_CN",
+  "module.fishing.log.咋回事_强制收杆一次": "zh_CN",
+  "module.fishing.log.运行错误_存在上限的值小于下限": "zh_CN",
+  "module.fishing.log.进入钓鱼超时": "zh_CN",
+  "module.fishing.log.选择鱼饵超时超时": "zh_CN",
+  "module.fishing.log.钓鱼佬永不空军": "zh_CN",
+  "module.fishing.log.钓鱼环节超时": "zh_CN",
+  "module.fishing.log.钓鱼结束环节超时": "zh_CN",
+  "module.fishing.log.鱼跑了_空军": "zh_CN",
+  "module.fishing.title": "en",
+  "module.fishing.ui.请点击图像上的黄色完美收杆区域_提取颜色": "zh_CN"
 }

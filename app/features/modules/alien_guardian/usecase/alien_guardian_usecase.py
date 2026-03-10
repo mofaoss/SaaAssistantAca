@@ -1,11 +1,12 @@
 import time
+from app.framework.i18n.runtime import _
 
 from app.framework.infra.automation.timer import Timer
 
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@on_demand_module("Alien Guardian", module_id="alien_guardian")
+@on_demand_module("Alien Guardian")
 class AlienGuardianModule:
     def __init__(self, auto, logger, ComboBox_mode=0):
         self.auto = auto
@@ -49,7 +50,7 @@ class AlienGuardianModule:
             self.auto.take_screenshot()
 
             if timeout.reached():
-                self.logger.error("异星守护战斗超时")
+                self.logger.error(_("异星守护战斗超时"))
                 break
 
     def fight_normal(self):
@@ -84,7 +85,7 @@ class AlienGuardianModule:
                 continue
 
             if timeout.reached():
-                self.logger.error("异星守护战斗超时")
+                self.logger.error(_("异星守护战斗超时"))
                 break
 
     def fight_endless(self):
@@ -126,7 +127,7 @@ class AlienGuardianModule:
                 continue
 
             if timeout.reached():
-                self.logger.error("异星守护战斗超时")
+                self.logger.error(_("异星守护战斗超时"))
                 break
 
 

@@ -10,7 +10,7 @@ from app.framework.core.module_system import on_demand_module, periodic_module
 from app.framework.i18n import _
 
 
-@periodic_module("Execute Exit", module_id="task_close_game")
+@periodic_module("Execute Exit")
 class CloseGameModule:
     def __init__(
         self,

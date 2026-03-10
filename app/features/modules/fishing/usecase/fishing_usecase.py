@@ -1,6 +1,7 @@
 import os
 import time
 from datetime import datetime
+from app.framework.i18n.runtime import _
 
 import cv2
 import numpy as np
@@ -13,7 +14,7 @@ from app.framework.infra.automation.timer import Timer
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@on_demand_module("Fishing", module_id="fishing")
+@on_demand_module("Fishing")
 def run_fishing(
     LineEdit_fish_upper: str = "25,255,255",
     LineEdit_fish_lower: str = "20,220,245",
@@ -96,12 +97,12 @@ class FishingModule:
         self.start_time = time.time()
 
         if np.any(self.upper_yellow < self.lower_yellow):
-            self.logger.error("运行错误，存在上限的值小于下限")
+            self.logger.error(_("运行错误，存在上限的值小于下限"))
             return
 
         self.is_select_fish = False
         for i in range(self.fish_times):
-            self.logger.info(f"开始第 {i + 1} 次钓鱼")
+            self.logger.info(_(f"开始第 {i + 1} 次钓鱼"))
             try:
                 self.enter_fish()
                 self.start_fish()
@@ -166,7 +167,7 @@ class FishingModule:
                 continue
 
             if timeout.reached():
-                self.logger.error("进入钓鱼超时")
+                self.logger.error(_("进入钓鱼超时"))
                 break
 
     def select_lure(self):
@@ -196,7 +197,7 @@ class FishingModule:
                 time.sleep(0.3)
 
             if timeout.reached():
-                self.logger.error("选择鱼饵超时超时")
+                self.logger.error(_("选择鱼饵超时超时"))
                 return False
 
     def start_fish(self):
@@ -212,7 +213,7 @@ class FishingModule:
                 # blocks_num = self.count_yellow_blocks(self.auto.current_screenshot)
                 blocks_num = count_color_blocks(self.auto.current_screenshot, self.lower_yellow, self.upper_yellow)
                 if blocks_num >= 2:
-                    self.logger.info("到点，收杆!")
+                    self.logger.info(_("到点，收杆!"))
                     if self.is_use_time_judge:
                         self.start_time = time.time()
                     self.auto.press_key(self.press_key)
@@ -229,18 +230,18 @@ class FishingModule:
                     if self.is_use_time_judge:
                         # 识别出未进入黄色区域，则进行时间判断、
                         if time.time() - self.start_time > 2.2:
-                            self.logger.warning("咋回事？强制收杆一次")
+                            self.logger.warning(_("咋回事？强制收杆一次"))
                             self.start_time = time.time()
                             self.auto.press_key(self.press_key)
             # 低性能模式判断方案
             else:
                 if time.time() - self.bite_time > 1.8:
-                    self.logger.info("到点，收杆!")
+                    self.logger.info(_("到点，收杆!"))
                     self.bite_time = time.time()
                     self.auto.press_key(self.press_key)
 
             if timeout.reached():
-                self.logger.error("钓鱼环节超时")
+                self.logger.error(_("钓鱼环节超时"))
                 break
 
     def after_fish(self):
@@ -256,7 +257,7 @@ class FishingModule:
             #     break
             if self.auto.find_element('本次获得', 'text', crop=(835 / 1920, 288 / 1080, 1076 / 1920, 377 / 1080),
                                       is_log=self.is_log):
-                self.logger.info("钓鱼佬永不空军！")
+                self.logger.info(_("钓鱼佬永不空军！"))
                 if self.save_fish:
                     save_flag = True
                     time.sleep(1)
@@ -266,14 +267,14 @@ class FishingModule:
                 break
             if self.auto.find_element('鱼跑掉了', 'text', crop=(858 / 1920, 151 / 1080, 1054 / 1920, 280 / 1080),
                                       is_log=self.is_log):
-                self.logger.warning("鱼跑了，空军！")
+                self.logger.warning(_("鱼跑了，空军！"))
                 break
             # 如果回到了未甩杆状态，也退出
             if not self.is_spin_rod():
                 break
 
             if timeout.reached():
-                self.logger.error("钓鱼结束环节超时")
+                self.logger.error(_("钓鱼结束环节超时"))
                 break
 
     def save_picture(self):
@@ -283,7 +284,7 @@ class FishingModule:
             os.makedirs(self.save_path)
         self.auto.take_screenshot()
         self.auto.crrent_screenshot.save(file_path)
-        self.logger.info(f"出了条大的！截图已保存至：{file_path}")
+        self.logger.info(_(f"出了条大的！截图已保存至：{file_path}"))
 
     # def count_yellow_blocks(self, image):
     #     # 黄色的确切HSV值
@@ -325,14 +326,14 @@ class FishingModule:
         try:
             text = text_results[0][0]
             best_match = process.extractOne(text, key_list)
-            self.logger.info(f"钓鱼按键识别最佳匹配为：{best_match}")
+            self.logger.info(_(f"钓鱼按键识别最佳匹配为：{best_match}"))
             key = best_match[0]
             self.press_key = key
             signalBus.updateFishKey.emit(key)
             if self.app_config is not None and hasattr(self.app_config, "set") and hasattr(self.app_config, "LineEdit_fish_key"):
                 self.app_config.set(getattr(self.app_config, "LineEdit_fish_key"), key)
         except Exception as e:
-            self.logger.error(f"未识别出按键文字，请手动设置{e}")
+            self.logger.error(_(f"未识别出按键文字，请手动设置{e}"))
             return False
         return True
 

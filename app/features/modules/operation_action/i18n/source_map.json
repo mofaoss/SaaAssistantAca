@@ -1,4 +1,8 @@
 {
   "module.action.title": "en",
+  "module.dummy.title": "en",
+  "module.operation_action.log.执行常规训练超时": "zh_CN",
+  "module.operation_action.log.进入常规行动时连续滚轮无进展_已停止以避免后台卡死": "zh_CN",
+  "module.operation_action.log.进入常规行动超时": "zh_CN",
   "module.task_operation.title": "en"
 }

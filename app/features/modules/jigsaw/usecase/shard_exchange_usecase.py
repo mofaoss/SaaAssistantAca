@@ -14,13 +14,14 @@ foundation of their MIT-licensed pipeline files.
 
 import time
 import cv2
+from app.framework.i18n.runtime import _
 
 from app.framework.core.module_system import on_demand_module, periodic_module
 from app.framework.infra.automation.timer import Timer
 from app.features.utils.home_navigation import back_to_home
 
 
-@periodic_module("Shard Exchange", module_id="task_shard_exchange")
+@periodic_module("Shard Exchange")
 class ShardExchangeModule:
     def __init__(
         self,
@@ -60,10 +61,10 @@ class ShardExchangeModule:
 
     def run(self):
         if not (self.enable_receive or self.enable_gift or self.enable_recycle):
-            self.logger.info("信源碎片相关操作均未勾选，跳过该任务。")
+            self.logger.info(_("信源碎片相关操作均未勾选，跳过该任务。"))
             return
 
-        self.logger.info("开始信源碎片相关流程...")
+        self.logger.info(_("开始信源碎片相关流程..."))
         back_to_home(self.auto, self.logger)
         self.swipe_to_base_puzzle()
 
@@ -71,22 +72,22 @@ class ShardExchangeModule:
         if self.enable_receive:
             self.receive_shards()
         else:
-            self.logger.info("未勾选【接收碎片】，跳过。")
+            self.logger.info(_("未勾选【接收碎片】，跳过。"))
 
         if self.enable_gift:
             self.gift_shards()
         else:
-            self.logger.info("未勾选【赠送碎片】，跳过。")
+            self.logger.info(_("未勾选【赠送碎片】，跳过。"))
 
         if self.enable_recycle:
             self.exchange_and_recycle()
         else:
-            self.logger.info("未勾选【信源回收】，跳过。")
+            self.logger.info(_("未勾选【信源回收】，跳过。"))
 
     def swipe_to_base_puzzle(self):
         # 注意这里加入 take_screenshot=True 确保刷新了首张截图
         if self.auto.find_element('app/features/assets/jigsaw/base.png', 'image', crop=self._roi(0, 0, 95, 102), take_screenshot=True, is_log=self.is_log):
-            self.logger.info("识别到在基地内部，调整拼图视角...")
+            self.logger.info(_("识别到在基地内部，调整拼图视角..."))
 
             # 使用 first_screenshot 的宽高计算实际点击像素坐标
             h, w = self.auto.first_screenshot.shape[:2]
@@ -99,14 +100,14 @@ class ShardExchangeModule:
             self.auto.key_up('a')
 
     def receive_shards(self):
-        self.logger.info("检查是否有待接收的碎片...")
+        self.logger.info(_("检查是否有待接收的碎片..."))
         if self.auto.click_element('接收', 'text', crop=self._roi(247, 0, 504, 129), take_screenshot=True, is_log=self.is_log):
             if self.auto.click_element('键接收', 'text', crop=self._roi(1039, 615, 196, 93), take_screenshot=True, is_log=self.is_log):
-                self.logger.info("成功一键接收碎片。")
+                self.logger.info(_("成功一键接收碎片。"))
                 time.sleep(1)
 
     def gift_shards(self):
-        self.logger.info("开始赠送流程...")
+        self.logger.info(_("开始赠送流程..."))
         if not self.auto.click_element('赠送', 'text', crop=self._roi(247, 0, 504, 129), take_screenshot=True, is_log=self.is_log):
             return
 
@@ -118,7 +119,7 @@ class ShardExchangeModule:
             if self.auto.find_element('信源断片已达上限', 'text', crop=self._roi(454, 333, 383, 48), take_screenshot=False) or \
             self._is_color_match(self._roi(1014, 671, 22, 23), [180, 220, 240], [190, 240, 255]):
 
-                self.logger.warning("达到赠送/接收上限。")
+                self.logger.warning(_("达到赠送/接收上限。"))
                 self.auto.click_element('获得道具', 'text', crop=self._roi(488, 0, 298, 169), take_screenshot=False, is_log=self.is_log)
                 break
 
@@ -128,20 +129,20 @@ class ShardExchangeModule:
                 self.execute_custom_getting_max()
 
                 if self.auto.click_element('赠送', 'text', crop=self._roi(1145, 100, 135, 322), take_screenshot=True, is_log=self.is_log):
-                    self.logger.info("已成功赠送给好友。")
+                    self.logger.info(_("已成功赠送给好友。"))
                     time.sleep(1)
                 continue
 
             if self.auto.find_element('app/features/assets/jigsaw/9_piece_present.png', 'image', crop=self._roi(495, 618, 567, 74), take_screenshot=False):
-                self.logger.info("没有更多碎片可以赠送了。")
+                self.logger.info(_("没有更多碎片可以赠送了。"))
                 break
 
             if timeout.reached():
-                self.logger.error("赠送流程超时。")
+                self.logger.error(_("赠送流程超时。"))
                 break
 
     def exchange_and_recycle(self):
-        self.logger.info("进入信源交换与回收...")
+        self.logger.info(_("进入信源交换与回收..."))
         if self.auto.click_element('交换', 'text', crop=self._roi(821, 240, 257, 307), take_screenshot=True, is_log=self.is_log):
             if self.auto.click_element('回收', 'text', crop=self._roi(853, 254, 220, 300), take_screenshot=True, is_log=self.is_log):
                 time.sleep(1)
@@ -149,12 +150,12 @@ class ShardExchangeModule:
                 self.execute_custom_puzzle_recycle(min_retain=15)
 
                 if self.auto.find_element('不足5段', 'text', crop=self._roi(450, 333, 391, 51), take_screenshot=True):
-                    self.logger.warning("碎片不足，无法进行回收。")
+                    self.logger.warning(_("碎片不足，无法进行回收。"))
                     self.auto.take_screenshot()
 
     def execute_custom_getting_max(self):
         """寻找数量最大的碎片并选中 """
-        self.logger.info("执行自定义动作：寻找并选择数量最多的碎片...")
+        self.logger.info(_("执行自定义动作：寻找并选择数量最多的碎片..."))
 
         pc_roi_list = [
             [28, 147, 25, 21],  [164, 148, 25, 20], [30, 245, 25, 20],  [166, 245, 22, 22],
@@ -182,7 +183,7 @@ class ShardExchangeModule:
                     continue
 
         if max_roi_ratio is not None and max_val > 0:
-            self.logger.info(f"寻找到最大碎片数量为: {max_val}，准备点击选中该碎片。")
+            self.logger.info(_(f"寻找到最大碎片数量为: {max_val}，准备点击选中该碎片。"))
 
             h, w = self.auto.first_screenshot.shape[:2]
 
@@ -192,10 +193,10 @@ class ShardExchangeModule:
             self.auto.click_element_with_pos((top_left, bottom_right), action="move_click", n=3)
             time.sleep(0.5)
         else:
-            self.logger.warning("未能通过 OCR 识别到有效的碎片数量，跳过该操作。")
+            self.logger.warning(_("???????????????????????"))
 
     def execute_custom_puzzle_recycle(self, min_retain=15):
-        self.logger.info(f"开始扫描碎片数量，每种至少保留 {min_retain} 个...")
+        self.logger.info(_(f"开始扫描碎片数量，每种至少保留 {min_retain} 个..."))
         self.auto.take_screenshot()
 
         roi_list = [
@@ -216,10 +217,10 @@ class ShardExchangeModule:
                 except ValueError:
                     puzzle_counts[i] = 0
 
-        self.logger.info(f"当前信源碎片数量总计: {puzzle_counts}")
+        self.logger.info(_(f"当前信源碎片数量总计: {puzzle_counts}"))
 
         recycle_amounts = self._calculate_recycle_amounts(puzzle_counts, min_retain)
-        self.logger.info(f"计算完毕，待回收碎片数量分布: {recycle_amounts}")
+        self.logger.info(_(f"计算完毕，待回收碎片数量分布: {recycle_amounts}"))
 
         h, w = self.auto.first_screenshot.shape[:2]
 
@@ -227,7 +228,7 @@ class ShardExchangeModule:
             if count == 0:
                 continue
 
-            self.logger.info(f"选中碎片类型 [{i+1}]，准备回收 {count} 个。")
+            self.logger.info(_(f"选中碎片类型 [{i+1}]，准备回收 {count} 个。"))
 
             # 点击对应的碎片
             target_ratio = self._roi(*roi_list[i])
@@ -244,7 +245,7 @@ class ShardExchangeModule:
                 self.auto.move_click(add_x, add_y)
                 time.sleep(0.5)
 
-        self.logger.info("信源选择完毕，等待后续点击确认回收...")
+        self.logger.info(_("信源选择完毕，等待后续点击确认回收..."))
 
     def _calculate_recycle_amounts(self, fragment_counts: list, min_retain: int) -> list:
         recyclable = []

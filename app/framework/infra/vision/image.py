@@ -1,4 +1,5 @@
 import ctypes
+from app.framework.i18n.runtime import _
 
 import cv2
 import numpy as np
@@ -154,7 +155,7 @@ class ImageUtils:
         except Exception as e:
             # 根据设置决定是否显示图像识别日志
             if config.isLog.value:
-                logger.error(f"图像匹配过程出现异常: {e}")
+                logger.error(_(f"图像匹配过程出现异常: {e}"))
             # 出错时返回最低相似度和零原点，确保业务逻辑能继续走下去而不闪退
             return 0.0, (0, 0)
 

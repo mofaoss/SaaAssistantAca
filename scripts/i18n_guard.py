@@ -124,7 +124,11 @@ def _is_translated_call(node: ast.AST | None) -> bool:
 
 
 def _is_raw_text_node(node: ast.AST | None) -> bool:
-    return isinstance(node, (ast.Constant, ast.JoinedStr)) and not _is_translated_call(node)
+    if _is_translated_call(node):
+        return False
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return bool(node.value.strip())
+    return isinstance(node, ast.JoinedStr)
 
 
 def _extract_msg_arg(call: ast.Call) -> ast.AST | None:

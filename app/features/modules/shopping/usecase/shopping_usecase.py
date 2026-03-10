@@ -14,7 +14,7 @@ from app.framework.core.module_system import on_demand_module, periodic_module
 from app.framework.i18n import _
 
 
-@periodic_module("Shop", module_id="task_shop")
+@periodic_module("Shop")
 class ShoppingModule:
     def __init__(
         self,
