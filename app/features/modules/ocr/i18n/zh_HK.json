@@ -20,5 +20,13 @@
   "module.ocr.log.5f7324113199": "OCR initialization completed",
   "module.ocr.log.5367a13ccc69": "OCR initialization failed: This CPU does not support AVX2 instruction set",
   "module.ocr.log.64791083260d": "OCR initialization failed: {e}",
-  "module.ocr.log.5678b1bd9312": "OCR failed to read image, invalid path or unreadable file: {image_path}"
+  "module.ocr.log.5678b1bd9312": "OCR failed to read image, invalid path or unreadable file: {image_path}",
+  "module.ocr.log.ocr_hit_frame_cache_skipping_repeated_recognitio": "OCR hit frame cache, skipping repeated recognition",
+  "module.ocr.log.ocr_hit_no_text_cooldown_skipping_recognition": "OCR hit no-text cooldown, skipping recognition",
+  "module.ocr.log.ocr_initialization_completed": "OCR initialization completed",
+  "module.ocr.log.ocr_initialization_failed_this_cpu_does_not_supp": "OCR initialization failed: This CPU does not support AVX2 instruction set",
+  "module.ocr.log.ocr_input_image_is_empty_skipping_this_recogniti": "OCR input image is empty, skipping this recognition",
+  "module.ocr.log.ocr_quick_check_low_text_probability_frame_skipp": "OCR quick check: low text probability frame, skipping recognition",
+  "module.ocr.log.ocr_recognized_no_text": "OCR recognized no text",
+  "module.ocr.log.starting_to_initialize_ocr": "Starting to initialize OCR..."
 }

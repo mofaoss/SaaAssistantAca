@@ -1,0 +1,18 @@
+{
+  "module.ocr.log.1c5f467f1be7": "en",
+  "module.ocr.log.328dd4d1a4f3": "en",
+  "module.ocr.log.5367a13ccc69": "en",
+  "module.ocr.log.5f7324113199": "en",
+  "module.ocr.log.b5025abbb9d2": "en",
+  "module.ocr.log.dd048bb5cb14": "en",
+  "module.ocr.log.e800193de899": "en",
+  "module.ocr.log.ecbbcbc53c31": "en",
+  "module.ocr.log.ocr_hit_frame_cache_skipping_repeated_recognitio": "en",
+  "module.ocr.log.ocr_hit_no_text_cooldown_skipping_recognition": "en",
+  "module.ocr.log.ocr_initialization_completed": "en",
+  "module.ocr.log.ocr_initialization_failed_this_cpu_does_not_supp": "en",
+  "module.ocr.log.ocr_input_image_is_empty_skipping_this_recogniti": "en",
+  "module.ocr.log.ocr_quick_check_low_text_probability_frame_skipp": "en",
+  "module.ocr.log.ocr_recognized_no_text": "en",
+  "module.ocr.log.starting_to_initialize_ocr": "en"
+}

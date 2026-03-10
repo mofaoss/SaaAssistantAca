@@ -15,7 +15,7 @@ class RedeemCodesView:
             dialog = CustomMessageBox(parent, "导入兑换码", "text_edit")
             dialog.content.setEnabled(True)
             dialog.content.setPlaceholderText(
-                _('One code per line', msgid='8271d40248dc')
+                _('One code per line', msgid='one_code_per_line')
             )
             if dialog.exec():
                 return dialog.content.toPlainText()

@@ -12,5 +12,8 @@
   "module.enter_game.log.528f0473f979": "Failed to resolve launch arguments, start_path: {start_path}, game_channel: {game_channel}",
   "module.enter_game.ui.71ae3513d20a": "Failed to spawn process: {exc}",
   "module.enter_game.log.9eddf8040deb": "Failed to spawn process: {exc}",
-  "module.task_login.title": "Auto Login"
+  "module.task_login.title": "Auto Login",
+  "module.enter_game.log.detected_that_the_game_process_started_by_the_pr": "Detected that the game process started by the program is still running, skipping duplicate startup",
+  "module.enter_game.log.game_window_already_exists": "Game window already exists",
+  "module.enter_game.ui.failed_to_resolve_launch_arguments": "Failed to resolve launch arguments"
 }

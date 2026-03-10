@@ -128,7 +128,7 @@ class Automation:
         if not hwnd:
             self._log_error_throttled(
                 "refresh_hwnd_failed",
-                _(f'Handle for window {self.window_title} not found', msgid='c627e679820a'),
+                _(f'Handle for window {self.window_title} not found', msgid='handle_for_window_value_not_found'),
             )
             return False
         self.hwnd = hwnd
@@ -166,10 +166,10 @@ class Automation:
         """根据传入的窗口名和类型确定可操作的句柄"""
         hwnd = get_hwnd(self.window_title, self.window_class)
         if hwnd:
-            self.logger.info(_(f'Found handle for window {self.window_title}: {hwnd}', msgid='302d2c73bec4'))
+            self.logger.info(_(f'Found handle for window {self.window_title}: {hwnd}', msgid='found_handle_for_window_value_hwnd'))
             return hwnd
         else:
-            raise ValueError(_(f'Handle for {self.window_title} not found', msgid='2419431adb62'))
+            raise ValueError(_(f'Handle for {self.window_title} not found', msgid='handle_for_value_not_found'))
     def take_screenshot(self, crop=(0, 0, 1, 1), is_interval=True):
         """
         捕获游戏窗口的截图。
@@ -191,7 +191,7 @@ class Automation:
             else:
                 self.current_screenshot = None
         except Exception as e:
-            self._log_error_throttled("take_screenshot_failed", _(f'Screenshot failed: {e}', msgid='2417d34f4f67'))
+            self._log_error_throttled("take_screenshot_failed", _(f'Screenshot failed: {e}', msgid='screenshot_failed_e'))
 
     def calculate_positions(self, max_loc):
         """
@@ -217,7 +217,7 @@ class Automation:
         if temp is None:
             self._log_error_throttled(
                 "find_image_without_screenshot",
-                _('No available screenshot currently, skipping image matching', msgid='1c250a959600'),
+                _('No available screenshot currently, skipping image matching', msgid='no_available_screenshot_currently_skipping_image'),
             )
             return None, None, None
 
@@ -233,16 +233,16 @@ class Automation:
                     top_left, bottom_right = self.calculate_positions((x, y, w, h))
                     if is_log:
                         template_name = self._template_log_name(template)
-                        self.logger.debug(_(f'Target image: {template_name} Similarity: {conf:.2f}', msgid='e0dbd06a50e5'))
+                        self.logger.debug(_(f'Target image: {template_name} Similarity: {conf:.2f}', msgid='target_image_template_name_similarity_conf'))
                     return top_left, bottom_right, conf
                 else:
                     if is_log:
                         template_name = self._template_log_name(template)
-                        self.logger.debug(_(f'Target image: {template_name} Similarity: {conf:.2f}, below {threshold}', msgid='00c5486e65e4'))
+                        self.logger.debug(_(f'Target image: {template_name} Similarity: {conf:.2f}, below {threshold}', msgid='target_image_template_name_similarity_conf_below'))
             else:
                 if is_log:
                     template_name = self._template_log_name(template)
-                    self.logger.debug(_(f'Target image: {template_name} No match found', msgid='6b3f6d57bb1e'))
+                    self.logger.debug(_(f'Target image: {template_name} No match found', msgid='target_image_template_name_no_match_found'))
             if is_show:
                 for idx, (x, y, w, h, conf) in enumerate(matches):
                     cv2.rectangle(temp,
@@ -256,7 +256,7 @@ class Automation:
                                 0.5, (0, 255, 0), 2)
                 ImageUtils.show_ndarray(temp)
         except Exception as e:
-            self._log_error_throttled("find_image_error", _(f'Error finding image: {e}', msgid='9d468742aa10'))
+            self._log_error_throttled("find_image_error", _(f'Error finding image: {e}', msgid='error_finding_image_e'))
             return None, None, None
 
     @atoms
@@ -273,7 +273,7 @@ class Automation:
             if not self.ocr_result:
                 self.ocr_result = []
         except Exception as e:
-            self._log_error_throttled("perform_ocr_error", _(f'OCR recognition failed: {e}', msgid='7c2a0f3c9566'))
+            self._log_error_throttled("perform_ocr_error", _(f'OCR recognition failed: {e}', msgid='ocr_recognition_failed_e'))
             self.ocr_result = []  # 确保在异常情况下，ocr_result为列表类型
 
     def calculate_text_position(self, result):
@@ -455,7 +455,7 @@ class Automation:
             return True
 
         if is_log:
-            self.logger.debug(_(f'Target {target} initial verification unconfirmed, retrying click', msgid='312db94a2d2c'))
+            self.logger.debug(_(f'Target {target} initial verification unconfirmed, retrying click', msgid='target_target_initial_verification_unconfirmed_r'))
 
         coordinates_retry = self.find_element(target, find_type, threshold, crop, take_screenshot=False,
                                               include=include, need_ocr=need_ocr, extract=extract,
@@ -577,7 +577,7 @@ class Automation:
         except Exception as e:
             self._log_error_throttled(
                 "restore_window_failed",
-                _(f'Failed to restore window position: {e}', msgid='d07b729e03a7'),
+                _(f'Failed to restore window position: {e}', msgid='failed_to_restore_window_position_e'),
             )
 
     def start(self):
@@ -600,7 +600,7 @@ class Automation:
         if self.first_screenshot is None:
             self._log_error_throttled(
                 "crop_from_first_no_screenshot",
-                _('No first_screenshot currently, crop failed', msgid='b4da6bfd6ba6'),
+                _('No first_screenshot currently, crop failed', msgid='no_first_screenshot_currently_crop_failed'),
             )
             return None
 
@@ -621,7 +621,7 @@ class Automation:
         if self.first_screenshot is None:
             self._log_error_throttled(
                 "read_text_no_screenshot",
-                _('No screenshot currently, unable to read text', msgid='8550a4b147db'),
+                _('No screenshot currently, unable to read text', msgid='no_screenshot_currently_unable_to_read_text'),
             )
             self.ocr_result = []
             return self.ocr_result
@@ -637,7 +637,7 @@ class Automation:
             if target is None:
                 self._log_error_throttled(
                     "find_image_and_count_no_target",
-                    _('Target image is empty, skipping match counting', msgid='7da4be68416d'),
+                    _('Target image is empty, skipping match counting', msgid='target_image_is_empty_skipping_match_counting'),
                 )
                 return None
             temp = target
@@ -651,8 +651,8 @@ class Automation:
                 if len(matches) > 0:
                     for i in range(len(matches)):
                         x, y, w, h, conf = matches[i]
-                        self.logger.debug(_(f'Target image: {template_name} Similarity: {conf:.2f}', msgid='42c3d9b7b3bd'))
-                self.logger.debug(_(f'Count of image {template_name} is {len(matches)}', msgid='d9f7334fe849'))
+                        self.logger.debug(_(f'Target image: {template_name} Similarity: {conf:.2f}', msgid='target_image_template_name_similarity_conf_2'))
+                self.logger.debug(_(f'Count of image {template_name} is {len(matches)}', msgid='count_of_image_template_name_is_value'))
             if is_show:
                 for idx, (x, y, w, h, conf) in enumerate(matches):
                     cv2.rectangle(temp,
@@ -669,7 +669,7 @@ class Automation:
         except Exception as e:
             self._log_error_throttled(
                 "find_image_and_count_error",
-                _(f'Error finding image and counting: {e}', msgid='3fade0143d76'),
+                _(f'Error finding image and counting: {e}', msgid='error_finding_image_and_counting_e'),
             )
             return None
 
@@ -690,10 +690,10 @@ class Automation:
                 formatted_time = future_time.strftime('%m-%d %H:%M')
                 return formatted_time
             else:
-                self.logger.error(_(f'Recognition result error: {text}', msgid='b247edc1f2a6'))
+                self.logger.error(_(f'Recognition result error: {text}', msgid='recognition_result_error_text'))
                 return None
         except Exception as e:
-            self.logger.error(_(f'Failed to recognize stamina: {e}', msgid='a1463b4541cb'))
+            self.logger.error(_(f'Failed to recognize stamina: {e}', msgid='failed_to_recognize_stamina_e'))
             return None
 
 

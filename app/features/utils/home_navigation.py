@@ -43,5 +43,5 @@ def back_to_home(auto, logger, timeout_seconds=10):
         time.sleep(0.5)
 
         if timeout.reached():
-            logger.error(_('Timeout returning to home page', msgid='25d4af2c5071'))
+            logger.error(_('Timeout returning to home page', msgid='timeout_returning_to_home_page'))
             return False

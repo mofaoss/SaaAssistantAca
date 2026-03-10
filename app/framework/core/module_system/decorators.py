@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+import ast
 import importlib
 import re
 from pathlib import Path
-from typing import Callable
 
 from app.framework.core.module_system.config_schema import build_config_schema
 from app.framework.core.module_system.models import Field, ModuleHost, ModuleMeta
@@ -38,168 +38,59 @@ _DEFAULT_ORDER: dict[str, int] = {
     "capture_pals": 80,
     "massaging": 90,
 }
-_FRAMEWORK_DEFAULTS = {
-    "trigger": {
-        "page_class_path": "app.features.modules.trigger.ui.trigger_interface:TriggerInterface",
-        "ui_bindings": dict(page_attr="page_trigger", log_widget_attr="textBrowser_log_trigger"),
-        "passive": True,
-    },
-    "fishing": {
-        "page_class_path": "app.features.modules.fishing.ui.fishing_interface:FishingInterface",
-        "ui_bindings": dict(
-            page_attr="page_fishing",
-            start_button_attr="PushButton_start_fishing",
-            card_widget_attr="SimpleCardWidget_fish",
-            log_widget_attr="textBrowser_log_fishing",
-        ),
-    },
-    "action": {
-        "page_class_path": "app.features.modules.operation_action.ui.operation_interface:OperationInterface",
-        "ui_bindings": dict(
-            page_attr="page_action",
-            start_button_attr="PushButton_start_action",
-            card_widget_attr="SimpleCardWidget_action",
-            log_widget_attr="textBrowser_log_action",
-        ),
-    },
-    "water_bomb": {
-        "page_class_path": "app.features.modules.water_bomb.ui.water_bomb_interface:WaterBombInterface",
-        "ui_bindings": dict(
-            page_attr="page_water_bomb",
-            start_button_attr="PushButton_start_water_bomb",
-            card_widget_attr="SimpleCardWidget_water_bomb",
-            log_widget_attr="textBrowser_log_water_bomb",
-        ),
-    },
-    "alien_guardian": {
-        "page_class_path": "app.features.modules.alien_guardian.ui.alien_guardian_interface:AlienGuardianInterface",
-        "ui_bindings": dict(
-            page_attr="page_alien_guardian",
-            start_button_attr="PushButton_start_alien_guardian",
-            card_widget_attr="SimpleCardWidget_alien_guardian",
-            log_widget_attr="textBrowser_log_alien_guardian",
-        ),
-    },
-    "maze": {
-        "page_class_path": "app.features.modules.maze.ui.maze_interface:MazeInterface",
-        "ui_bindings": dict(
-            page_attr="page_maze",
-            start_button_attr="PushButton_start_maze",
-            card_widget_attr="SimpleCardWidget_maze",
-            log_widget_attr="textBrowser_log_maze",
-        ),
-    },
-    "drink": {
-        "page_class_path": "app.features.modules.drink.ui.drink_interface:DrinkInterface",
-        "ui_bindings": dict(
-            page_attr="page_card",
-            start_button_attr="PushButton_start_drink",
-            card_widget_attr="SimpleCardWidget_card",
-            log_widget_attr="textBrowser_log_drink",
-        ),
-    },
-    "capture_pals": {
-        "page_class_path": "app.features.modules.capture_pals.ui.capture_pals_interface:CapturePalsInterface",
-        "ui_bindings": dict(
-            page_attr="page_capture_pals",
-            start_button_attr="PushButton_start_capture_pals",
-            card_widget_attr="SimpleCardWidget_capture_pals",
-            log_widget_attr="textBrowser_log_capture_pals",
-        ),
-    },
-    "massaging": {
-        "page_class_path": "app.features.modules.massaging.ui.massaging_interface:MassagingInterface",
-        "ui_bindings": dict(
-            page_attr="page_massaging",
-            start_button_attr="PushButton_start_massaging",
-            card_widget_attr="SimpleCardWidget_massaging",
-        ),
-    },
+
+# Keep only true policy-level periodic overrides here. UI class discovery and UI bindings
+# are inferred from module location and naming conventions.
+_PERIODIC_POLICY_OVERRIDES: dict[str, dict] = {
     "task_login": {
-        "page_class_path": "app.features.modules.enter_game.ui.enter_game_periodic_page:EnterGamePage",
-        "ui_bindings": dict(page_attr="page_enter"),
         "periodic_mandatory": True,
         "periodic_force_first": True,
-        "periodic_default_activation_config": [{"type": "daily", "day": 0, "time": "00:00", "max_runs": 1}],
-        "periodic_ui_page_index": 0,
-        "periodic_option_key": "CheckBox_entry_1",
         "periodic_requires_home_sync": False,
     },
-    "task_supplies": {
-        "page_class_path": "app.features.modules.collect_supplies.ui.collect_supplies_periodic_page:CollectSuppliesPage",
-        "ui_bindings": dict(page_attr="page_collect"),
-        "periodic_default_activation_config": [{"type": "daily", "day": 0, "time": "00:00", "max_runs": 1}],
-        "periodic_ui_page_index": 1,
-        "periodic_option_key": "CheckBox_stamina_2",
-    },
-    "task_shop": {
-        "page_class_path": "app.features.modules.shopping.ui.shop_periodic_page:ShopPage",
-        "ui_bindings": dict(page_attr="page_shop"),
-        "periodic_default_activation_config": [{"type": "daily", "day": 0, "time": "00:00", "max_runs": 1}],
-        "periodic_ui_page_index": 2,
-        "periodic_option_key": "CheckBox_shop_3",
-    },
-    "task_stamina": {
-        "page_class_path": "app.features.modules.use_power.ui.use_power_periodic_page:UsePowerPage",
-        "ui_bindings": dict(page_attr="page_use_power"),
-        "periodic_default_activation_config": [{"type": "daily", "day": 0, "time": "00:00", "max_runs": 1}],
-        "periodic_ui_page_index": 3,
-        "periodic_option_key": "CheckBox_use_power_4",
-    },
-    "task_shards": {
-        "page_class_path": "app.features.modules.person.ui.person_periodic_page:PersonPage",
-        "ui_bindings": dict(page_attr="page_person"),
-        "periodic_default_activation_config": [{"type": "daily", "day": 0, "time": "00:00", "max_runs": 1}],
-        "periodic_ui_page_index": 4,
-        "periodic_option_key": "CheckBox_person_5",
-    },
     "task_chasm": {
-        "page_class_path": "app.features.modules.chasm.ui.chasm_periodic_page:ChasmPage",
-        "ui_bindings": dict(page_attr="page_chasm"),
         "periodic_default_activation_config": [{"type": "weekly", "day": 1, "time": "10:00", "max_runs": 1}],
-        "periodic_ui_page_index": 5,
-        "periodic_option_key": "CheckBox_chasm_6",
-    },
-    "task_reward": {
-        "page_class_path": "app.features.modules.get_reward.ui.reward_periodic_page:RewardPage",
-        "ui_bindings": dict(page_attr="page_reward"),
-        "periodic_default_activation_config": [{"type": "daily", "day": 0, "time": "00:00", "max_runs": 1}],
-        "periodic_ui_page_index": 6,
-        "periodic_option_key": "CheckBox_reward_7",
-    },
-    "task_operation": {
-        "page_class_path": "app.features.modules.operation_action.ui.operation_interface:OperationInterface",
-        "ui_bindings": dict(page_attr="page_operation"),
-        "periodic_default_activation_config": [{"type": "daily", "day": 0, "time": "00:00", "max_runs": 1}],
-        "periodic_ui_page_index": 7,
-        "periodic_option_key": "CheckBox_operation_8",
-    },
-    "task_weapon": {
-        "page_class_path": "app.features.modules.upgrade.ui.weapon_upgrade_periodic_page:WeaponUpgradePage",
-        "ui_bindings": dict(page_attr="page_weapon"),
-        "periodic_default_activation_config": [{"type": "daily", "day": 0, "time": "00:00", "max_runs": 1}],
-        "periodic_ui_page_index": 8,
-        "periodic_option_key": "CheckBox_weapon_8",
-    },
-    "task_shard_exchange": {
-        "page_class_path": "app.features.modules.jigsaw.ui.shard_exchange_periodic_page:ShardExchangePage",
-        "ui_bindings": dict(page_attr="page_shard_exchange"),
-        "periodic_default_activation_config": [{"type": "daily", "day": 0, "time": "00:00", "max_runs": 1}],
-        "periodic_ui_page_index": 9,
-        "periodic_option_key": "CheckBox_shard_exchange_9",
     },
     "task_close_game": {
-        "page_class_path": "app.features.modules.close_game.ui.close_game_periodic_page:CloseGamePage",
-        "ui_bindings": dict(page_attr="page_close_game"),
-        "periodic_default_activation_config": [{"type": "daily", "day": 0, "time": "00:00", "max_runs": 1}],
-        "periodic_ui_page_index": 10,
-        "periodic_option_key": "CheckBox_close_game_10",
         "periodic_requires_home_sync": False,
     },
 }
 
+# Backed by existing config keys for periodic option persistence.
+_PERIODIC_OPTION_KEY_OVERRIDES: dict[str, str] = {
+    "task_login": "CheckBox_entry_1",
+    "task_supplies": "CheckBox_stamina_2",
+    "task_shop": "CheckBox_shop_3",
+    "task_stamina": "CheckBox_use_power_4",
+    "task_shards": "CheckBox_person_5",
+    "task_chasm": "CheckBox_chasm_6",
+    "task_reward": "CheckBox_reward_7",
+    "task_operation": "CheckBox_operation_8",
+    "task_weapon": "CheckBox_weapon_8",
+    "task_shard_exchange": "CheckBox_shard_exchange_9",
+    "task_close_game": "CheckBox_close_game_10",
+}
 
+_PERIODIC_PAGE_ATTR_ALIAS: dict[str, str] = {
+    "task_login": "enter",
+    "task_supplies": "collect",
+    "task_shop": "shop",
+    "task_stamina": "use_power",
+    "task_shards": "person",
+    "task_chasm": "chasm",
+    "task_reward": "reward",
+    "task_operation": "operation",
+    "task_weapon": "weapon",
+    "task_shard_exchange": "shard_exchange",
+    "task_close_game": "close_game",
+}
 
+_ON_DEMAND_PAGE_ALIAS: dict[str, str] = {
+    "drink": "card",
+}
+
+_ON_DEMAND_PASSIVE: dict[str, bool] = {
+    "trigger": True,
+}
 
 _EN_DECL_RE = re.compile(r"^[\x20-\x7E]+$")
 
@@ -225,14 +116,130 @@ def _validate_declaration_fields(fields: dict[str, str | Field] | None) -> None:
             if meta.help:
                 _validate_english_declaration(meta.help, field=f"fields[{param}] help")
 
+
 def _resolve_symbol(symbol_path: str):
     module_path, symbol_name = symbol_path.rsplit(":", 1)
     mod = importlib.import_module(module_path)
     return getattr(mod, symbol_name)
 
 
-def _resolve_module_defaults(module_id: str) -> dict:
-    return dict(_FRAMEWORK_DEFAULTS.get(module_id, {}))
+def _module_package_from_target(target) -> str | None:
+    module_name = getattr(target, "__module__", "")
+    parts = module_name.split(".")
+    if "modules" not in parts:
+        return None
+    idx = parts.index("modules")
+    if idx + 1 >= len(parts):
+        return None
+    return ".".join(parts[: idx + 2])
+
+
+def _module_name_from_target(target) -> str | None:
+    pkg = _module_package_from_target(target)
+    if not pkg:
+        return None
+    return pkg.split(".")[-1]
+
+
+def _ui_dir_from_module_name(module_name: str) -> Path:
+    root = Path(__file__).resolve().parents[4]
+    return root / "app" / "features" / "modules" / module_name / "ui"
+
+
+def _candidate_ui_files(ui_dir: Path, host: ModuleHost) -> list[Path]:
+    if not ui_dir.exists():
+        return []
+
+    all_py = [p for p in ui_dir.glob("*.py") if p.name != "__init__.py"]
+    priority: list[Path] = []
+
+    if host == ModuleHost.PERIODIC:
+        priority.extend(sorted([p for p in all_py if p.name.endswith("_periodic_page.py")]))
+        priority.extend(sorted([p for p in all_py if p.name.endswith("_interface.py")]))
+    else:
+        priority.extend(sorted([p for p in all_py if p.name.endswith("_interface.py")]))
+
+    seen = {p.name for p in priority}
+    priority.extend(sorted([p for p in all_py if p.name not in seen]))
+    return priority
+
+
+def _extract_preferred_class_name(py_file: Path, host: ModuleHost) -> str | None:
+    try:
+        tree = ast.parse(py_file.read_text(encoding="utf-8-sig"))
+    except Exception:
+        return None
+
+    class_names = [n.name for n in tree.body if isinstance(n, ast.ClassDef)]
+    if not class_names:
+        return None
+
+    if host == ModuleHost.PERIODIC:
+        for name in class_names:
+            if name.endswith("Page"):
+                return name
+        for name in class_names:
+            if name.endswith("Interface"):
+                return name
+    else:
+        for name in class_names:
+            if name.endswith("Interface"):
+                return name
+        for name in class_names:
+            if name.endswith("Page"):
+                return name
+
+    return class_names[0]
+
+
+def _infer_page_class_path(target, host: ModuleHost) -> str | None:
+    module_name = _module_name_from_target(target)
+    if not module_name:
+        return None
+
+    ui_dir = _ui_dir_from_module_name(module_name)
+    for py_file in _candidate_ui_files(ui_dir, host):
+        class_name = _extract_preferred_class_name(py_file, host)
+        if not class_name:
+            continue
+
+        rel = py_file.relative_to(Path(__file__).resolve().parents[4]).with_suffix("")
+        module_import = ".".join(rel.parts)
+        return f"{module_import}:{class_name}"
+
+    return None
+
+
+def _infer_periodic_index(resolved_order: int) -> int:
+    # Most periodic tasks use step-10 ordering. Keep deterministic mapping.
+    return max(0, (resolved_order // 10) - 1)
+
+
+def _infer_ui_bindings(resolved_id: str, module_name: str | None, host: ModuleHost):
+    from app.framework.application.modules.contracts import ModuleUiBindings
+
+    if host == ModuleHost.PERIODIC:
+        alias = _PERIODIC_PAGE_ATTR_ALIAS.get(resolved_id, module_name or resolved_id)
+        return ModuleUiBindings(page_attr=f"page_{alias}")
+
+    # on-demand defaults
+    suffix = _ON_DEMAND_PAGE_ALIAS.get(resolved_id, resolved_id)
+    page_attr = f"page_{suffix}"
+    if resolved_id == "trigger":
+        return ModuleUiBindings(page_attr=page_attr, log_widget_attr="textBrowser_log_trigger")
+
+    return ModuleUiBindings(
+        page_attr=page_attr,
+        start_button_attr=f"PushButton_start_{resolved_id}",
+        card_widget_attr=f"SimpleCardWidget_{suffix}",
+        log_widget_attr=f"textBrowser_log_{resolved_id}",
+    )
+
+
+def _periodic_activation_defaults(resolved_id: str) -> list[dict]:
+    if resolved_id in _PERIODIC_POLICY_OVERRIDES and "periodic_default_activation_config" in _PERIODIC_POLICY_OVERRIDES[resolved_id]:
+        return list(_PERIODIC_POLICY_OVERRIDES[resolved_id]["periodic_default_activation_config"])
+    return [{"type": "daily", "day": 0, "time": "00:00", "max_runs": 1}]
 
 
 def _build_meta(
@@ -251,22 +258,20 @@ def _build_meta(
     _validate_declaration_fields(fields)
 
     resolved_id = module_id or infer_module_id(target)
-    defaults = _resolve_module_defaults(resolved_id)
+    module_name = _module_name_from_target(target)
     resolved_order = int(_DEFAULT_ORDER.get(resolved_id, 100) if order is None else order)
-    resolved_page_class_path = defaults.get("page_class_path")
-    resolved_ui_bindings = defaults.get("ui_bindings")
-    if isinstance(resolved_ui_bindings, dict):
-        from app.framework.application.modules.contracts import ModuleUiBindings
+    resolved_page_class_path = _infer_page_class_path(target, host)
+    resolved_ui_bindings = _infer_ui_bindings(resolved_id, module_name, host)
+    resolved_passive = bool(_ON_DEMAND_PASSIVE.get(resolved_id, False) if passive is None else passive)
 
-        resolved_ui_bindings = ModuleUiBindings(**resolved_ui_bindings)
-    resolved_passive = bool(defaults.get("passive", False) if passive is None else passive)
-    resolved_periodic_enabled_by_default = bool(defaults.get("periodic_enabled_by_default", False))
-    resolved_periodic_mandatory = bool(defaults.get("periodic_mandatory", False))
-    resolved_periodic_force_first = bool(defaults.get("periodic_force_first", False))
-    resolved_periodic_requires_home_sync = bool(defaults.get("periodic_requires_home_sync", True))
-    resolved_periodic_ui_page_index = defaults.get("periodic_ui_page_index")
-    resolved_periodic_option_key = defaults.get("periodic_option_key")
-    resolved_activation_config = list(defaults.get("periodic_default_activation_config", []))
+    periodic_overrides = _PERIODIC_POLICY_OVERRIDES.get(resolved_id, {})
+    resolved_periodic_enabled_by_default = bool(periodic_overrides.get("periodic_enabled_by_default", False))
+    resolved_periodic_mandatory = bool(periodic_overrides.get("periodic_mandatory", False))
+    resolved_periodic_force_first = bool(periodic_overrides.get("periodic_force_first", False))
+    resolved_periodic_requires_home_sync = bool(periodic_overrides.get("periodic_requires_home_sync", True))
+    resolved_periodic_ui_page_index = _infer_periodic_index(resolved_order) if host == ModuleHost.PERIODIC else None
+    resolved_periodic_option_key = _PERIODIC_OPTION_KEY_OVERRIDES.get(resolved_id)
+    resolved_activation_config = _periodic_activation_defaults(resolved_id) if host == ModuleHost.PERIODIC else []
 
     module_class = target if isinstance(target, type) else None
     schema_target = target
@@ -294,7 +299,7 @@ def _build_meta(
         periodic_enabled_by_default=resolved_periodic_enabled_by_default,
         periodic_mandatory=resolved_periodic_mandatory,
         periodic_force_first=resolved_periodic_force_first,
-        periodic_default_hour=4,
+        periodic_default_hour=0,
         periodic_default_minute=0,
         periodic_max_runs=1,
         periodic_requires_home_sync=resolved_periodic_requires_home_sync,

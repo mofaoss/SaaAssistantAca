@@ -29,7 +29,7 @@ class BaseTask:
 
         if client_height == 0:
             self.logger.warning(
-                _('Window height is 0, cannot calculate ratio', msgid='543f0c4715ee')
+                _('Window height is 0, cannot calculate ratio', msgid='window_height_is_0_cannot_calculate_ratio')
             )
             return False
 
@@ -39,19 +39,19 @@ class BaseTask:
         is_16_9 = abs(actual_ratio - target_ratio) <= (target_ratio * tolerance)
 
         status = (
-            _('Meets', msgid='95af714f631f')
+            _('Meets', msgid='meets')
             if is_16_9
-            else _('Does not meet', msgid='25bb2217a017')
+            else _('Does not meet', msgid='does_not_meet')
         )
         self.logger.warning(
-            _(f'Client area size: {client_width}x{client_height} ({actual_ratio:.3f}:1), {status} 16:9 standard ratio', msgid='fcaa237cbac3')
+            _(f'Client area size: {client_width}x{client_height} ({actual_ratio:.3f}:1), {status} 16:9 standard ratio', msgid='client_area_size_client_width_x_client_height_ac')
         )
         if is_16_9:
             self.auto.scale_x = 1920 / client_width
             self.auto.scale_y = 1080 / client_height
         else:
             self.logger.warning(
-                _('Game window does not meet 16:9 ratio, please adjust manually.', msgid='27eb3232a97e')
+                _('Game window does not meet 16:9 ratio, please adjust manually.', msgid='game_window_does_not_meet_16_9_ratio_please_adju')
             )
         return is_16_9
 
@@ -64,7 +64,7 @@ class BaseTask:
     ):
         _ = name
         if self.auto is not None:
-            self.logger.debug(_(f'Using existing auto: {self.auto.hwnd}', msgid='d079a661e93d'))
+            self.logger.debug(_(f'Using existing auto: {self.auto.hwnd}', msgid='using_existing_auto_value'))
             return True
 
         try:
@@ -79,8 +79,8 @@ class BaseTask:
                 signalBus.sendHwnd.emit(self.auto.hwnd)
                 return True
 
-            self.logger.error(_('Game window ratio is not 16:9', msgid='89eefa0e1faa'))
+            self.logger.error(_('Game window ratio is not 16:9', msgid='game_window_ratio_is_not_16_9'))
             return False
         except Exception as e:
-            self.logger.error(_(f'Failed to initialize auto: {e}', msgid='20cc4907bd27'))
+            self.logger.error(_(f'Failed to initialize auto: {e}', msgid='failed_to_initialize_auto_e'))
             return False

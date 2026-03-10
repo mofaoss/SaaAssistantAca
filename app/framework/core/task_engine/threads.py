@@ -46,14 +46,14 @@ class TaskQueueThread(QThread):
         if reason:
             self._interrupted_reason = reason
             self.logger.warning(
-                _(f'Interrupt detected, stopping automatic task: {reason}', msgid='054ac2160959')
+                _(f'Interrupt detected, stopping automatic task: {reason}', msgid='interrupt_detected_stopping_automatic_task_reaso')
             )
         if self.session.auto is not None:
             try:
                 self.session.stop()
             except Exception as e:
                 self.logger.warning(
-                    _(f'Exception occurred while stopping automatic task, ignored: {e}', msgid='23dc6ab8ded3')
+                    _(f'Exception occurred while stopping automatic task, ignored: {e}', msgid='exception_occurred_while_stopping_automatic_task')
                 )
 
     @staticmethod
@@ -125,18 +125,18 @@ class TaskQueueThread(QThread):
                     continue
 
                 task_name = meta["en_name"] if is_non_chinese_ui_language() else meta["zh_name"]
-                self.logger.info(_(f'Current task: {task_name}', msgid='550b7c49b8ff'))
+                self.logger.info(_(f'Current task: {task_name}', msgid='current_task_task_name'))
                 self.task_started_signal.emit(task_id)
 
                 task_success = True
                 requires_home_sync = bool(meta.get("requires_home_sync", True))
                 if requires_home_sync:
                     self.logger.info(
-                        _(f'Preparing {task_name}, returning to home...', msgid='8cee80e84fc8')
+                        _(f'Preparing {task_name}, returning to home...', msgid='preparing_task_name_returning_to_home')
                     )
                     if not self.home_sync(auto, self.logger):
                         self.logger.error(
-                            _(f'[{task_name}] Failed to return to home before start, skipping.', msgid='40df1ad8f76d')
+                            _(f'[{task_name}] Failed to return to home before start, skipping.', msgid='task_name_failed_to_return_to_home_before_start')
                         )
                         task_success = False
 
@@ -146,7 +146,7 @@ class TaskQueueThread(QThread):
                     module.run()
 
                     if requires_home_sync and self._is_running:
-                        msg = _(f'{task_name} finished, returning to home...', msgid='c87b23e00aba')
+                        msg = _(f'{task_name} finished, returning to home...', msgid='task_name_finished_returning_to_home')
                         self.logger.info(msg)
                         self.home_sync(auto, self.logger)
 
@@ -208,7 +208,7 @@ class ModuleTaskThread(QThread):
         try:
             self.session.stop()
         except Exception as e:
-            self.logger.warning(_(f'Exception occurred while stopping sub task, ignored: {e}', msgid='4261c14a6166'))
+            self.logger.warning(_(f'Exception occurred while stopping sub task, ignored: {e}', msgid='exception_occurred_while_stopping_sub_task_ignor'))
 
     def run(self):
         if self.module is None or self.session.auto is None:

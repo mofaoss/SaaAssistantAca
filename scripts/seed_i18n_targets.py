@@ -13,7 +13,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 SUPPORTED_LANGS = ["en", "zh_CN", "zh_HK"]
-_MSGID_RE = re.compile(r"^[a-zA-Z0-9_][a-zA-Z0-9_\-\.]*$")
+_MSGID_SEMANTIC_RE = re.compile(r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$")
+_MSGID_HASHLIKE_RE = re.compile(r"^(?:[0-9a-f]{8,}|h[0-9a-f]{6,})$")
 
 
 def _contains_han(text: str) -> bool:
@@ -40,10 +41,19 @@ def classify_source_language(text: str) -> str:
 
 
 def slugify(text: str) -> str:
-    if _contains_han(text):
-        return f"h{abs(hash(text)) & 0xFFFFFFFF:x}"
-    slug = re.sub(r"[^a-z0-9]+", "_", text.lower()).strip("_")
-    return slug[:64] if slug else "text"
+    lowered = text.strip().lower()
+    chars = []
+    for ch in lowered:
+        code = ord(ch)
+        if (97 <= code <= 122) or (48 <= code <= 57):
+            chars.append(ch)
+            continue
+        if 0x4E00 <= code <= 0x9FFF:
+            chars.append(ch)
+            continue
+        chars.append("_")
+    slug = re.sub(r"_+", "_", "".join(chars)).strip("_")
+    return slug[:80] if slug else "text"
 
 
 def infer_owner(path: Path) -> tuple[str, str | None]:
@@ -144,8 +154,11 @@ def collect_expected():
                     if not isinstance(kw.value, ast.Constant) or not isinstance(kw.value.value, str):
                         raise ValueError(f"{path}:msgid must be a string literal")
                     msgid = kw.value.value.strip()
-                    if msgid and not _MSGID_RE.match(msgid):
-                        raise ValueError(f"{path}:invalid msgid format: {msgid!r}")
+                    if msgid:
+                        if _MSGID_HASHLIKE_RE.fullmatch(msgid):
+                            raise ValueError(f"{path}:hash-like msgid is forbidden: {msgid!r}")
+                        if not _MSGID_SEMANTIC_RE.match(msgid):
+                            raise ValueError(f"{path}:msgid must be semantic snake_case: {msgid!r}")
 
             suffix = msgid or slugify(source_text)
             context = context_from_parent(parents.get(node))

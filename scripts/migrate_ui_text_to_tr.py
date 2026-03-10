@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-SUPPORTED_LANGS = ["en", "zh_CN", "zh_TW"]
+SUPPORTED_LANGS = ["en", "zh_CN", "zh_HK"]
 
 
 def _line_offsets(src: str) -> list[int]:
@@ -114,7 +114,7 @@ def migrate_file(path: Path) -> tuple[bool, dict[Path, dict[str, dict[str, str]]
             owner_updates[owner]["en"][key] = en_const
         if zh_const is not None:
             owner_updates[owner]["zh_CN"][key] = zh_const
-            owner_updates[owner]["zh_TW"][key] = zh_const
+            owner_updates[owner]["zh_HK"][key] = zh_const
 
     if not replacements and "ui_text" not in src:
         return False, {}

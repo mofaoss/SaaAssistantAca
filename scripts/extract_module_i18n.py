@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 from __future__ import annotations
 
 import ast
@@ -6,18 +6,27 @@ import json
 import re
 import sys
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from app.framework.core.module_system.models import Field
-from app.framework.core.module_system.naming import infer_module_id, humanize_name
+from app.framework.core.module_system.naming import humanize_name, infer_module_id
+from app.framework.i18n.runtime import (
+    TranslatableMessage,
+    build_key,
+    classify_source_language,
+    validate_msgid,
+)
 
-MODULES_ROOT = ROOT / "app" / "features" / "modules"
-
+APP_ROOT = ROOT / "app"
+MODULES_ROOT = APP_ROOT / "features" / "modules"
+FRAMEWORK_ROOT = APP_ROOT / "framework"
+SUPPORTED_SOURCE_LANGS = ["en", "zh_CN"]
 
 _EN_DECL_RE = re.compile(r"^[\x20-\x7E]+$")
+LOG_METHODS = {"debug", "info", "warning", "error", "exception", "critical"}
 
 
 def _validate_english_declaration(text: str, *, field: str) -> None:
@@ -29,7 +38,7 @@ def _validate_english_declaration(text: str, *, field: str) -> None:
         )
 
 
-def _literal(node: ast.AST):
+def _literal(node: ast.AST) -> Any:
     if isinstance(node, ast.Constant):
         return node.value
     return None
@@ -86,14 +95,29 @@ def _target_name(node: ast.AST) -> str:
     return "module"
 
 
-def _extract_from_file(path: Path):
-    tree = ast.parse(path.read_text(encoding="utf-8-sig"))
-    out = []
+def _owner_from_file(path: Path) -> tuple[str, str | None]:
+    rel = path.relative_to(ROOT)
+    parts = list(rel.parts)
+    if len(parts) >= 5 and parts[0] == "app" and parts[1] == "features" and parts[2] == "modules":
+        return "module", parts[3]
+    return "framework", None
+
+
+def _owner_i18n_dir(owner_scope: str, owner_module: str | None) -> Path:
+    if owner_scope == "module" and owner_module:
+        return MODULES_ROOT / owner_module / "i18n"
+    return FRAMEWORK_ROOT / "i18n"
+
+
+def _extract_declarations_from_file(path: Path, tree: ast.AST) -> list[tuple[str, str | None, str, str, str]]:
+    out: list[tuple[str, str | None, str, str, str]] = []
+    owner_scope, owner_module = _owner_from_file(path)
+    if owner_scope != "module" or owner_module is None:
+        return out
 
     for node in tree.body:
         if not isinstance(node, (ast.FunctionDef, ast.ClassDef)):
             continue
-
         for deco in node.decorator_list:
             if not isinstance(deco, ast.Call) or not isinstance(deco.func, ast.Name):
                 continue
@@ -119,51 +143,163 @@ def _extract_from_file(path: Path):
                 dummy = type("Dummy", (), {"__name__": _target_name(node)})
                 module_id = infer_module_id(dummy)
 
-            entries = {f"module.{module_id}.title": title}
+            out.append((owner_scope, owner_module, f"module.{module_id}.title", title, "en"))
             for param_name, meta in fields.items():
                 field_id = meta["field_id"] or param_name
-                entries[f"module.{module_id}.field.{field_id}.label"] = meta["label"] or humanize_name(param_name)
+                out.append(
+                    (
+                        owner_scope,
+                        owner_module,
+                        f"module.{module_id}.field.{field_id}.label",
+                        meta["label"] or humanize_name(param_name),
+                        "en",
+                    )
+                )
                 if meta.get("help"):
-                    entries[f"module.{module_id}.field.{field_id}.help"] = meta["help"]
+                    out.append(
+                        (
+                            owner_scope,
+                            owner_module,
+                            f"module.{module_id}.field.{field_id}.help",
+                            str(meta["help"]),
+                            "en",
+                        )
+                    )
+    return out
 
-            out.append((module_id, entries))
+
+def _build_parents(tree: ast.AST) -> dict[ast.AST, ast.AST]:
+    parents: dict[ast.AST, ast.AST] = {}
+    for node in ast.walk(tree):
+        for child in ast.iter_child_nodes(node):
+            parents[child] = node
+    return parents
+
+
+def _detect_context(node: ast.Call, parents: dict[ast.AST, ast.AST]) -> str:
+    parent = parents.get(node)
+    if isinstance(parent, ast.Call):
+        func = parent.func
+        if isinstance(func, ast.Attribute) and func.attr in LOG_METHODS:
+            if node in parent.args:
+                return "log"
+            for kw in parent.keywords:
+                if kw.value is node:
+                    return "log"
+    return "ui"
+
+
+def _extract_marked_strings_from_file(path: Path, tree: ast.AST) -> list[tuple[str, str | None, str, str, str]]:
+    out: list[tuple[str, str | None, str, str, str]] = []
+    parents = _build_parents(tree)
+    owner_scope, owner_module = _owner_from_file(path)
+
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        if not (isinstance(node.func, ast.Name) and node.func.id == "_"):
+            continue
+        if not node.args:
+            continue
+
+        text = _literal(node.args[0])
+        if not isinstance(text, str):
+            continue
+
+        msgid = None
+        for kw in node.keywords:
+            if kw.arg == "msgid":
+                v = _literal(kw.value)
+                if isinstance(v, str) and v.strip():
+                    msgid = validate_msgid(v.strip())
+
+        source_lang = classify_source_language(text)
+        context = _detect_context(node, parents)
+
+        message = TranslatableMessage(
+            source_text=text,
+            source_lang=source_lang,
+            msgid=msgid,
+            kwargs={},
+            owner_scope=owner_scope,
+            owner_module=owner_module,
+        )
+        key = build_key(message, context=context)
+        out.append((owner_scope, owner_module, key, text, source_lang))
 
     return out
 
 
-def _module_root(py_file: Path) -> Path:
-    current = py_file.parent
-    while current.parent != MODULES_ROOT and current.parent != ROOT:
-        current = current.parent
-    return current
+def _load_json(path: Path) -> dict[str, str]:
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(data, dict):
+            return {str(k): str(v) for k, v in data.items()}
+    except Exception:
+        pass
+    return {}
+
+
+def _save_json(path: Path, data: dict[str, str]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def main() -> int:
-    updates = 0
-    for py in MODULES_ROOT.rglob("*.py"):
-        found = _extract_from_file(py)
-        if not found:
+    owner_lang_entries: dict[tuple[str, str | None], dict[str, dict[str, str]]] = {}
+    owner_source_map: dict[tuple[str, str | None], dict[str, str]] = {}
+
+    py_files = sorted(APP_ROOT.rglob("*.py"))
+    for py in py_files:
+        try:
+            tree = ast.parse(py.read_text(encoding="utf-8-sig"))
+        except Exception:
             continue
 
-        module_dir = _module_root(py)
-        i18n_dir = module_dir / "i18n"
+        entries = []
+        entries.extend(_extract_declarations_from_file(py, tree))
+        entries.extend(_extract_marked_strings_from_file(py, tree))
+
+        for owner_scope, owner_module, key, value, source_lang in entries:
+            if source_lang not in SUPPORTED_SOURCE_LANGS:
+                continue
+            owner = (owner_scope, owner_module)
+            owner_lang_entries.setdefault(owner, {})
+            owner_lang_entries[owner].setdefault(source_lang, {})
+            owner_lang_entries[owner][source_lang][key] = value
+
+            owner_source_map.setdefault(owner, {})
+            prev = owner_source_map[owner].get(key)
+            if prev and prev != source_lang:
+                raise ValueError(
+                    f"Conflicting source language for key {key}: {prev} vs {source_lang}"
+                )
+            owner_source_map[owner][key] = source_lang
+
+    updated_owners = 0
+    for owner, by_lang in owner_lang_entries.items():
+        owner_scope, owner_module = owner
+        i18n_dir = _owner_i18n_dir(owner_scope, owner_module)
         i18n_dir.mkdir(parents=True, exist_ok=True)
-        en_path = i18n_dir / "en.json"
 
-        current = {}
-        if en_path.exists():
-            try:
-                current = json.loads(en_path.read_text(encoding="utf-8"))
-            except Exception:
-                current = {}
+        for lang in SUPPORTED_SOURCE_LANGS:
+            if lang not in by_lang:
+                continue
+            path = i18n_dir / f"{lang}.json"
+            current = _load_json(path)
+            current.update(by_lang[lang])
+            _save_json(path, current)
 
-        for _, entries in found:
-            current.update(entries)
+        source_map_path = i18n_dir / "source_map.json"
+        source_map = _load_json(source_map_path)
+        source_map.update(owner_source_map.get(owner, {}))
+        _save_json(source_map_path, dict(sorted(source_map.items(), key=lambda x: x[0])))
 
-        en_path.write_text(json.dumps(current, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        updates += 1
+        updated_owners += 1
 
-    print(f"updated_modules={updates}")
+    print(f"updated_owners={updated_owners}")
     return 0
 
 

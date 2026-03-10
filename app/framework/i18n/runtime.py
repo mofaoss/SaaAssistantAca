@@ -18,7 +18,8 @@ ERROR_LOG_I18N_MODE = "current"
 
 _CATALOGS: dict[str, dict[str, str]] = {lang: {} for lang in SUPPORTED_LANGS}
 _LOADED = False
-_MSGID_RE = re.compile(r"^[a-zA-Z0-9_][a-zA-Z0-9_\-\.]*$")
+_MSGID_SEMANTIC_RE = re.compile(r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$")
+_MSGID_HASHLIKE_RE = re.compile(r"^(?:[0-9a-f]{8,}|h[0-9a-f]{6,})$")
 
 
 @dataclass(frozen=True, slots=True)
@@ -38,6 +39,11 @@ def _contains_han(text: str) -> bool:
     return any("一" <= ch <= "鿿" for ch in text)
 
 
+
+
+def _contains_latin_letters(text: str) -> bool:
+    return bool(re.search(r"[A-Za-z]", text))
+
 def _contains_unsupported_non_ascii(text: str) -> bool:
     for ch in text:
         code = ord(ch)
@@ -52,9 +58,18 @@ def _contains_unsupported_non_ascii(text: str) -> bool:
 def classify_source_language(text: str) -> str:
     if not isinstance(text, str) or not text.strip():
         raise ValueError("Translation source text must be a non-empty string")
+
+    has_han = _contains_han(text)
+    has_latin = _contains_latin_letters(text)
+
     if _contains_unsupported_non_ascii(text):
         raise ValueError(f"Unsupported source language/script in _(): {text!r}")
-    if _contains_han(text):
+
+    # Enforce per-string single-language rule for extracted source text.
+    if has_han and has_latin:
+        raise ValueError(f"Mixed-language source text is not allowed in _(): {text!r}")
+
+    if has_han:
         return "zh_CN"
     return "en"
 
@@ -65,16 +80,37 @@ def _normalize_msgid(msgid: str | None) -> str | None:
     normalized = msgid.strip()
     if not normalized:
         return None
-    if not _MSGID_RE.match(normalized):
-        raise ValueError(f"Invalid msgid format: {msgid!r}")
+    if _MSGID_HASHLIKE_RE.fullmatch(normalized):
+        raise ValueError(f"Hash-like msgid is forbidden: {msgid!r}")
+    if not _MSGID_SEMANTIC_RE.fullmatch(normalized):
+        raise ValueError(
+            "Invalid msgid format. msgid must be semantic snake_case, "
+            f"for example task_completed: {msgid!r}"
+        )
     return normalized
 
 
 def _slugify(text: str) -> str:
-    if _contains_han(text):
-        return f"h{abs(hash(text)) & 0xFFFFFFFF:x}"
-    slug = re.sub(r"[^a-z0-9]+", "_", text.lower()).strip("_")
-    return slug[:64] if slug else "text"
+    # Readable fallback slug; never hash-based.
+    lowered = text.strip().lower()
+    normalized_chars: list[str] = []
+    for ch in lowered:
+        code = ord(ch)
+        if (97 <= code <= 122) or (48 <= code <= 57):
+            normalized_chars.append(ch)
+            continue
+        # Preserve CJK Unified Ideographs to keep fallback readable.
+        if 0x4E00 <= code <= 0x9FFF:
+            normalized_chars.append(ch)
+            continue
+        normalized_chars.append("_")
+    slug = re.sub(r"_+", "_", "".join(normalized_chars)).strip("_")
+    return slug[:80] if slug else "text"
+
+
+def validate_msgid(msgid: str | None) -> str | None:
+    """Public validator for tooling to enforce msgid policy consistently."""
+    return _normalize_msgid(msgid)
 
 
 def _infer_owner_from_frame(frame) -> tuple[str, str | None]:
@@ -119,7 +155,7 @@ def _owner_prefix(message: TranslatableMessage) -> str:
 
 def build_key(message: TranslatableMessage, *, context: str) -> str:
     prefix = _owner_prefix(message)
-    suffix = message.msgid or _slugify(message.source_text)
+    suffix = _normalize_msgid(message.msgid) or _slugify(message.source_text)
     return f"{prefix}.{context}.{suffix}"
 
 

@@ -393,7 +393,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
 
         if schedule_logs:
             header = "<b>📅 当前已激活的自动执行日程表：</b>" if not self._is_non_chinese_ui else "<b>📅 Active Schedules:</b>"
-            self.logger.info(f"{header}<br/>" + "<br/>".join(schedule_logs))
+            self.logger.info(_(f"{header}<br/>" + "<br/>".join(schedule_logs), msgid="periodic_active_schedule_output"))
         else:
             self.logger.info("📅 当前未启用任何计划任务。" if not self._is_non_chinese_ui
                              else "📅 No active schedules.")

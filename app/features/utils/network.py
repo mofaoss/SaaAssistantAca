@@ -248,7 +248,7 @@ def _refresh_tips(parent, *, url=None):
 def handle_cloudflare_success(data, parent):
     try:
         if 'data' not in data:
-            parent.logger.error(_('Error occurred while updating through Cloudflare: Incorrect data format returned', msgid='8e0f80b3ac5a'))
+            parent.logger.error(_('Error occurred while updating through Cloudflare: Incorrect data format returned', msgid='error_occurred_while_updating_through_cloudflare'))
             return
 
         online_data = data["data"]
@@ -258,7 +258,7 @@ def handle_cloudflare_success(data, parent):
         for field in required_fields:
             if field not in online_data:
                 parent.logger.error(
-                    _(f'Error occurred while updating through Cloudflare: Missing required field {field} in updateData', msgid='94c67e5d88ed')
+                    _(f'Error occurred while updating through Cloudflare: Missing required field {field} in updateData', msgid='error_occurred_while_updating_through_cloudflare_2')
                 )
                 _refresh_tips(parent)
                 return
@@ -267,7 +267,7 @@ def handle_cloudflare_success(data, parent):
             for field in update_data_fields:
                 if field not in online_data['updateData']:
                     parent.logger.error(
-                        _(f'Error occurred while updating through Cloudflare: Missing required field {field} in updateData', msgid='7c8d1cc74bea')
+                        _(f'Error occurred while updating through Cloudflare: Missing required field {field} in updateData', msgid='error_occurred_while_updating_through_cloudflare_3')
                     )
                     _refresh_tips(parent)
                     return
@@ -277,13 +277,13 @@ def handle_cloudflare_success(data, parent):
             handle_update_logic(data, online_data, response, parent)
         except Exception as e:
             parent.logger.error(
-                _(f'Error occurred while parsing API response data: {str(e)}', msgid='a20f1c9de24f')
+                _(f'Error occurred while parsing API response data: {str(e)}', msgid='error_occurred_while_parsing_api_response_data_v')
             )
             traceback.print_exc()
             handle_update_logic_fallback(data, online_data, parent)
     except Exception as e:
         parent.logger.error(
-            _(f'Error occurred while processing Cloudflare data: {str(e)}', msgid='7f7b01f6e149')
+            _(f'Error occurred while processing Cloudflare data: {str(e)}', msgid='error_occurred_while_processing_cloudflare_data')
         )
         _refresh_tips(parent)
 
@@ -294,15 +294,15 @@ def handle_update_logic(raw_data: Dict[str, Any], online_data: Dict[str, Any], r
     if not local_config_data:
         config.set(config.update_data, raw_data)
         if config.isLog.value:
-            parent.logger.info(_(f'Obtained update information: {online_data}', msgid='fa29abd83616'))
+            parent.logger.info(_(f'Obtained update information: {online_data}', msgid='obtained_update_information_online_data'))
         url = (
             f"https://www.cbjq.com/api.php?op=search_api&action=get_article_detail"
             f"&catid={response.data.updateData.linkCatId}&id={response.data.updateData.linkId}"
         )
         _refresh_tips(parent, url=url)
         InfoBar.success(
-            title=_('Update Successful', msgid='8567828f9a6f'),
-            content=_('New redeem code event information detected', msgid='f47b94019072'),
+            title=_('Update Successful', msgid='update_successful'),
+            content=_('New redeem code event information detected', msgid='new_redeem_code_event_information_detected'),
             orient=Qt.Orientation.Horizontal,
             isClosable=True,
             position=InfoBarPosition.TOP_RIGHT,
@@ -331,15 +331,15 @@ def handle_update_logic(raw_data: Dict[str, Any], online_data: Dict[str, Any], r
 
             if content:
                 if config.isLog.value:
-                    parent.logger.info(_(f'Obtained update information: {online_data}', msgid='b67b771d218f'))
+                    parent.logger.info(_(f'Obtained update information: {online_data}', msgid='obtained_update_information_online_data_2'))
                 config.set(config.update_data, raw_data)
                 config.set(config.task_name,
                            response.data.updateData.questName)
                 url = f"https://www.cbjq.com/api.php?op=search_api&action=get_article_detail&catid={response.data.updateData.linkCatId}&id={response.data.updateData.linkId}"
                 _refresh_tips(parent, url=url)
                 InfoBar.success(
-                    title=_('Update Successful', msgid='8567828f9a6f'),
-                    content=_(f'New {content} detected', msgid='1662a4d93a4b'),
+                    title=_('Update Successful', msgid='update_successful_3'),
+                    content=_(f'New {content} detected', msgid='new_content_detected'),
                     orient=Qt.Orientation.Horizontal,
                     isClosable=True,
                     position=InfoBarPosition.TOP_RIGHT,
@@ -362,8 +362,8 @@ def handle_update_logic_fallback(data, online_data, parent):
         url = f"https://www.cbjq.com/api.php?op=search_api&action=get_article_detail&catid={catId}&id={linkId}"
         _refresh_tips(parent, url=url)
         InfoBar.success(
-            title=_('Update Successful', msgid='8567828f9a6f'),
-            content=_('New redeem code event information detected', msgid='f47b94019072'),
+            title=_('Update Successful', msgid='update_successful_2'),
+            content=_('New redeem code event information detected', msgid='new_redeem_code_event_information_detected_2'),
             orient=Qt.Orientation.Horizontal,
             isClosable=True,
             position=InfoBarPosition.TOP_RIGHT,
@@ -373,7 +373,7 @@ def handle_update_logic_fallback(data, online_data, parent):
     else:
         if not isinstance(config.update_data.value, dict) or 'data' not in config.update_data.value:
             parent.logger.error(
-                _('Local configuration data format is incorrect, using online data', msgid='f04deae1d035')
+                _('Local configuration data format is incorrect, using online data', msgid='local_configuration_data_format_is_incorrect_usi')
             )
             config.set(config.update_data, data)
             config.set(config.task_name, online_data["updateData"]["questName"])

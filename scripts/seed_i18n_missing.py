@@ -28,14 +28,14 @@ def _save(path: Path, data: dict[str, str]) -> None:
 def _pick_source_value(
     key: str,
     all_maps: dict[str, dict[str, str]],
+    source_map: dict[str, str],
 ) -> tuple[str | None, str | None]:
-    """Pick source text for key with zh_CN->others support.
+    source_lang = source_map.get(key)
+    if source_lang in SUPPORTED_LANGS:
+        value = all_maps.get(source_lang, {}).get(key)
+        if value is not None:
+            return source_lang, value
 
-    Priority:
-    1) en (default source)
-    2) zh_CN
-    3) zh_HK
-    """
     for lang in ("en", "zh_CN", "zh_HK"):
         value = all_maps.get(lang, {}).get(key)
         if value is not None:
@@ -48,8 +48,10 @@ def _sync_owner(base_dir: Path) -> tuple[int, int]:
         lang: _load(base_dir / f"{lang}.json")
         for lang in SUPPORTED_LANGS
     }
+    source_map = _load(base_dir / "source_map.json")
+
     has_any_file = any((base_dir / f"{lang}.json").exists() for lang in SUPPORTED_LANGS)
-    all_keys: set[str] = set()
+    all_keys: set[str] = set(source_map.keys())
     for m in maps.values():
         all_keys.update(m.keys())
 
@@ -64,7 +66,7 @@ def _sync_owner(base_dir: Path) -> tuple[int, int]:
         before = len(cur)
         for k in sorted(all_keys):
             if k not in cur:
-                _, source_value = _pick_source_value(k, maps)
+                _, source_value = _pick_source_value(k, maps, source_map)
                 if source_value is None:
                     continue
                 cur[k] = source_value

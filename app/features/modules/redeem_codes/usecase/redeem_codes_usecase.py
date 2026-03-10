@@ -1,3 +1,4 @@
+from app.framework.i18n.runtime import _
 class RedeemCodesUseCase:
     def __init__(self, settings_usecase):
         self.settings_usecase = settings_usecase

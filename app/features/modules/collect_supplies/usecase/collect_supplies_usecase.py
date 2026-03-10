@@ -68,8 +68,8 @@ class CollectSuppliesModule:
             raise RuntimeError("redeem_codes_usecase is not configured")
         content = self.redeem_codes_usecase.reset_codes(text_edit)
         InfoBar.success(
-            title=_('Reset Successful', msgid='3fd0e9e4395f'),
-            content=_(f'Successfully reset import and display {content}', msgid='d27e72351f53'),
+            title=_('Reset Successful', msgid='reset_successful'),
+            content=_(f'Successfully reset import and display {content}', msgid='successfully_reset_import_and_display_content'),
             orient=Qt.Orientation.Horizontal,
             isClosable=True,
             position=InfoBarPosition.TOP_RIGHT,

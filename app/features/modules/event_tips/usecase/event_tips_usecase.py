@@ -27,8 +27,8 @@ class EventTipsUseCase:
             return tips_dic
 
         InfoBar.error(
-            title=_('Failed to update event schedule', msgid='5c1e67a3aca3'),
-            content=_('No local information stored and no URL fetched', msgid='566bc31ba4f4'),
+            title=_('Failed to update event schedule', msgid='failed_to_update_event_schedule'),
+            content=_('No local information stored and no URL fetched', msgid='no_local_information_stored_and_no_url_fetched'),
             orient=Qt.Orientation.Horizontal,
             isClosable=True,
             position=InfoBarPosition.TOP_RIGHT,
@@ -43,7 +43,7 @@ class EventTipsUseCase:
             return
 
         if self.settings_usecase.is_log_enabled():
-            logger.info(_('Successfully fetched event schedule', msgid='1ba446845b7f'))
+            logger.info(_('Successfully fetched event schedule', msgid='successfully_fetched_event_schedule'))
         normalized = {key: calculate_time_difference(value) for key, value in tips_dic.items()}
         max_total_days = max(
             (
@@ -120,4 +120,4 @@ class EventTipsActions:
                 url=url,
             )
         except Exception as e:
-            self._logger.error(_(f'Error occurred while updating controls: {e}', msgid='b2f8257d8b77'))
+            self._logger.error(_(f'Error occurred while updating controls: {e}', msgid='error_occurred_while_updating_controls_e'))

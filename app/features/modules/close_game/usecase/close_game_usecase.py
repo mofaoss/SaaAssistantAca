@@ -29,7 +29,7 @@ class CloseGameModule:
     def run(self):
         # 1. 退出游戏
         if self.close_game_enabled:
-            self.logger.info(_('Exiting game...', msgid='d37a4e4fc0c2'))
+            self.logger.info(_('Exiting game...', msgid='exiting_game'))
             hwnd = is_snowbreak_running()
             if hwnd:
                 win32gui.SendMessage(hwnd, win32con.WM_CLOSE, 0, 0)
@@ -37,12 +37,12 @@ class CloseGameModule:
 
         # 2. 关机
         if self.shutdown_enabled:
-            self.logger.info(_('System will shut down in 60s...', msgid='429e494e4e1c'))
+            self.logger.info(_('System will shut down in 60s...', msgid='system_will_shut_down_in_60s'))
             os.system("shutdown -s -t 60")
 
         # 3. 退出代理 (发送信号给主窗口处理)
         if self.close_proxy_enabled:
-            self.logger.info(_('Exiting Application...', msgid='fb1533f4f2b1'))
+            self.logger.info(_('Exiting Application...', msgid='exiting_application'))
             signalBus.requestExitApp.emit()
 
 

@@ -62,8 +62,8 @@ class PeriodicPresetActions:
         host.ui.ComboBox_presets.setCurrentIndex(host.ui.ComboBox_presets.findText(preset_name))
 
         InfoBar.success(
-            title=_('Saved', msgid='c0ae8f6ea841'),
-            content=_(f"Preset '{preset_name}' saved", msgid='42f6cd65c5ca'),
+            title=_('Saved', msgid='saved'),
+            content=_(f"Preset '{preset_name}' saved", msgid='preset_preset_name_saved'),
             parent=host,
         )
 
@@ -75,8 +75,8 @@ class PeriodicPresetActions:
             return
         if not deleted and reason == "min_one_required":
             InfoBar.warning(
-                title=_('Cannot Delete', msgid='9635fe8cd43e'),
-                content=_('At least one preset must remain', msgid='ae9985813275'),
+                title=_('Cannot Delete', msgid='cannot_delete'),
+                content=_('At least one preset must remain', msgid='at_least_one_preset_must_remain'),
                 parent=host,
             )
             return
@@ -87,8 +87,8 @@ class PeriodicPresetActions:
         host.ui.ComboBox_presets.setCurrentIndex(0)
 
         InfoBar.success(
-            title=_('Deleted', msgid='441bda6cd856'),
-            content=_(f"Preset '{preset_name}' deleted", msgid='168499bbdb96'),
+            title=_('Deleted', msgid='deleted'),
+            content=_(f"Preset '{preset_name}' deleted", msgid='preset_preset_name_deleted'),
             parent=host,
         )
 
@@ -111,8 +111,8 @@ class PeriodicRuleActions:
 
         if not checked_task_ids:
             InfoBar.warning(
-                title=_('No Target Selected', msgid='1b371d6fb221'),
-                content=_('Please check tasks in the left list first', msgid='cc351cec08d8'),
+                title=_('No Target Selected', msgid='no_target_selected'),
+                content=_('Please check tasks in the left list first', msgid='please_check_tasks_in_the_left_list_first'),
                 orient=Qt.Orientation.Horizontal,
                 isClosable=True,
                 position=InfoBarPosition.TOP_RIGHT,
@@ -138,8 +138,8 @@ class PeriodicRuleActions:
 
         host._auto_adjust_after_use_action()
         InfoBar.success(
-            title=_('Rule Copied Successfully', msgid='e3ae5bcbf5de'),
-            content=_(f'Rule added to {len(checked_task_ids)} checked tasks\nand enabled their scheduling', msgid='f30a6af3358a'),
+            title=_('Rule Copied Successfully', msgid='rule_copied_successfully'),
+            content=_(f'Rule added to {len(checked_task_ids)} checked tasks\nand enabled their scheduling', msgid='rule_added_to_value_checked_tasks_and_enabled_th'),
             orient=Qt.Orientation.Horizontal,
             isClosable=True,
             position=InfoBarPosition.TOP_RIGHT,
@@ -165,8 +165,8 @@ class PeriodicRuleActions:
 
         if not checked_task_ids:
             InfoBar.warning(
-                title=_('No Target Selected', msgid='1b371d6fb221'),
-                content=_('Please check tasks in the left list first', msgid='cc351cec08d8'),
+                title=_('No Target Selected', msgid='no_target_selected_2'),
+                content=_('Please check tasks in the left list first', msgid='please_check_tasks_in_the_left_list_first_2'),
                 orient=Qt.Orientation.Horizontal,
                 isClosable=True,
                 position=InfoBarPosition.TOP_RIGHT,
@@ -191,8 +191,8 @@ class PeriodicRuleActions:
 
         host._auto_adjust_after_use_action()
         InfoBar.success(
-            title=_('Withdraw Successful', msgid='015f96fc84cf'),
-            content=_(f'Removed trigger from {modified_count} tasks', msgid='2aa8a383db15'),
+            title=_('Withdraw Successful', msgid='withdraw_successful'),
+            content=_(f'Removed trigger from {modified_count} tasks', msgid='removed_trigger_from_modified_count_tasks'),
             orient=Qt.Orientation.Horizontal,
             isClosable=True,
             position=InfoBarPosition.TOP_RIGHT,
@@ -552,7 +552,7 @@ class PeriodicRuntimeActions:
         pending_tasks = host.periodic_controller.consume_pending_queue_on_external_release()
         if pending_tasks:
             host.logger.info(
-                _('External task finished, waking up queued daily tasks...', msgid='839d28ef6808')
+                _('External task finished, waking up queued daily tasks...', msgid='external_task_finished_waking_up_queued_daily_ta')
             )
             host.after_start_button_click(pending_tasks)
 

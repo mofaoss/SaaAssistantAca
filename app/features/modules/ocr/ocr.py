@@ -109,7 +109,7 @@ class OCR:
         if distance <= 1.8 and now - self._last_signature_time <= self._frame_cache_ttl:
             if is_log:
                 self.logger.debug(
-                    _('OCR hit frame cache, skipping repeated recognition', msgid='dd048bb5cb14')
+                    _('OCR hit frame cache, skipping repeated recognition', msgid='ocr_hit_frame_cache_skipping_repeated_recognitio')
                 )
             return True, self._last_result, signature
 
@@ -122,14 +122,14 @@ class OCR:
         ):
             if is_log:
                 self.logger.debug(
-                    _('OCR hit no-text cooldown, skipping recognition', msgid='e800193de899')
+                    _('OCR hit no-text cooldown, skipping recognition', msgid='ocr_hit_no_text_cooldown_skipping_recognition')
                 )
             return True, None, signature
 
         if (not is_small) and (not has_text_candidate) and self._low_text_likelihood(image):
             if is_log:
                 self.logger.debug(
-                    _('OCR quick check: low text probability frame, skipping recognition', msgid='1c5f467f1be7')
+                    _('OCR quick check: low text probability frame, skipping recognition', msgid='ocr_quick_check_low_text_probability_frame_skipp')
                 )
             return True, None, signature
 
@@ -159,7 +159,7 @@ class OCR:
             image = cv2.resize(image, (new_w, new_h), interpolation=cv2.INTER_CUBIC)
             image = self._enhance_low_res_text(image)
             if is_log:
-                self.logger.debug(_(f'OCR low-res enhance: {w}x{h} -> {new_w}x{new_h} (x{scale:.2f})', msgid='283283d9f41d'))
+                self.logger.debug(_(f'OCR low-res enhance: {w}x{h} -> {new_w}x{new_h} (x{scale:.2f})', msgid='ocr_low_res_enhance_w_x_h_new_w_x_new_h_x_scale'))
             return image, (scale, scale)
 
         return image, (1.0, 1.0)
@@ -243,7 +243,7 @@ class OCR:
             if image is None:
                 if is_log:
                     self.logger.debug(
-                        _('OCR input image is empty, skipping this recognition', msgid='328dd4d1a4f3')
+                        _('OCR input image is empty, skipping this recognition', msgid='ocr_input_image_is_empty_skipping_this_recogniti')
                     )
                 return None
 
@@ -252,7 +252,7 @@ class OCR:
                 image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
                 if image is None:
                     if is_log:
-                        self.logger.debug(_(f'OCR failed to read image, invalid path or unreadable file: {image_path}', msgid='5678b1bd9312'))
+                        self.logger.debug(_(f'OCR failed to read image, invalid path or unreadable file: {image_path}', msgid='ocr_failed_to_read_image_invalid_path_or_unreada'))
                     return None
                 if len(image.shape) == 3 and image.shape[2] == 4:
                     image = image[:, :, :3]
@@ -279,18 +279,18 @@ class OCR:
 
             if not candidates:
                 if is_log:
-                    self.logger.debug(_('OCR recognized no text', msgid='b5025abbb9d2'))
+                    self.logger.debug(_('OCR recognized no text', msgid='ocr_recognized_no_text'))
                 self._update_cache(signature, None)
                 return None
 
             best_name, best_result = max(candidates, key=lambda x: self._score_formatted_result(x[1]))
             if is_log:
-                self.logger.debug(_(f'OCR adopted strategy: {best_name}', msgid='e553f2750f9a'))
+                self.logger.debug(_(f'OCR adopted strategy: {best_name}', msgid='ocr_adopted_strategy_best_name'))
                 self.log_result(best_result)
             self._update_cache(signature, best_result)
             return best_result
         except Exception as e:
-            error_message = _(f'Error executing ocr: {e}', msgid='85dc5a050c0f')
+            error_message = _(f'Error executing ocr: {e}', msgid='error_executing_ocr_e')
             now = time.time()
             if error_message != self._last_error_message or now - self._last_error_time > 2:
                 self.logger.error(error_message)
@@ -337,7 +337,7 @@ class OCR:
         log_content = []
         for result in results:
             log_content.append(f'{result[0]}:{result[1]}')
-        self.logger.debug(_(f'OCR recognition result: {log_content}', msgid='c404ba289053'))
+        self.logger.debug(_(f'OCR recognition result: {log_content}', msgid='ocr_recognition_result_log_content'))
 
     def instance_ocr(self):
         """实例化OCR引擎。采用单例机制，防止重复初始化导致显存泄漏。"""
@@ -348,17 +348,17 @@ class OCR:
             if config.cpu_support_avx2.value is None:
                 cpu_support_avx2(config)
             try:
-                self.logger.debug(_('Starting to initialize OCR...', msgid='ecbbcbc53c31'))
+                self.logger.debug(_('Starting to initialize OCR...', msgid='starting_to_initialize_ocr'))
                 if config.cpu_support_avx2.value:
                     self.ocr = ONNXPaddleOcr(use_angle_cls=True, use_gpu=False)
-                    self.logger.info(_('OCR initialization completed', msgid='5f7324113199'))
+                    self.logger.info(_('OCR initialization completed', msgid='ocr_initialization_completed'))
                     self._is_initialized = True
                 else:
                     self.logger.error(
-                        _('OCR initialization failed: This CPU does not support AVX2 instruction set', msgid='5367a13ccc69')
+                        _('OCR initialization failed: This CPU does not support AVX2 instruction set', msgid='ocr_initialization_failed_this_cpu_does_not_supp')
                     )
             except Exception as e:
-                self.logger.error(_(f'OCR initialization failed: {e}', msgid='64791083260d'))
+                self.logger.error(_(f'OCR initialization failed: {e}', msgid='ocr_initialization_failed_e'))
                 raise Exception("初始化OCR失败")
 
     def stop_ocr(self):

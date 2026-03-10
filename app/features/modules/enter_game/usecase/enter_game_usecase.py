@@ -254,7 +254,7 @@ def launch_game_with_guard(
         if _last_game_process is not None and _last_game_process.poll() is None:
             if logger:
                 logger.info(
-                    _('Detected that the game process started by the program is still running, skipping duplicate startup', msgid='22bfd52ce240')
+                    _('Detected that the game process started by the program is still running, skipping duplicate startup', msgid='detected_that_the_game_process_started_by_the_pr')
                 )
             return {
                 "ok": True,
@@ -271,7 +271,7 @@ def launch_game_with_guard(
 
         if is_game_running():
             if logger:
-                logger.info(_('Game window already exists', msgid='f80650f28a54'))
+                logger.info(_('Game window already exists', msgid='game_window_already_exists'))
             return {
                 "ok": True,
                 "already_running": True,
@@ -283,29 +283,29 @@ def launch_game_with_guard(
         if not exe_path or not os.path.exists(exe_path):
             if logger:
                 logger.error(
-                    _(f'Game.exe not found, please check the path: {start_path}', msgid='df889f0ebf82')
+                    _(f'Game.exe not found, please check the path: {start_path}', msgid='game_exe_not_found_please_check_the_path_start_p')
                 )
             return {
                 "ok": False,
-                "error": _(f'Game executable not found under: {start_path}', msgid='1abfcb8e6130'),
+                "error": _(f'Game executable not found under: {start_path}', msgid='game_executable_not_found_under_start_path'),
             }
 
         launch_args = get_start_arguments(start_path, game_channel, exe_path=exe_path)
         if launch_args is None:
             if logger:
                 logger.error(
-                    _(f'Failed to resolve launch arguments, start_path: {start_path}, game_channel: {game_channel}', msgid='528f0473f979')
+                    _(f'Failed to resolve launch arguments, start_path: {start_path}, game_channel: {game_channel}', msgid='failed_to_resolve_launch_arguments_start_path_st')
                 )
-            return {"ok": False, "error": _('Failed to resolve launch arguments', msgid='fc3cf53d556a')}
+            return {"ok": False, "error": _('Failed to resolve launch arguments', msgid='failed_to_resolve_launch_arguments')}
 
         if logger:
-            logger.debug(_(f'Starting {exe_path} {launch_args}', msgid='8bb7e083549c'))
+            logger.debug(_(f'Starting {exe_path} {launch_args}', msgid='starting_exe_path_launch_args'))
         try:
             process = subprocess.Popen([exe_path] + launch_args)
         except Exception as exc:
             if logger:
-                logger.error(_(f'Failed to spawn process: {exc}', msgid='9eddf8040deb'))
-            return {"ok": False, "error": _(f'Failed to spawn process: {exc}', msgid='71ae3513d20a')}
+                logger.error(_(f'Failed to spawn process: {exc}', msgid='failed_to_spawn_process_exc_2'))
+            return {"ok": False, "error": _(f'Failed to spawn process: {exc}', msgid='failed_to_spawn_process_exc')}
 
         _last_game_process = process
         _last_launch_ts = time.time()
@@ -375,7 +375,7 @@ class EnterGameService(IGameEnvironment):
         action = "将" if state == 2 else "不会"
         InfoBar.success(
             title=status,
-            content=_(f"Clicking the 'Start' button will {action}automatically launch the game", msgid='4f4b7745f8d0'),
+            content=_(f"Clicking the 'Start' button will {action}automatically launch the game", msgid='clicking_the_start_button_will_action_automatica'),
             orient=Qt.Orientation.Horizontal,
             isClosable=True,
             position=InfoBarPosition.TOP_RIGHT,

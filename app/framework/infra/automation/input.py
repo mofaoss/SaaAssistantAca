@@ -135,7 +135,7 @@ class Input:
         if now - self._last_shell_guard_log_time >= self._shell_guard_log_interval:
             if config.isInputLog.value:
                 self.logger.info(
-                    _('Detected user interacting with desktop/taskbar, keeping tracking hidden and waiting', msgid='a03262985b45')
+                    _('Detected user interacting with desktop/taskbar, keeping tracking hidden and waiting', msgid='detected_user_interacting_with_desktop_taskbar_k')
                 )
             self._last_shell_guard_log_time = now
 
@@ -234,7 +234,7 @@ class Input:
         lock_timeout = max(0.1, min(time_out, 1.0))
         if not self._mouse_action_lock.acquire(timeout=lock_timeout):
             self.logger.error(
-                _(f'Failed to perform mouse click ({x}, {y}) because mouse operation is in progress', msgid='caa657222e69')
+                _(f'Failed to perform mouse click ({x}, {y}) because mouse operation is in progress', msgid='failed_to_perform_mouse_click_x_y_because_mouse')
             )
             return
         self._sync_tracker_hwnd()
@@ -321,7 +321,7 @@ class Input:
                             self.window_tracker.hide_window_offscreen()
                             if config.isInputLog.value:
                                 self.logger.info(
-                                    _(f'Tracking click completed ({x}, {y})', msgid='3f8cb64f8a22')
+                                    _(f'Tracking click completed ({x}, {y})', msgid='tracking_click_completed_x_y')
                                 )
                             return
                         time.sleep(0.003)
@@ -346,7 +346,7 @@ class Input:
 
                     time.sleep(0.02)
                     if config.isInputLog.value:
-                        self.logger.info(_(f'Mouse move and click ({x}, {y})', msgid='bb776acba1c2'))
+                        self.logger.info(_(f'Mouse move and click ({x}, {y})', msgid='mouse_move_and_click_x_y_2'))
                     return
                 finally:
                     if current_pos is not None:
@@ -357,10 +357,10 @@ class Input:
 
             active_elapsed = time.time() - start_time - (deferred_time if self._window_tracking_enabled else 0.0)
             if active_elapsed > time_out:
-                raise RuntimeError(_('Click timeout', msgid='9f046fba4a42'))
+                raise RuntimeError(_('Click timeout', msgid='click_timeout'))
         except Exception as e:
             self.logger.error(
-                _(f'Error occurred while performing mouse move click ({x}, {y}): {repr(e)}', msgid='232e9dc79724')
+                _(f'Error occurred while performing mouse move click ({x}, {y}): {repr(e)}', msgid='error_occurred_while_performing_mouse_move_click')
             )
             if self._window_tracking_enabled:
                 self.window_tracker.hide_window_offscreen()
@@ -374,10 +374,10 @@ class Input:
             time.sleep(press_time)
             self.mouse_up(x, y, mouse_key)
             if config.isInputLog.value:
-                self.logger.info(_(f'Mouse move and click ({x}, {y})', msgid='81f445316f32'))
+                self.logger.info(_(f'Mouse move and click ({x}, {y})', msgid='mouse_move_and_click_x_y'))
         except Exception as e:
             self.logger.error(
-                _(f'Error occurred while performing mouse move click ({x}, {y}): {repr(e)}', msgid='af21f8ed0e4e')
+                _(f'Error occurred while performing mouse move click ({x}, {y}): {repr(e)}', msgid='error_occurred_while_performing_mouse_move_click_2')
             )
 
     def move_to(self, x: int, y: int):
@@ -411,7 +411,7 @@ class Input:
             active_elapsed = time.time() - start_time - deferred_time
             if active_elapsed >= effective_timeout:
                 self.logger.warning(
-                    _(f'Tracking wheel timeout, abandoning this wheel input: ({x}, {y}, {delta}), total_batches={total_batches}, finished={finished_batches}, timeout={effective_timeout:.2f}s', msgid='27ab5f2d7bf1')
+                    _(f'Tracking wheel timeout, abandoning this wheel input: ({x}, {y}, {delta}), total_batches={total_batches}, finished={finished_batches}, timeout={effective_timeout:.2f}s', msgid='tracking_wheel_timeout_abandoning_this_wheel_inp')
                 )
                 return False
 
@@ -434,7 +434,7 @@ class Input:
 
             if not aligned:
                 self.logger.warning(
-                    _(f'Tracking wheel alignment failed, abandoning this wheel input: ({x}, {y}, {delta})', msgid='4dcf931755cd')
+                    _(f'Tracking wheel alignment failed, abandoning this wheel input: ({x}, {y}, {delta})', msgid='tracking_wheel_alignment_failed_abandoning_this')
                 )
                 return False
 
@@ -454,7 +454,7 @@ class Input:
                 active_elapsed = time.time() - start_time - deferred_time
                 if active_elapsed >= effective_timeout:
                     self.logger.warning(
-                        _(f'Tracking wheel timeout (remainder), abandoning this wheel input: ({x}, {y}, {delta}), total_batches={total_batches}, finished={finished_batches}, timeout={effective_timeout:.2f}s', msgid='33a98f72903f')
+                        _(f'Tracking wheel timeout (remainder), abandoning this wheel input: ({x}, {y}, {delta}), total_batches={total_batches}, finished={finished_batches}, timeout={effective_timeout:.2f}s', msgid='tracking_wheel_timeout_remainder_abandoning_this')
                     )
                     return False
 
@@ -477,7 +477,7 @@ class Input:
 
                 if not aligned:
                     self.logger.warning(
-                        _(f'Tracking wheel remainder alignment failed, abandoning this wheel input: ({x}, {y}, {delta})', msgid='23150d6d9a26')
+                        _(f'Tracking wheel remainder alignment failed, abandoning this wheel input: ({x}, {y}, {delta})', msgid='tracking_wheel_remainder_alignment_failed_abando')
                     )
                     return False
                 self.activate()
@@ -486,7 +486,7 @@ class Input:
                 break
 
         if config.isInputLog.value:
-            self.logger.info(_(f'Tracking mode scrolling completed ({x},{y}) delta={delta}', msgid='7e075a1d25e4'))
+            self.logger.info(_(f'Tracking mode scrolling completed ({x},{y}) delta={delta}', msgid='tracking_mode_scrolling_completed_x_y_delta_delt'))
         return True
 
     def mouse_scroll(self, x: int, y: int, delta: int = 120, time_out: float = 10.):
@@ -538,7 +538,7 @@ class Input:
 
                         if config.isInputLog.value:
                             self.logger.info(
-                                _(f'Mouse moved to ({x},{y}) and scrolled wheel {delta}', msgid='64cf452636e6')
+                                _(f'Mouse moved to ({x},{y}) and scrolled wheel {delta}', msgid='mouse_moved_to_x_y_and_scrolled_wheel_delta')
                             )
                         return True
                     finally:
@@ -551,12 +551,12 @@ class Input:
                 time.sleep(0.02)
 
             self.logger.warning(
-                _(f'Waiting for wheel scrolling timeout, abandoning this wheel input: ({x}, {y}, {delta})', msgid='4e66efce731d')
+                _(f'Waiting for wheel scrolling timeout, abandoning this wheel input: ({x}, {y}, {delta})', msgid='waiting_for_wheel_scrolling_timeout_abandoning_t')
             )
             return False
         except Exception as e:
             self.logger.error(
-                _(f'Error occurred while scrolling after mouse move ({x}, {y}): {repr(e)}', msgid='2837c39f5660')
+                _(f'Error occurred while scrolling after mouse move ({x}, {y}): {repr(e)}', msgid='error_occurred_while_scrolling_after_mouse_move')
             )
             return False
 
@@ -566,7 +566,7 @@ class Input:
             time.sleep(press_time)
             self.key_up(key)
         except Exception as e:
-            self.logger.error(_(f'Error occurred while simulating key {key}: {repr(e)}', msgid='6d24eb9e59c4'))
+            self.logger.error(_(f'Error occurred while simulating key {key}: {repr(e)}', msgid='error_occurred_while_simulating_key_key_value'))
 
     def key_down(self, key):
         vk_code = self.get_virtual_keycode(key)
@@ -575,7 +575,7 @@ class Input:
         lparam = (scan_code << 16) | 1
         win32gui.PostMessage(self.hwnd, self.WmCode["key_down"], wparam, lparam)
         if config.isInputLog.value:
-            self.logger.debug(_(f'Key pressed: {key}', msgid='e88c659ac469'))
+            self.logger.debug(_(f'Key pressed: {key}', msgid='key_pressed_key'))
 
     def key_up(self, key):
         vk_code = self.get_virtual_keycode(key)
@@ -584,7 +584,7 @@ class Input:
         lparam = (scan_code << 16) | 1
         win32gui.PostMessage(self.hwnd, self.WmCode["key_up"], wparam, lparam)
         if config.isInputLog.value:
-            self.logger.debug(_(f'Key released: {key}', msgid='98cebd476766'))
+            self.logger.debug(_(f'Key released: {key}', msgid='key_released_key'))
 
 
 if __name__ == '__main__':
