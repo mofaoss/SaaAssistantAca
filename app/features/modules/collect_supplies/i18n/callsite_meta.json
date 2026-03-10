@@ -1,4 +1,16 @@
 {
+  "app/features/modules/collect_supplies/ui/collect_supplies_periodic_page.py:57:35": {
+    "kind": "static_literal",
+    "key": "module.collect_supplies.ui.claim_mail",
+    "msgid": "claim_mail",
+    "source_text": "Claim Mail",
+    "owner_scope": "module",
+    "owner_module": "collect_supplies",
+    "file_path": "app/features/modules/collect_supplies/ui/collect_supplies_periodic_page.py",
+    "line": 57,
+    "col": 35,
+    "context": "ui"
+  },
   "app/features/modules/collect_supplies/ui/collect_supplies_periodic_page.py:58:35": {
     "kind": "static_literal",
     "key": "module.collect_supplies.ui.claim_mail",
@@ -11,11 +23,23 @@
     "col": 35,
     "context": "ui"
   },
-  "app/features/modules/collect_supplies/ui/collect_supplies_periodic_page.py:59:40": {
+  "app/features/modules/collect_supplies/ui/collect_supplies_periodic_page.py:58:40": {
     "kind": "static_literal",
     "key": "module.collect_supplies.ui.claim_bait",
     "msgid": "claim_bait",
     "source_text": "Claim Bait",
+    "owner_scope": "module",
+    "owner_module": "collect_supplies",
+    "file_path": "app/features/modules/collect_supplies/ui/collect_supplies_periodic_page.py",
+    "line": 58,
+    "col": 40,
+    "context": "ui"
+  },
+  "app/features/modules/collect_supplies/ui/collect_supplies_periodic_page.py:59:40": {
+    "kind": "static_literal",
+    "key": "module.collect_supplies.ui.dorm_shards",
+    "msgid": "dorm_shards",
+    "source_text": "Dorm Shards",
     "owner_scope": "module",
     "owner_module": "collect_supplies",
     "file_path": "app/features/modules/collect_supplies/ui/collect_supplies_periodic_page.py",
@@ -35,6 +59,18 @@
     "col": 40,
     "context": "ui"
   },
+  "app/features/modules/collect_supplies/ui/collect_supplies_periodic_page.py:60:42": {
+    "kind": "static_literal",
+    "key": "module.collect_supplies.ui.redeem_codes",
+    "msgid": "redeem_codes",
+    "source_text": "Redeem Codes",
+    "owner_scope": "module",
+    "owner_module": "collect_supplies",
+    "file_path": "app/features/modules/collect_supplies/ui/collect_supplies_periodic_page.py",
+    "line": 60,
+    "col": 42,
+    "context": "ui"
+  },
   "app/features/modules/collect_supplies/ui/collect_supplies_periodic_page.py:61:42": {
     "kind": "static_literal",
     "key": "module.collect_supplies.ui.redeem_codes",
@@ -45,6 +81,30 @@
     "file_path": "app/features/modules/collect_supplies/ui/collect_supplies_periodic_page.py",
     "line": 61,
     "col": 42,
+    "context": "ui"
+  },
+  "app/features/modules/collect_supplies/ui/collect_supplies_periodic_page.py:61:52": {
+    "kind": "static_literal",
+    "key": "module.collect_supplies.ui.import",
+    "msgid": "import",
+    "source_text": "Import",
+    "owner_scope": "module",
+    "owner_module": "collect_supplies",
+    "file_path": "app/features/modules/collect_supplies/ui/collect_supplies_periodic_page.py",
+    "line": 61,
+    "col": 52,
+    "context": "ui"
+  },
+  "app/features/modules/collect_supplies/ui/collect_supplies_periodic_page.py:62:44": {
+    "kind": "static_literal",
+    "key": "module.collect_supplies.ui.reset",
+    "msgid": "reset",
+    "source_text": "Reset",
+    "owner_scope": "module",
+    "owner_module": "collect_supplies",
+    "file_path": "app/features/modules/collect_supplies/ui/collect_supplies_periodic_page.py",
+    "line": 62,
+    "col": 44,
     "context": "ui"
   },
   "app/features/modules/collect_supplies/ui/collect_supplies_periodic_page.py:62:52": {

@@ -1,4 +1,4 @@
-from PySide6.QtCore import QSize
+﻿from PySide6.QtCore import QSize
 from PySide6.QtWidgets import QGridLayout, QWidget
 from qfluentwidgets import CheckBox, ScrollArea, StrongBodyLabel
 
@@ -8,8 +8,8 @@ from app.framework.ui.views.periodic_base import ModulePageBase
 
 
 class ShopPage(ModulePageBase):
-    def __init_self._(self, parent=None):
-        super().__init_self._("page_shop", parent=parent, host_context="periodic", use_default_layout=True)
+    def __init__(self, parent=None):
+        super().__init__("page_shop", parent=parent, host_context="periodic", use_default_layout=True)
 
         self.ScrollArea = ScrollArea(self)
         self.ScrollArea.setObjectName("ScrollArea")
@@ -62,7 +62,7 @@ class ShopPage(ModulePageBase):
         self.finalize()
 
     def _apply_i18n(self):
-        self.StrongBodyLabel.setText(self._("Select items to buy", msgid='select_items_to_buy'))
+        self.StrongBodyLabel.setText(_("Select items to buy", msgid='select_items_to_buy'))
         shop_items = [
             ("CheckBox_buy_3", "通用强化套件", "Universal Enhancement Kit"),
             ("CheckBox_buy_4", "优选强化套件", "Premium Enhancement Kit"),
@@ -82,4 +82,5 @@ class ShopPage(ModulePageBase):
             checkbox = getattr(self, attr, None)
             if checkbox is not None:
                 checkbox.setText(self._ui_text(zh, en))
+
 

@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget
@@ -6,8 +6,8 @@ from qfluentwidgets import BodyLabel, PrimaryPushButton, SimpleCardWidget
 
 
 class MassagingInterface(QWidget):
-    def __init_self._(self, parent=None):
-        super().__init_self._(parent=parent)
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
         self.setObjectName("page_massaging")
 
         self.main_layout = QHBoxLayout(self)
@@ -46,3 +46,4 @@ class MassagingInterface(QWidget):
 
     def bind_host_context(self, _host_context):
         return None
+

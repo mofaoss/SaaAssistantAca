@@ -1,4 +1,28 @@
 {
+  "app/features/modules/jigsaw/ui/shard_exchange_periodic_page.py:24:45": {
+    "kind": "static_literal",
+    "key": "module.jigsaw.ui.auto_receive",
+    "msgid": "auto_receive",
+    "source_text": "Auto Receive",
+    "owner_scope": "module",
+    "owner_module": "jigsaw",
+    "file_path": "app/features/modules/jigsaw/ui/shard_exchange_periodic_page.py",
+    "line": 24,
+    "col": 45,
+    "context": "ui"
+  },
+  "app/features/modules/jigsaw/ui/shard_exchange_periodic_page.py:25:42": {
+    "kind": "static_literal",
+    "key": "module.jigsaw.ui.auto_gift",
+    "msgid": "auto_gift",
+    "source_text": "Auto Gift",
+    "owner_scope": "module",
+    "owner_module": "jigsaw",
+    "file_path": "app/features/modules/jigsaw/ui/shard_exchange_periodic_page.py",
+    "line": 25,
+    "col": 42,
+    "context": "ui"
+  },
   "app/features/modules/jigsaw/ui/shard_exchange_periodic_page.py:25:45": {
     "kind": "static_literal",
     "key": "module.jigsaw.ui.auto_receive",
@@ -21,6 +45,18 @@
     "file_path": "app/features/modules/jigsaw/ui/shard_exchange_periodic_page.py",
     "line": 26,
     "col": 42,
+    "context": "ui"
+  },
+  "app/features/modules/jigsaw/ui/shard_exchange_periodic_page.py:26:45": {
+    "kind": "static_literal",
+    "key": "module.jigsaw.ui.smart_recycle",
+    "msgid": "smart_recycle",
+    "source_text": "Smart Recycle",
+    "owner_scope": "module",
+    "owner_module": "jigsaw",
+    "file_path": "app/features/modules/jigsaw/ui/shard_exchange_periodic_page.py",
+    "line": 26,
+    "col": 45,
     "context": "ui"
   },
   "app/features/modules/jigsaw/ui/shard_exchange_periodic_page.py:27:45": {

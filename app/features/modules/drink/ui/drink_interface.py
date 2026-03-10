@@ -1,12 +1,12 @@
-from PySide6.QtCore import Qt
+﻿from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QTextBrowser
 from qfluentwidgets import (BodyLabel, CheckBox, ComboBox, PushButton, SimpleCardWidget, SpinBox, TitleLabel)
 from app.framework.infra.config.app_config import config
 from app.framework.ui.views.periodic_base import ModulePageBase
 
 class DrinkInterface(ModulePageBase):
-    def __init_self._(self, parent=None):
-        super().__init_self._(parent)
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.setObjectName("page_card")
 
         self.main_layout = QHBoxLayout(self)
@@ -79,18 +79,19 @@ class DrinkInterface(ModulePageBase):
 
     def apply_i18n(self):
         self.BodyLabel_tip_card.setText(
-            self._("### Tips\n* Stand at the Card Match entrance before starting\n* Both modes prioritize ending matches quickly for fast farming\n* Logic: always challenge when possible; play the middle card on your turn\n* Win/loss may vary; it is designed for passive EXP farming", msgid='tips_stand_at_the_card_match_entrance_before_starting_both_modes_prioritize_endi')
+            _("### Tips\n* Stand at the Card Match entrance before starting\n* Both modes prioritize ending matches quickly for fast farming\n* Logic: always challenge when possible; play the middle card on your turn\n* Win/loss may vary; it is designed for passive EXP farming", msgid='tips_stand_at_the_card_match_entrance_before_starting_both_modes_prioritize_endi')
         )
-        self.BodyLabel_31.setText(self._("Mode", msgid='mode'))
-        self.BodyLabel_32.setText(self._("Run count (-1 means infinite)", msgid='run_count_1_means_infinite'))
-        self.CheckBox_is_speed_up.setText(self._("I have enabled speed-up manually", msgid='i_have_enabled_speed_up_manually'))
-        self.TitleLabel_7.setText(self._("Log", msgid='log'))
-        self.PushButton_start_drink.setText(self._('Start Drink', msgid='start_drink'))
+        self.BodyLabel_31.setText(_("Mode", msgid='mode'))
+        self.BodyLabel_32.setText(_("Run count (-1 means infinite)", msgid='run_count_1_means_infinite'))
+        self.CheckBox_is_speed_up.setText(_("I have enabled speed-up manually", msgid='i_have_enabled_speed_up_manually'))
+        self.TitleLabel_7.setText(_("Log", msgid='log'))
+        self.PushButton_start_drink.setText(_('Start Drink', msgid='start_drink'))
 
         self.ComboBox_card_mode.clear()
         self.ComboBox_card_mode.addItems(
-            [self._('Standard (fast EXP)', msgid='standard_fast_exp'),
-             self._('Mystery Box Raid (EXP/Achievements)', msgid='mystery_box_raid_exp_achievements')]
+            [_('Standard (fast EXP)', msgid='standard_fast_exp'),
+             _('Mystery Box Raid (EXP/Achievements)', msgid='mystery_box_raid_exp_achievements')]
         )
+
 
 

@@ -1,4 +1,4 @@
-import logging
+﻿import logging
 import cv2
 import numpy as np
 from PySide6.QtCore import QThread, Signal, Qt
@@ -13,15 +13,15 @@ from app.framework.core.task_engine.base_task import BaseTask
 logger = logging.getLogger(__name__)
 
 class SubTask(ModuleTaskThread):
-    def __init_self._(self, module, logger_instance=None):
-        super().__init_self._(module, logger_instance or logger)
+    def __init__(self, module, logger_instance=None):
+        super().__init__(module, logger_instance or logger)
 
 
 # 纯原生的 PySide6 取色对话框
 class ColorPickDialog(QDialog):
-    def __init_self._(self, img_np, parent=None):
-        super().__init_self._(parent)
-        self.setWindowTitle(qt(self._("请点击图像上的黄色完美收杆区域 (提取颜色)")))
+    def __init__(self, img_np, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(qt(_("请点击图像上的黄色完美收杆区域 (提取颜色)")))
 
         # 【核心修复】：强制转换图像内存为连续的 C 风格内存块
         if not img_np.flags['C_CONTIGUOUS']:
@@ -59,15 +59,15 @@ class AdjustColor(QThread, BaseTask):
     # 【新增】发给主线程的 UI 渲染信号
     _show_ui_signal = Signal(object)
 
-    def __init_self._(self):
-        super().__init_self._()
+    def __init__(self):
+        super().__init__()
         self.logger = logger
         # 将弹窗信号绑定到当前实例的方法（因该实例在主线程被创建，故此槽函数在主线程执行）
         self._show_ui_signal.connect(self._show_dialog)
 
     def run(self):
         if not self.init_auto('game'):
-            self.logger.error(self._("初始化自动化失败，无法打开颜色校准", msgid="init_automation_failed_unable_to_open_color_calibration"))
+            self.logger.error(_("初始化自动化失败，无法打开颜色校准", msgid="init_automation_failed_unable_to_open_color_calibration"))
             return
         self.auto.take_screenshot()
         img_np = self.auto.get_crop_form_first_screenshot(crop=(1130 / 1920, 240 / 1080, 1500 / 1920, 570 / 1080), is_resize=False)
@@ -80,7 +80,7 @@ class AdjustColor(QThread, BaseTask):
         dialog = ColorPickDialog(img_np)
         if dialog.exec():  # 如果用户点击并成功提取了颜色
             hsv = dialog.picked_hsv
-            self.logger.info(self._(f"选定的HSV值: {hsv}"))
+            self.logger.info(_(f"选定的HSV值: {hsv}"))
             self.save_color_to_config(hsv)
             self.color_changed.emit()
 
@@ -94,4 +94,5 @@ class AdjustColor(QThread, BaseTask):
         config.set(config.LineEdit_fish_base, base)
         config.set(config.LineEdit_fish_upper, upper)
         config.set(config.LineEdit_fish_lower, lower)
+
 

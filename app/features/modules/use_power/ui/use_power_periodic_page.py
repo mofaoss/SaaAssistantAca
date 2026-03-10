@@ -1,12 +1,12 @@
-from PySide6.QtWidgets import QHBoxLayout
+﻿from PySide6.QtWidgets import QHBoxLayout
 from qfluentwidgets import BodyLabel, CheckBox, ComboBox, StrongBodyLabel
 
 from app.framework.ui.views.periodic_base import ModulePageBase
 
 
 class UsePowerPage(ModulePageBase):
-    def __init_self._(self, parent=None):
-        super().__init_self._("page_2", parent=parent, host_context="periodic", use_default_layout=True)
+    def __init__(self, parent=None):
+        super().__init__("page_2", parent=parent, host_context="periodic", use_default_layout=True)
 
         first_line = QHBoxLayout()
         self.CheckBox_is_use_power = CheckBox(self)
@@ -34,11 +34,12 @@ class UsePowerPage(ModulePageBase):
         self.ComboBox_power_day.addItems(["1", "2", "3", "4", "5", "6"])
         self.ComboBox_power_usage.addItems(
             [
-                self._("Event Stages", msgid='event_stages'),
-                self._("Operation Logistics", msgid='operation_logistics'),
+                _("Event Stages", msgid='event_stages'),
+                _("Operation Logistics", msgid='operation_logistics'),
             ]
         )
-        self.StrongBodyLabel_2.setText(self._("Stamina usage mode", msgid='stamina_usage_mode'))
-        self.CheckBox_is_use_power.setText(self._("Auto use expiring", msgid='auto_use_expiring'))
-        self.BodyLabel_6.setText(self._("day potion", msgid='day_potion'))
+        self.StrongBodyLabel_2.setText(_("Stamina usage mode", msgid='stamina_usage_mode'))
+        self.CheckBox_is_use_power.setText(_("Auto use expiring", msgid='auto_use_expiring'))
+        self.BodyLabel_6.setText(_("day potion", msgid='day_potion'))
+
 

@@ -1,4 +1,16 @@
 {
+  "app/features/modules/shopping/ui/shop_periodic_page.py:65:37": {
+    "kind": "static_literal",
+    "key": "module.shopping.ui.select_items_to_buy",
+    "msgid": "select_items_to_buy",
+    "source_text": "Select items to buy",
+    "owner_scope": "module",
+    "owner_module": "shopping",
+    "file_path": "app/features/modules/shopping/ui/shop_periodic_page.py",
+    "line": 65,
+    "col": 37,
+    "context": "ui"
+  },
   "app/features/modules/shopping/ui/shop_periodic_page.py:66:37": {
     "kind": "static_literal",
     "key": "module.shopping.ui.select_items_to_buy",

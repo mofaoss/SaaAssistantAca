@@ -1,8 +1,8 @@
-from app.framework.ui.widgets.custom_message_box import CustomMessageBox
+﻿from app.framework.ui.widgets.custom_message_box import CustomMessageBox
 
 
 class RedeemCodesView:
-    def __init_self._(self):
+    def __init__(self):
         self._is_dialog_open = False
 
     def prompt_import_codes(self, parent):
@@ -14,10 +14,11 @@ class RedeemCodesView:
             dialog = CustomMessageBox(parent, "导入兑换码", "text_edit")
             dialog.content.setEnabled(True)
             dialog.content.setPlaceholderText(
-                self._('One code per line', msgid='one_code_per_line')
+                _('One code per line', msgid='one_code_per_line')
             )
             if dialog.exec():
                 return dialog.content.toPlainText()
             return None
         finally:
             self._is_dialog_open = False
+

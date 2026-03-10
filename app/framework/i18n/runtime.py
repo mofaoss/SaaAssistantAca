@@ -439,6 +439,20 @@ def _render_dynamic_message(message: TranslatableMessage, *, key: str, target_la
     translated_template = _CATALOGS.get(target_lang, {}).get(key)
     if translated_template is None:
         translated_template = _CATALOGS.get(message.source_lang, {}).get(key)
+    # Context-aware fallback: allow ui/log catalogs to share the same dynamic msgid
+    # when one side has no explicit seeded entry yet.
+    if translated_template is None and ".ui." in key:
+        log_key = key.replace(".ui.", ".log.", 1)
+        translated_template = (
+            _CATALOGS.get(target_lang, {}).get(log_key)
+            or _CATALOGS.get(message.source_lang, {}).get(log_key)
+        )
+    if translated_template is None and ".log." in key:
+        ui_key = key.replace(".log.", ".ui.", 1)
+        translated_template = (
+            _CATALOGS.get(target_lang, {}).get(ui_key)
+            or _CATALOGS.get(message.source_lang, {}).get(ui_key)
+        )
     if translated_template is None:
         _telemetry_warn("dynamic_template_missing", key)
         translated_template = source_template

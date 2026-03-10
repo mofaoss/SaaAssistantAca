@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt
+﻿from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QTextBrowser
 from qfluentwidgets import (BodyLabel, ComboBox, PushButton, SimpleCardWidget, TitleLabel)
 from app.framework.infra.config.app_config import config
@@ -66,16 +66,17 @@ class MazeInterface(ModulePageBase):
 
     def apply_i18n(self):
         self.BodyLabel_tip_maze.setText(
-            self._("### Tips\n* This feature only supports the new Buff Maze, not the old maze\n* Single Run is suitable for first 3 stages; Repeat Run keeps farming the last stage\n* Select buffs in team setup first, then click Start Maze in Acacia\n* Recommended buffs: Skill-Chain Lightning and Shield-Steal\n* Team must include Chenxing - Qiongxian in the middle slot\n* Bring a strong support unit to reduce sudden deaths", msgid='tips_this_feature_only_supports_the_new_buff_maze_not_the_old_maze_single_run_is')
+            _("### Tips\n* This feature only supports the new Buff Maze, not the old maze\n* Single Run is suitable for first 3 stages; Repeat Run keeps farming the last stage\n* Select buffs in team setup first, then click Start Maze in Acacia\n* Recommended buffs: Skill-Chain Lightning and Shield-Steal\n* Team must include Chenxing - Qiongxian in the middle slot\n* Bring a strong support unit to reduce sudden deaths", msgid='tips_this_feature_only_supports_the_new_buff_maze_not_the_old_maze_single_run_is')
         )
-        self.BodyLabel_27.setText(self._("Run mode", msgid='run_mode'))
-        self.TitleLabel_5.setText(self._("Log", msgid='log'))
-        self.PushButton_start_maze.setText(self._('Start Maze', msgid='start_maze'))
+        self.BodyLabel_27.setText(_("Run mode", msgid='run_mode'))
+        self.TitleLabel_5.setText(_("Log", msgid='log'))
+        self.PushButton_start_maze.setText(_('Start Maze', msgid='start_maze'))
 
         self.ComboBox_mode_maze.clear()
         self.ComboBox_mode_maze.addItems(
-            [self._("Single Run", msgid='single_run'),
-             self._("Repeat Run", msgid='repeat_run')]
+            [_("Single Run", msgid='single_run'),
+             _("Repeat Run", msgid='repeat_run')]
         )
+
 
 

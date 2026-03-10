@@ -1,9 +1,21 @@
 {
-  "app/features/modules/use_power/ui/use_power_periodic_page.py:38:16": {
+  "app/features/modules/use_power/ui/use_power_periodic_page.py:37:16": {
     "kind": "static_literal",
     "key": "module.use_power.ui.event_stages",
     "msgid": "event_stages",
     "source_text": "Event Stages",
+    "owner_scope": "module",
+    "owner_module": "use_power",
+    "file_path": "app/features/modules/use_power/ui/use_power_periodic_page.py",
+    "line": 37,
+    "col": 16,
+    "context": "ui"
+  },
+  "app/features/modules/use_power/ui/use_power_periodic_page.py:38:16": {
+    "kind": "static_literal",
+    "key": "module.use_power.ui.operation_logistics",
+    "msgid": "operation_logistics",
+    "source_text": "Operation Logistics",
     "owner_scope": "module",
     "owner_module": "use_power",
     "file_path": "app/features/modules/use_power/ui/use_power_periodic_page.py",
@@ -23,6 +35,18 @@
     "col": 16,
     "context": "ui"
   },
+  "app/features/modules/use_power/ui/use_power_periodic_page.py:41:39": {
+    "kind": "static_literal",
+    "key": "module.use_power.ui.stamina_usage_mode",
+    "msgid": "stamina_usage_mode",
+    "source_text": "Stamina usage mode",
+    "owner_scope": "module",
+    "owner_module": "use_power",
+    "file_path": "app/features/modules/use_power/ui/use_power_periodic_page.py",
+    "line": 41,
+    "col": 39,
+    "context": "ui"
+  },
   "app/features/modules/use_power/ui/use_power_periodic_page.py:42:39": {
     "kind": "static_literal",
     "key": "module.use_power.ui.stamina_usage_mode",
@@ -33,6 +57,30 @@
     "file_path": "app/features/modules/use_power/ui/use_power_periodic_page.py",
     "line": 42,
     "col": 39,
+    "context": "ui"
+  },
+  "app/features/modules/use_power/ui/use_power_periodic_page.py:42:43": {
+    "kind": "static_literal",
+    "key": "module.use_power.ui.auto_use_expiring",
+    "msgid": "auto_use_expiring",
+    "source_text": "Auto use expiring",
+    "owner_scope": "module",
+    "owner_module": "use_power",
+    "file_path": "app/features/modules/use_power/ui/use_power_periodic_page.py",
+    "line": 42,
+    "col": 43,
+    "context": "ui"
+  },
+  "app/features/modules/use_power/ui/use_power_periodic_page.py:43:33": {
+    "kind": "static_literal",
+    "key": "module.use_power.ui.day_potion",
+    "msgid": "day_potion",
+    "source_text": "day potion",
+    "owner_scope": "module",
+    "owner_module": "use_power",
+    "file_path": "app/features/modules/use_power/ui/use_power_periodic_page.py",
+    "line": 43,
+    "col": 33,
     "context": "ui"
   },
   "app/features/modules/use_power/ui/use_power_periodic_page.py:43:43": {

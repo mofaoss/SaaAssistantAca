@@ -1,12 +1,12 @@
-from PySide6.QtCore import Qt
+﻿from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QTextBrowser
 from qfluentwidgets import (BodyLabel, PushButton, SimpleCardWidget, Slider, SpinBox, TitleLabel)
 from app.framework.infra.config.app_config import config
 from app.framework.ui.views.periodic_base import ModulePageBase
 
 class WaterBombInterface(ModulePageBase):
-    def __init_self._(self, parent=None):
-        super().__init_self._(parent)
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.setObjectName("page_water_bomb")
 
         self.main_layout = QHBoxLayout(self)
@@ -99,16 +99,17 @@ class WaterBombInterface(ModulePageBase):
 
     def apply_i18n(self):
         self.BodyLabel_tip_water.setText(
-            self._("### Tips\n* Stand at the Water Bomb entrance before starting\n* If items or HP are not recognized, lower the two confidence values above", msgid='tips_stand_at_the_water_bomb_entrance_before_starting_if_items_or_hp_are_not_rec'))
-        self.BodyLabel_28.setText(self._("Template confidence", msgid='template_confidence'))
-        self.BodyLabel_29.setText(self._("Count confidence", msgid='count_confidence'))
-        self.BodyLabel_24.setText(self._("Win streak", msgid='win_streak'))
-        self.BodyLabel_26.setText(self._("stop after wins", msgid='stop_after_wins'))
-        self.TitleLabel_3.setText(self._("Log", msgid='log'))
-        self.PushButton_start_water_bomb.setText(self._('Start Water Bomb', msgid='start_water_bomb'))
+            _("### Tips\n* Stand at the Water Bomb entrance before starting\n* If items or HP are not recognized, lower the two confidence values above", msgid='tips_stand_at_the_water_bomb_entrance_before_starting_if_items_or_hp_are_not_rec'))
+        self.BodyLabel_28.setText(_("Template confidence", msgid='template_confidence'))
+        self.BodyLabel_29.setText(_("Count confidence", msgid='count_confidence'))
+        self.BodyLabel_24.setText(_("Win streak", msgid='win_streak'))
+        self.BodyLabel_26.setText(_("stop after wins", msgid='stop_after_wins'))
+        self.TitleLabel_3.setText(_("Log", msgid='log'))
+        self.PushButton_start_water_bomb.setText(_('Start Water Bomb', msgid='start_water_bomb'))
 
     def load_config(self):
         self.BodyLabel_template_threshold.setText(str(self.Slider_template_threshold.value()))
         self.BodyLabel_count_threshold.setText(str(self.Slider_count_threshold.value()))
+
 
 

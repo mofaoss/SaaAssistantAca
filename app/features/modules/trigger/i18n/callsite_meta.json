@@ -1,9 +1,21 @@
 {
-  "app/features/modules/trigger/ui/trigger.py:102:20": {
+  "app/features/modules/trigger/ui/trigger.py:101:20": {
     "kind": "static_literal",
     "key": "module.trigger.log.error",
     "msgid": "error",
     "source_text": "Error",
+    "owner_scope": "module",
+    "owner_module": "trigger",
+    "file_path": "app/features/modules/trigger/ui/trigger.py",
+    "line": 101,
+    "col": 20,
+    "context": "log"
+  },
+  "app/features/modules/trigger/ui/trigger.py:102:20": {
+    "kind": "static_literal",
+    "key": "module.trigger.log.game_task_is_not_running",
+    "msgid": "game_task_is_not_running",
+    "source_text": "Game/Task is not running",
     "owner_scope": "module",
     "owner_module": "trigger",
     "file_path": "app/features/modules/trigger/ui/trigger.py",
@@ -23,6 +35,30 @@
     "col": 20,
     "context": "log"
   },
+  "app/features/modules/trigger/ui/trigger.py:38:40": {
+    "kind": "static_literal",
+    "key": "module.trigger.ui.trigger_list",
+    "msgid": "trigger_list",
+    "source_text": "Trigger List",
+    "owner_scope": "module",
+    "owner_module": "trigger",
+    "file_path": "app/features/modules/trigger/ui/trigger.py",
+    "line": 38,
+    "col": 40,
+    "context": "ui"
+  },
+  "app/features/modules/trigger/ui/trigger.py:39:37": {
+    "kind": "static_literal",
+    "key": "module.trigger.ui.auto_collect",
+    "msgid": "auto_collect",
+    "source_text": "Auto Collect",
+    "owner_scope": "module",
+    "owner_module": "trigger",
+    "file_path": "app/features/modules/trigger/ui/trigger.py",
+    "line": 39,
+    "col": 37,
+    "context": "ui"
+  },
   "app/features/modules/trigger/ui/trigger.py:39:40": {
     "kind": "static_literal",
     "key": "module.trigger.ui.trigger_list",
@@ -33,6 +69,18 @@
     "file_path": "app/features/modules/trigger/ui/trigger.py",
     "line": 39,
     "col": 40,
+    "context": "ui"
+  },
+  "app/features/modules/trigger/ui/trigger.py:40:31": {
+    "kind": "static_literal",
+    "key": "module.trigger.ui.automatically_press_f_when_collect_prompt_appears",
+    "msgid": "automatically_press_f_when_collect_prompt_appears",
+    "source_text": "Automatically press F when collect prompt appears",
+    "owner_scope": "module",
+    "owner_module": "trigger",
+    "file_path": "app/features/modules/trigger/ui/trigger.py",
+    "line": 40,
+    "col": 31,
     "context": "ui"
   },
   "app/features/modules/trigger/ui/trigger.py:40:37": {
@@ -59,6 +107,30 @@
     "col": 31,
     "context": "ui"
   },
+  "app/features/modules/trigger/ui/trigger.py:41:39": {
+    "kind": "static_literal",
+    "key": "module.trigger.ui.nita_e_auto_qte",
+    "msgid": "nita_e_auto_qte",
+    "source_text": "Nita E Auto QTE",
+    "owner_scope": "module",
+    "owner_module": "trigger",
+    "file_path": "app/features/modules/trigger/ui/trigger.py",
+    "line": 41,
+    "col": 39,
+    "context": "ui"
+  },
+  "app/features/modules/trigger/ui/trigger.py:42:33": {
+    "kind": "static_literal",
+    "key": "module.trigger.ui.automatically_press_e_during_qte_stage",
+    "msgid": "automatically_press_e_during_qte_stage",
+    "source_text": "Automatically press E during QTE stage",
+    "owner_scope": "module",
+    "owner_module": "trigger",
+    "file_path": "app/features/modules/trigger/ui/trigger.py",
+    "line": 42,
+    "col": 33,
+    "context": "ui"
+  },
   "app/features/modules/trigger/ui/trigger.py:42:39": {
     "kind": "static_literal",
     "key": "module.trigger.ui.nita_e_auto_qte",
@@ -83,6 +155,18 @@
     "col": 33,
     "context": "ui"
   },
+  "app/features/modules/trigger/ui/trigger.py:44:12": {
+    "kind": "static_literal",
+    "key": "module.trigger.ui.tips_launch_the_game_before_enabling_this_feature_these_are_toggle_switches_once",
+    "msgid": "tips_launch_the_game_before_enabling_this_feature_these_are_toggle_switches_once",
+    "source_text": "### Tips\n* Launch the game before enabling this feature\n* These are toggle switches. Once enabled, detection keeps running and triggers automatically when conditions match\n* It does not block manual gameplay, acting as semi-automation assistance",
+    "owner_scope": "module",
+    "owner_module": "trigger",
+    "file_path": "app/features/modules/trigger/ui/trigger.py",
+    "line": 44,
+    "col": 12,
+    "context": "ui"
+  },
   "app/features/modules/trigger/ui/trigger.py:45:12": {
     "kind": "static_literal",
     "key": "module.trigger.ui.tips_launch_the_game_before_enabling_this_feature_these_are_toggle_switches_once",
@@ -95,11 +179,23 @@
     "col": 12,
     "context": "ui"
   },
-  "app/features/modules/trigger/ui/trigger.py:69:20": {
+  "app/features/modules/trigger/ui/trigger.py:68:20": {
     "kind": "static_literal",
     "key": "module.trigger.ui.auto_f",
     "msgid": "auto_f",
     "source_text": "Auto F",
+    "owner_scope": "module",
+    "owner_module": "trigger",
+    "file_path": "app/features/modules/trigger/ui/trigger.py",
+    "line": 68,
+    "col": 20,
+    "context": "ui"
+  },
+  "app/features/modules/trigger/ui/trigger.py:69:20": {
+    "kind": "static_literal",
+    "key": "module.trigger.ui.disabled",
+    "msgid": "disabled",
+    "source_text": "Disabled",
     "owner_scope": "module",
     "owner_module": "trigger",
     "file_path": "app/features/modules/trigger/ui/trigger.py",
@@ -119,11 +215,23 @@
     "col": 20,
     "context": "ui"
   },
-  "app/features/modules/trigger/ui/trigger.py:77:20": {
+  "app/features/modules/trigger/ui/trigger.py:76:20": {
     "kind": "static_literal",
     "key": "module.trigger.log.error",
     "msgid": "error",
     "source_text": "Error",
+    "owner_scope": "module",
+    "owner_module": "trigger",
+    "file_path": "app/features/modules/trigger/ui/trigger.py",
+    "line": 76,
+    "col": 20,
+    "context": "log"
+  },
+  "app/features/modules/trigger/ui/trigger.py:77:20": {
+    "kind": "static_literal",
+    "key": "module.trigger.log.game_task_is_not_running",
+    "msgid": "game_task_is_not_running",
+    "source_text": "Game/Task is not running",
     "owner_scope": "module",
     "owner_module": "trigger",
     "file_path": "app/features/modules/trigger/ui/trigger.py",
@@ -143,11 +251,23 @@
     "col": 20,
     "context": "log"
   },
-  "app/features/modules/trigger/ui/trigger.py:94:20": {
+  "app/features/modules/trigger/ui/trigger.py:93:20": {
     "kind": "static_literal",
     "key": "module.trigger.ui.nita_auto_e",
     "msgid": "nita_auto_e",
     "source_text": "Nita Auto E",
+    "owner_scope": "module",
+    "owner_module": "trigger",
+    "file_path": "app/features/modules/trigger/ui/trigger.py",
+    "line": 93,
+    "col": 20,
+    "context": "ui"
+  },
+  "app/features/modules/trigger/ui/trigger.py:94:20": {
+    "kind": "static_literal",
+    "key": "module.trigger.ui.disabled",
+    "msgid": "disabled",
+    "source_text": "Disabled",
     "owner_scope": "module",
     "owner_module": "trigger",
     "file_path": "app/features/modules/trigger/ui/trigger.py",
@@ -165,6 +285,30 @@
     "file_path": "app/features/modules/trigger/ui/trigger.py",
     "line": 95,
     "col": 20,
+    "context": "ui"
+  },
+  "app/features/modules/trigger/ui/trigger_interface.py:104:47": {
+    "kind": "static_literal",
+    "key": "module.trigger.ui.auto_collect",
+    "msgid": "auto_collect",
+    "source_text": "Auto Collect",
+    "owner_scope": "module",
+    "owner_module": "trigger",
+    "file_path": "app/features/modules/trigger/ui/trigger_interface.py",
+    "line": 104,
+    "col": 47,
+    "context": "ui"
+  },
+  "app/features/modules/trigger/ui/trigger_interface.py:105:41": {
+    "kind": "static_literal",
+    "key": "module.trigger.ui.automatically_press_f_when_collect_prompt_appears",
+    "msgid": "automatically_press_f_when_collect_prompt_appears",
+    "source_text": "Automatically press F when collect prompt appears",
+    "owner_scope": "module",
+    "owner_module": "trigger",
+    "file_path": "app/features/modules/trigger/ui/trigger_interface.py",
+    "line": 105,
+    "col": 41,
     "context": "ui"
   },
   "app/features/modules/trigger/ui/trigger_interface.py:105:47": {
@@ -188,6 +332,30 @@
     "owner_module": "trigger",
     "file_path": "app/features/modules/trigger/ui/trigger_interface.py",
     "line": 106,
+    "col": 41,
+    "context": "ui"
+  },
+  "app/features/modules/trigger/ui/trigger_interface.py:106:47": {
+    "kind": "static_literal",
+    "key": "module.trigger.ui.nita_e_auto_qte",
+    "msgid": "nita_e_auto_qte",
+    "source_text": "Nita E Auto QTE",
+    "owner_scope": "module",
+    "owner_module": "trigger",
+    "file_path": "app/features/modules/trigger/ui/trigger_interface.py",
+    "line": 106,
+    "col": 47,
+    "context": "ui"
+  },
+  "app/features/modules/trigger/ui/trigger_interface.py:107:41": {
+    "kind": "static_literal",
+    "key": "module.trigger.ui.automatically_press_e_during_qte_stage",
+    "msgid": "automatically_press_e_during_qte_stage",
+    "source_text": "Automatically press E during QTE stage",
+    "owner_scope": "module",
+    "owner_module": "trigger",
+    "file_path": "app/features/modules/trigger/ui/trigger_interface.py",
+    "line": 107,
     "col": 41,
     "context": "ui"
   },
@@ -215,6 +383,18 @@
     "col": 41,
     "context": "ui"
   },
+  "app/features/modules/trigger/ui/trigger_interface.py:108:44": {
+    "kind": "static_literal",
+    "key": "module.trigger.ui.log",
+    "msgid": "log",
+    "source_text": "Log",
+    "owner_scope": "module",
+    "owner_module": "trigger",
+    "file_path": "app/features/modules/trigger/ui/trigger_interface.py",
+    "line": 108,
+    "col": 44,
+    "context": "ui"
+  },
   "app/features/modules/trigger/ui/trigger_interface.py:109:44": {
     "kind": "static_literal",
     "key": "module.trigger.ui.log",
@@ -225,6 +405,18 @@
     "file_path": "app/features/modules/trigger/ui/trigger_interface.py",
     "line": 109,
     "col": 44,
+    "context": "ui"
+  },
+  "app/features/modules/trigger/ui/trigger_interface.py:110:12": {
+    "kind": "static_literal",
+    "key": "module.trigger.ui.tips_launch_the_game_before_enabling_this_feature_these_are_toggle_switches_once",
+    "msgid": "tips_launch_the_game_before_enabling_this_feature_these_are_toggle_switches_once",
+    "source_text": "### Tips\n* Launch the game before enabling this feature\n* These are toggle switches. Once enabled, detection keeps running and triggers automatically when conditions match\n* It does not block manual gameplay, acting as semi-automation assistance",
+    "owner_scope": "module",
+    "owner_module": "trigger",
+    "file_path": "app/features/modules/trigger/ui/trigger_interface.py",
+    "line": 110,
+    "col": 12,
     "context": "ui"
   },
   "app/features/modules/trigger/ui/trigger_interface.py:111:12": {

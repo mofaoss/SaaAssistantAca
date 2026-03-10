@@ -1,9 +1,21 @@
 {
-  "app/features/modules/fishing/ui/fishing_interface.py:138:12": {
+  "app/features/modules/fishing/ui/fishing_interface.py:137:12": {
     "kind": "static_literal",
     "key": "module.fishing.ui.high_performance_faster_and_more_accurate_higher_cpu_usage",
     "msgid": "high_performance_faster_and_more_accurate_higher_cpu_usage",
     "source_text": "High Performance (faster and more accurate, higher CPU usage)",
+    "owner_scope": "module",
+    "owner_module": "fishing",
+    "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
+    "line": 137,
+    "col": 12,
+    "context": "ui"
+  },
+  "app/features/modules/fishing/ui/fishing_interface.py:138:12": {
+    "kind": "static_literal",
+    "key": "module.fishing.ui.low_performance_timeout_based_auto_reel_lower_accuracy",
+    "msgid": "low_performance_timeout_based_auto_reel_lower_accuracy",
+    "source_text": "Low Performance (timeout-based auto reel, lower accuracy)",
     "owner_scope": "module",
     "owner_module": "fishing",
     "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
@@ -21,6 +33,30 @@
     "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
     "line": 139,
     "col": 12,
+    "context": "ui"
+  },
+  "app/features/modules/fishing/ui/fishing_interface.py:155:46": {
+    "kind": "static_literal",
+    "key": "module.fishing.ui.start_fishing",
+    "msgid": "start_fishing",
+    "source_text": "Start Fishing",
+    "owner_scope": "module",
+    "owner_module": "fishing",
+    "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
+    "line": 155,
+    "col": 46,
+    "context": "ui"
+  },
+  "app/features/modules/fishing/ui/fishing_interface.py:156:32": {
+    "kind": "static_literal",
+    "key": "module.fishing.ui.log",
+    "msgid": "log",
+    "source_text": "Log",
+    "owner_scope": "module",
+    "owner_module": "fishing",
+    "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
+    "line": 156,
+    "col": 32,
     "context": "ui"
   },
   "app/features/modules/fishing/ui/fishing_interface.py:156:46": {
@@ -47,6 +83,30 @@
     "col": 32,
     "context": "ui"
   },
+  "app/features/modules/fishing/ui/fishing_interface.py:157:43": {
+    "kind": "static_literal",
+    "key": "module.fishing.ui.pause_on_new_records",
+    "msgid": "pause_on_new_records",
+    "source_text": "Pause on new records",
+    "owner_scope": "module",
+    "owner_module": "fishing",
+    "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
+    "line": 157,
+    "col": 43,
+    "context": "ui"
+  },
+  "app/features/modules/fishing/ui/fishing_interface.py:158:33": {
+    "kind": "static_literal",
+    "key": "module.fishing.ui.color_lower_bound",
+    "msgid": "color_lower_bound",
+    "source_text": "Color lower bound",
+    "owner_scope": "module",
+    "owner_module": "fishing",
+    "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
+    "line": 158,
+    "col": 33,
+    "context": "ui"
+  },
   "app/features/modules/fishing/ui/fishing_interface.py:158:43": {
     "kind": "static_literal",
     "key": "module.fishing.ui.pause_on_new_records",
@@ -69,6 +129,30 @@
     "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
     "line": 159,
     "col": 33,
+    "context": "ui"
+  },
+  "app/features/modules/fishing/ui/fishing_interface.py:159:49": {
+    "kind": "static_literal",
+    "key": "module.fishing.ui.calibrate_color",
+    "msgid": "calibrate_color",
+    "source_text": "Calibrate Color",
+    "owner_scope": "module",
+    "owner_module": "fishing",
+    "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
+    "line": 159,
+    "col": 49,
+    "context": "ui"
+  },
+  "app/features/modules/fishing/ui/fishing_interface.py:160:31": {
+    "kind": "static_literal",
+    "key": "module.fishing.ui.fishing_attempts",
+    "msgid": "fishing_attempts",
+    "source_text": "Fishing attempts:",
+    "owner_scope": "module",
+    "owner_module": "fishing",
+    "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
+    "line": 160,
+    "col": 31,
     "context": "ui"
   },
   "app/features/modules/fishing/ui/fishing_interface.py:160:49": {
@@ -95,6 +179,30 @@
     "col": 31,
     "context": "ui"
   },
+  "app/features/modules/fishing/ui/fishing_interface.py:161:44": {
+    "kind": "static_literal",
+    "key": "module.fishing.ui.limit_max_reeling_interval_per_attempt",
+    "msgid": "limit_max_reeling_interval_per_attempt",
+    "source_text": "Limit max reeling interval per attempt",
+    "owner_scope": "module",
+    "owner_module": "fishing",
+    "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
+    "line": 161,
+    "col": 44,
+    "context": "ui"
+  },
+  "app/features/modules/fishing/ui/fishing_interface.py:162:34": {
+    "kind": "static_literal",
+    "key": "module.fishing.ui.custom_fishing_key",
+    "msgid": "custom_fishing_key",
+    "source_text": "Custom fishing key",
+    "owner_scope": "module",
+    "owner_module": "fishing",
+    "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
+    "line": 162,
+    "col": 34,
+    "context": "ui"
+  },
   "app/features/modules/fishing/ui/fishing_interface.py:162:44": {
     "kind": "static_literal",
     "key": "module.fishing.ui.limit_max_reeling_interval_per_attempt",
@@ -119,6 +227,18 @@
     "col": 34,
     "context": "ui"
   },
+  "app/features/modules/fishing/ui/fishing_interface.py:163:37": {
+    "kind": "static_literal",
+    "key": "module.fishing.ui.calibrate_perfect_reeling_hsv_use_when_logs_report_yellow_block_count_2",
+    "msgid": "calibrate_perfect_reeling_hsv_use_when_logs_report_yellow_block_count_2",
+    "source_text": "Calibrate perfect reeling HSV (use when logs report yellow block count > 2)",
+    "owner_scope": "module",
+    "owner_module": "fishing",
+    "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
+    "line": 163,
+    "col": 37,
+    "context": "ui"
+  },
   "app/features/modules/fishing/ui/fishing_interface.py:164:37": {
     "kind": "static_literal",
     "key": "module.fishing.ui.calibrate_perfect_reeling_hsv_use_when_logs_report_yellow_block_count_2",
@@ -129,6 +249,30 @@
     "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
     "line": 164,
     "col": 37,
+    "context": "ui"
+  },
+  "app/features/modules/fishing/ui/fishing_interface.py:164:50": {
+    "kind": "static_literal",
+    "key": "module.fishing.ui.fishing_key_is_bound_to_in_game_dodge_key",
+    "msgid": "fishing_key_is_bound_to_in_game_dodge_key",
+    "source_text": "Fishing key is bound to in-game dodge key",
+    "owner_scope": "module",
+    "owner_module": "fishing",
+    "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
+    "line": 164,
+    "col": 50,
+    "context": "ui"
+  },
+  "app/features/modules/fishing/ui/fishing_interface.py:165:33": {
+    "kind": "static_literal",
+    "key": "module.fishing.ui.color_upper_bound",
+    "msgid": "color_upper_bound",
+    "source_text": "Color upper bound",
+    "owner_scope": "module",
+    "owner_module": "fishing",
+    "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
+    "line": 165,
+    "col": 33,
     "context": "ui"
   },
   "app/features/modules/fishing/ui/fishing_interface.py:165:50": {
@@ -145,9 +289,9 @@
   },
   "app/features/modules/fishing/ui/fishing_interface.py:166:33": {
     "kind": "static_literal",
-    "key": "module.fishing.ui.color_upper_bound",
-    "msgid": "color_upper_bound",
-    "source_text": "Color upper bound",
+    "key": "module.fishing.ui.base_hsv",
+    "msgid": "base_hsv",
+    "source_text": "Base HSV",
     "owner_scope": "module",
     "owner_module": "fishing",
     "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
@@ -157,9 +301,9 @@
   },
   "app/features/modules/fishing/ui/fishing_interface.py:167:33": {
     "kind": "static_literal",
-    "key": "module.fishing.ui.base_hsv",
-    "msgid": "base_hsv",
-    "source_text": "Base HSV",
+    "key": "module.fishing.ui.fishing_mode",
+    "msgid": "fishing_mode",
+    "source_text": "Fishing mode",
     "owner_scope": "module",
     "owner_module": "fishing",
     "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
@@ -177,6 +321,30 @@
     "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
     "line": 168,
     "col": 33,
+    "context": "ui"
+  },
+  "app/features/modules/fishing/ui/fishing_interface.py:168:38": {
+    "kind": "static_literal",
+    "key": "module.fishing.ui.reset",
+    "msgid": "reset",
+    "source_text": "Reset",
+    "owner_scope": "module",
+    "owner_module": "fishing",
+    "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
+    "line": 168,
+    "col": 38,
+    "context": "ui"
+  },
+  "app/features/modules/fishing/ui/fishing_interface.py:169:34": {
+    "kind": "static_literal",
+    "key": "module.fishing.ui.bait_type",
+    "msgid": "bait_type",
+    "source_text": "Bait type:",
+    "owner_scope": "module",
+    "owner_module": "fishing",
+    "file_path": "app/features/modules/fishing/ui/fishing_interface.py",
+    "line": 169,
+    "col": 34,
     "context": "ui"
   },
   "app/features/modules/fishing/ui/fishing_interface.py:169:38": {

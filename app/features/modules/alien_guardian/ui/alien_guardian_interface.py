@@ -1,12 +1,12 @@
-from PySide6.QtCore import Qt
+﻿from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QTextBrowser
 from qfluentwidgets import (BodyLabel, ComboBox, PushButton, SimpleCardWidget, TitleLabel)
 from app.framework.infra.config.app_config import config
 from app.framework.ui.views.periodic_base import ModulePageBase
 
 class AlienGuardianInterface(ModulePageBase):
-    def __init_self._(self, parent=None):
-        super().__init_self._(parent)
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.setObjectName("page_alien_guardian")
 
         self.main_layout = QHBoxLayout(self)
@@ -66,16 +66,17 @@ class AlienGuardianInterface(ModulePageBase):
 
     def apply_i18n(self):
         self.BodyLabel_tip_alien.setText(
-            self._("### Tips\n* Click Start after battle begins\n* Recommended support pals: Steel Shot and Blazing Pitcher\n* Stage mode is semi-automatic: manual shooting and manual next-stage selection are required", msgid='tips_click_start_after_battle_begins_recommended_support_pals_steel_shot_and_bla')
+            _("### Tips\n* Click Start after battle begins\n* Recommended support pals: Steel Shot and Blazing Pitcher\n* Stage mode is semi-automatic: manual shooting and manual next-stage selection are required", msgid='tips_click_start_after_battle_begins_recommended_support_pals_steel_shot_and_bla')
         )
-        self.BodyLabel_25.setText(self._("Run mode", msgid='run_mode'))
-        self.TitleLabel_4.setText(self._("Log", msgid='log'))
-        self.PushButton_start_alien_guardian.setText(self._('Start Alien Guardian', msgid='start_alien_guardian'))
+        self.BodyLabel_25.setText(_("Run mode", msgid='run_mode'))
+        self.TitleLabel_4.setText(_("Log", msgid='log'))
+        self.PushButton_start_alien_guardian.setText(_('Start Alien Guardian', msgid='start_alien_guardian'))
 
         self.ComboBox_mode.clear()
         self.ComboBox_mode.addItems(
-            [self._("Endless Mode", msgid='endless_mode'),
-             self._("Stage Mode", msgid='stage_mode')]
+            [_("Endless Mode", msgid='endless_mode'),
+             _("Stage Mode", msgid='stage_mode')]
         )
+
 
 
