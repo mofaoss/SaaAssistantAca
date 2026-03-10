@@ -66,7 +66,7 @@
   "framework.log.github_api_response_status_code_rate_limit_hit_using_fallback": "GitHub API {response_status_code} Rate Limit hit! Using fallback.",
   "framework.log.home_sync_failed_reason": "home_sync_failed",
   "framework.log.hotkey_pressed": "Hotkey pressed",
-  "framework.log.interrupt_detected_stopping_automatic_task_reaso": "Interrupt detected, stopping automatic task: {value_1}",
+  "framework.log.interrupt_detected_stopping_automatic_task_reaso": "Interrupt detected, stopping automatic task: {reason}",
   "framework.log.key_pressed_key": "Key pressed: {key}",
   "framework.log.key_released_key": "Key released: {key}",
   "framework.log.local_configuration_data_format_is_incorrect_usi": "Local configuration data format is incorrect, using online data",

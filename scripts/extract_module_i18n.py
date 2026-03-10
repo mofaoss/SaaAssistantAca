@@ -532,6 +532,84 @@ def _extract_marked_strings_from_file(
         owner = (owner_scope, owner_module)
 
         first_arg = node.args[0]
+        literal_dynamic: tuple[str, list[str]] | None = None
+        if isinstance(first_arg, ast.Constant) and isinstance(first_arg.value, str):
+            template_text = first_arg.value
+            template_fields = list(extract_template_field_details(template_text).keys())
+            runtime_kw_fields = [
+                kw.arg
+                for kw in node.keywords
+                if isinstance(kw.arg, str) and kw.arg != "msgid" and not kw.arg.startswith("__i18n_")
+            ]
+            # Treat literal templates with explicit kwargs as dynamic templates so
+            # template_meta/source_map stay in sync with named placeholders.
+            if template_fields and runtime_kw_fields:
+                literal_dynamic = (template_text, template_fields)
+
+        if literal_dynamic is not None:
+            template, fields = literal_dynamic
+            dynamic_msgid = msgid or f"tmpl_{hashlib.sha1(template.encode('utf-8')).hexdigest()[:12]}"
+            try:
+                source_lang = classify_source_language(template)
+                mixed_source_template = False
+            except Exception:
+                has_han = any("\u4e00" <= ch <= "\u9fff" for ch in template)
+                source_lang = "zh_CN" if has_han else "en"
+                mixed_source_template = True
+            message = TranslatableMessage(
+                source_text=template,
+                source_lang=source_lang,
+                msgid=dynamic_msgid,
+                kwargs={},
+                owner_scope=owner_scope,
+                owner_module=owner_module,
+                dynamic=True,
+                template_skeleton=template,
+                template_fields=list(fields),
+            )
+            key = build_key(message, context=context)
+            out.append((owner_scope, owner_module, key, template, source_lang))
+
+            func_name, class_name = _nearest_scope(node, parents)
+            rel_path = str(path.relative_to(ROOT)).replace("\\", "/")
+            template_hash = hashlib.sha1(template.encode("utf-8")).hexdigest()
+            dynamic_meta.setdefault(owner, {})[key] = {
+                "kind": "dynamic_template",
+                "template_id": dynamic_msgid,
+                "msgid": dynamic_msgid,
+                "source_template": template,
+                "fields": list(fields),
+                "field_details": extract_template_field_details(template),
+                "owner_scope": owner_scope,
+                "owner_module": owner_module,
+                "file_path": rel_path,
+                "line": int(getattr(node, "lineno", 0)),
+                "col": int(getattr(node, "col_offset", 0)),
+                "function_name": func_name,
+                "class_name": class_name,
+                "context": context,
+                "source_language": source_lang,
+                "template_hash": template_hash,
+                "callsite_key": callsite_key,
+                "is_runtime_visible": True,
+                "mixed_source_template": mixed_source_template,
+            }
+            callsite_meta.setdefault(owner, {})[callsite_key] = {
+                "kind": "dynamic_template",
+                "key": key,
+                "msgid": dynamic_msgid,
+                "source_template": template,
+                "fields": list(fields),
+                "field_details": extract_template_field_details(template),
+                "owner_scope": owner_scope,
+                "owner_module": owner_module,
+                "file_path": rel_path,
+                "line": int(getattr(node, "lineno", 0)),
+                "col": int(getattr(node, "col_offset", 0)),
+                "context": context,
+            }
+            continue
+
         if isinstance(first_arg, ast.Constant) and isinstance(first_arg.value, str):
             text = first_arg.value
             static_msgid = msgid or f"txt_{hashlib.sha1(text.encode('utf-8')).hexdigest()[:12]}"

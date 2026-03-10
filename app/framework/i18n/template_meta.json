@@ -479,6 +479,34 @@
     "is_runtime_visible": true,
     "mixed_source_template": false
   },
+  "framework.log.current_task_task_name": {
+    "kind": "dynamic_template",
+    "template_id": "current_task_task_name",
+    "msgid": "current_task_task_name",
+    "source_template": "Current task: {task_name}",
+    "fields": [
+      "task_name"
+    ],
+    "field_details": {
+      "task_name": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 276,
+    "col": 33,
+    "function_name": "run",
+    "class_name": "TaskQueueThread",
+    "context": "log",
+    "source_language": "en",
+    "template_hash": "5a53dbb03c1b9098bc46e66632d59f527fd9e4e0",
+    "callsite_key": "app/framework/core/task_engine/threads.py:276:33",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
   "framework.log.error_occurred_while_parsing_api_response_data_v": {
     "kind": "dynamic_template",
     "template_id": "error_occurred_while_parsing_api_response_data_v",
@@ -689,14 +717,14 @@
     "owner_scope": "framework",
     "owner_module": null,
     "file_path": "app/framework/core/task_engine/threads.py",
-    "line": 66,
+    "line": 70,
     "col": 20,
     "function_name": "stop",
     "class_name": "TaskQueueThread",
     "context": "log",
     "source_language": "en",
     "template_hash": "42bcdb3cc59d8d0456099bf68cf35431f5cca526",
-    "callsite_key": "app/framework/core/task_engine/threads.py:66:20",
+    "callsite_key": "app/framework/core/task_engine/threads.py:70:20",
     "is_runtime_visible": true,
     "mixed_source_template": false
   },
@@ -717,14 +745,14 @@
     "owner_scope": "framework",
     "owner_module": null,
     "file_path": "app/framework/core/task_engine/threads.py",
-    "line": 395,
+    "line": 399,
     "col": 32,
     "function_name": "stop",
     "class_name": "ModuleTaskThread",
     "context": "log",
     "source_language": "en",
     "template_hash": "9a68065526f07d6ca9629b8021ac5088ebaaf558",
-    "callsite_key": "app/framework/core/task_engine/threads.py:395:32",
+    "callsite_key": "app/framework/core/task_engine/threads.py:399:32",
     "is_runtime_visible": true,
     "mixed_source_template": false
   },
@@ -943,12 +971,12 @@
     "kind": "dynamic_template",
     "template_id": "interrupt_detected_stopping_automatic_task_reaso",
     "msgid": "interrupt_detected_stopping_automatic_task_reaso",
-    "source_template": "Interrupt detected, stopping automatic task: {value_1}",
+    "source_template": "Interrupt detected, stopping automatic task: {reason}",
     "fields": [
-      "value_1"
+      "reason"
     ],
     "field_details": {
-      "value_1": {
+      "reason": {
         "format_spec": "",
         "conversion": ""
       }
@@ -962,7 +990,7 @@
     "class_name": "TaskQueueThread",
     "context": "log",
     "source_language": "en",
-    "template_hash": "c8517200f8e2acffab414432f6b019c63045be5f",
+    "template_hash": "5d2222b1ac3479b9dfc71717513df5cd8d6b9f90",
     "callsite_key": "app/framework/core/task_engine/threads.py:59:16",
     "is_runtime_visible": true,
     "mixed_source_template": false
@@ -1091,6 +1119,34 @@
     "source_language": "en",
     "template_hash": "387fefc369ae8053eb0601d87a124d0aa9807567",
     "callsite_key": "app/framework/infra/automation/input.py:541:32",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
+  "framework.log.non_critical_tray_message_update_failed": {
+    "kind": "dynamic_template",
+    "template_id": "non_critical_tray_message_update_failed",
+    "msgid": "non_critical_tray_message_update_failed",
+    "source_template": "Non-critical tray message update failed: {error}",
+    "fields": [
+      "error"
+    ],
+    "field_details": {
+      "error": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 347,
+    "col": 28,
+    "function_name": "run",
+    "class_name": "TaskQueueThread",
+    "context": "log",
+    "source_language": "en",
+    "template_hash": "115a700620a48990beb050eae29a99c319e75dde",
+    "callsite_key": "app/framework/core/task_engine/threads.py:347:28",
     "is_runtime_visible": true,
     "mixed_source_template": false
   },
@@ -1315,6 +1371,54 @@
     "is_runtime_visible": true,
     "mixed_source_template": false
   },
+  "framework.log.periodic_diagnostic_event_event_code_task_id_task_name_detail": {
+    "kind": "dynamic_template",
+    "template_id": "periodic_diagnostic_event_event_code_task_id_task_name_detail",
+    "msgid": "periodic_diagnostic_event_event_code_task_id_task_name_detail",
+    "source_template": "Periodic diagnostic: event={event} ({event_code}) task_id={task_id} task_name={task_name} detail={detail}",
+    "fields": [
+      "event",
+      "event_code",
+      "task_id",
+      "task_name",
+      "detail"
+    ],
+    "field_details": {
+      "event": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "event_code": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "task_id": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "task_name": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "detail": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 135,
+    "col": 16,
+    "function_name": "_telemetry_periodic",
+    "class_name": "TaskQueueThread",
+    "context": "log",
+    "source_language": "en",
+    "template_hash": "703c4b788b8000dbe47512c29214acebde3a2af3",
+    "callsite_key": "app/framework/core/task_engine/threads.py:135:16",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
   "framework.log.prefix_error_suffix": {
     "kind": "dynamic_template",
     "template_id": "978bce4037070c84",
@@ -1353,6 +1457,34 @@
       }
     }
   },
+  "framework.log.preparing_task_name_returning_to_home": {
+    "kind": "dynamic_template",
+    "template_id": "preparing_task_name_returning_to_home",
+    "msgid": "preparing_task_name_returning_to_home",
+    "source_template": "Preparing {task_name}, returning to home...",
+    "fields": [
+      "task_name"
+    ],
+    "field_details": {
+      "task_name": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 283,
+    "col": 24,
+    "function_name": "run",
+    "class_name": "TaskQueueThread",
+    "context": "log",
+    "source_language": "en",
+    "template_hash": "0539492f7322bb51448a7a4b34e2badf863ac801",
+    "callsite_key": "app/framework/core/task_engine/threads.py:283:24",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
   "framework.log.recognition_result_error_text": {
     "kind": "dynamic_template",
     "template_id": "recognition_result_error_text",
@@ -1378,6 +1510,34 @@
     "source_language": "en",
     "template_hash": "a649b91311d8c949c9f689c6b02cbf82da87db47",
     "callsite_key": "app/framework/infra/automation/automation.py:950:32",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
+  "framework.log.skipping_task_metadata_not_found": {
+    "kind": "dynamic_template",
+    "template_id": "skipping_task_metadata_not_found",
+    "msgid": "skipping_task_metadata_not_found",
+    "source_template": "Skipping task '{task_id}': metadata not found",
+    "fields": [
+      "task_id"
+    ],
+    "field_details": {
+      "task_id": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 271,
+    "col": 24,
+    "function_name": "run",
+    "class_name": "TaskQueueThread",
+    "context": "log",
+    "source_language": "en",
+    "template_hash": "aee46c5c83054a0fd89816f2e22b14bc6fcd5cad",
+    "callsite_key": "app/framework/core/task_engine/threads.py:271:24",
     "is_runtime_visible": true,
     "mixed_source_template": false
   },
@@ -1533,6 +1693,123 @@
     "source_language": "en",
     "template_hash": "7c6d6f8d5c7f55052b48c65aa275fedbce06c909",
     "callsite_key": "app/framework/infra/automation/automation.py:711:30",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
+  "framework.log.task_failed_reason": {
+    "kind": "dynamic_template",
+    "template_id": "task_failed_reason",
+    "msgid": "task_failed_reason",
+    "source_template": "Task failed: {task_name}, reason={reason}",
+    "fields": [
+      "task_name",
+      "reason"
+    ],
+    "field_details": {
+      "task_name": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "reason": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 316,
+    "col": 28,
+    "function_name": "run",
+    "class_name": "TaskQueueThread",
+    "context": "log",
+    "source_language": "en",
+    "template_hash": "56002b375011d806017d4203b5329171c844a0dd",
+    "callsite_key": "app/framework/core/task_engine/threads.py:316:28",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
+  "framework.log.task_name_failed_to_return_to_home_before_start": {
+    "kind": "dynamic_template",
+    "template_id": "task_name_failed_to_return_to_home_before_start",
+    "msgid": "task_name_failed_to_return_to_home_before_start",
+    "source_template": "[{task_name}] Failed to return to home before start, skipping.",
+    "fields": [
+      "task_name"
+    ],
+    "field_details": {
+      "task_name": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 287,
+    "col": 28,
+    "function_name": "run",
+    "class_name": "TaskQueueThread",
+    "context": "log",
+    "source_language": "en",
+    "template_hash": "b10479460c221d757f68a7a890bf5511052be4a2",
+    "callsite_key": "app/framework/core/task_engine/threads.py:287:28",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
+  "framework.log.task_queue_resolved": {
+    "kind": "dynamic_template",
+    "template_id": "task_queue_resolved",
+    "msgid": "task_queue_resolved",
+    "source_template": "Task queue resolved: {tasks}",
+    "fields": [
+      "tasks"
+    ],
+    "field_details": {
+      "tasks": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 259,
+    "col": 16,
+    "function_name": "run",
+    "class_name": "TaskQueueThread",
+    "context": "log",
+    "source_language": "en",
+    "template_hash": "91ff9fae04134485bffb4060a5e83322cd4c4766",
+    "callsite_key": "app/framework/core/task_engine/threads.py:259:16",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
+  "framework.log.task_skipped_home_sync_failed": {
+    "kind": "dynamic_template",
+    "template_id": "task_skipped_home_sync_failed",
+    "msgid": "task_skipped_home_sync_failed",
+    "source_template": "Task skipped: {task_name}, reason=home_sync_failed",
+    "fields": [
+      "task_name"
+    ],
+    "field_details": {
+      "task_name": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 290,
+    "col": 28,
+    "function_name": "run",
+    "class_name": "TaskQueueThread",
+    "context": "log",
+    "source_language": "en",
+    "template_hash": "8bf35a1c8db1de501217cba13ee848a2af72c5dc",
+    "callsite_key": "app/framework/core/task_engine/threads.py:290:28",
     "is_runtime_visible": true,
     "mixed_source_template": false
   },
@@ -1829,6 +2106,34 @@
     "source_language": "en",
     "template_hash": "c85408cb351728903f30d9a102238298f20ff011",
     "callsite_key": "app/framework/infra/automation/automation.py:205:20",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
+  "framework.log.unhandled_queue_runtime_exception": {
+    "kind": "dynamic_template",
+    "template_id": "unhandled_queue_runtime_exception",
+    "msgid": "unhandled_queue_runtime_exception",
+    "source_template": "Unhandled queue runtime exception: {error}",
+    "fields": [
+      "error"
+    ],
+    "field_details": {
+      "error": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 357,
+    "col": 20,
+    "function_name": "run",
+    "class_name": "TaskQueueThread",
+    "context": "log",
+    "source_language": "en",
+    "template_hash": "dd15864f5e7bb74716281f4864ec7c36941ca839",
+    "callsite_key": "app/framework/core/task_engine/threads.py:357:20",
     "is_runtime_visible": true,
     "mixed_source_template": false
   },
@@ -2259,6 +2564,67 @@
     "source_language": "en",
     "template_hash": "87fba8277eca1cf290f05114628b4d14bc1155a8",
     "callsite_key": "app/framework/infra/automation/automation.py:380:64",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
+  "framework.ui.task_name_finished_returning_to_home": {
+    "kind": "dynamic_template",
+    "template_id": "task_name_finished_returning_to_home",
+    "msgid": "task_name_finished_returning_to_home",
+    "source_template": "{task_name} finished, returning to home...",
+    "fields": [
+      "task_name"
+    ],
+    "field_details": {
+      "task_name": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 325,
+    "col": 30,
+    "function_name": "run",
+    "class_name": "TaskQueueThread",
+    "context": "ui",
+    "source_language": "en",
+    "template_hash": "9a1c1f1e4af63ac005480c794a6ac20621b223ed",
+    "callsite_key": "app/framework/core/task_engine/threads.py:325:30",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
+  "framework.ui.task_skipped_reason": {
+    "kind": "dynamic_template",
+    "template_id": "task_skipped_reason",
+    "msgid": "task_skipped_reason",
+    "source_template": "Task skipped: {task_name}, reason={reason}",
+    "fields": [
+      "task_name",
+      "reason"
+    ],
+    "field_details": {
+      "task_name": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "reason": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/core/task_engine/threads.py",
+    "line": 303,
+    "col": 28,
+    "function_name": "run",
+    "class_name": "TaskQueueThread",
+    "context": "ui",
+    "source_language": "en",
+    "template_hash": "0aa69efa6c933bed2e66ab5fd05c00ba7fafdbd9",
+    "callsite_key": "app/framework/core/task_engine/threads.py:303:28",
     "is_runtime_visible": true,
     "mixed_source_template": false
   },

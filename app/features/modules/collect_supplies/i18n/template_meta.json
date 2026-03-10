@@ -1,4 +1,32 @@
 {
+  "module.collect_supplies.log.redeem_code_start": {
+    "kind": "dynamic_template",
+    "template_id": "redeem_code_start",
+    "msgid": "redeem_code_start",
+    "source_template": "Start redeeming code {code}",
+    "fields": [
+      "code"
+    ],
+    "field_details": {
+      "code": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "module",
+    "owner_module": "collect_supplies",
+    "file_path": "app/features/modules/collect_supplies/usecase/collect_supplies_usecase.py",
+    "line": 328,
+    "col": 33,
+    "function_name": "redeem_code",
+    "class_name": "CollectSuppliesModule",
+    "context": "log",
+    "source_language": "en",
+    "template_hash": "d4cecf4e6a851ec90e81d8a1e6b357f74737efec",
+    "callsite_key": "app/features/modules/collect_supplies/usecase/collect_supplies_usecase.py:328:33",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
   "module.collect_supplies.ui.successfully_reset_import_and_display_content": {
     "kind": "dynamic_template",
     "template_id": "successfully_reset_import_and_display_content",

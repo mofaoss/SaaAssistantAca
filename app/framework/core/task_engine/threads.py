@@ -56,7 +56,11 @@ class TaskQueueThread(QThread):
         if reason:
             self._interrupted_reason = reason
             self.logger.debug(
-                _(f'Interrupt detected, stopping automatic task: {self._normalize_reason(str(reason))}', msgid='interrupt_detected_stopping_automatic_task_reaso')
+                _(
+                    "Interrupt detected, stopping automatic task: {reason}",
+                    msgid="interrupt_detected_stopping_automatic_task_reaso",
+                    reason=self._normalize_reason(str(reason)),
+                )
             )
         if self.session.auto is not None:
             try:
