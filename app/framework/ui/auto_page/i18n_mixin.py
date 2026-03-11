@@ -1,8 +1,10 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import re
+from functools import lru_cache
 
 from app.framework.i18n import tr
+from app.framework.i18n.runtime import get_catalog
 from app.framework.core.module_system.models import SchemaField
 
 
@@ -17,7 +19,7 @@ class AutoPageI18nMixin:
 
     @staticmethod
     def _strip_widget_prefix(param_name: str) -> str:
-        return re.sub(r"^(SpinBox|ComboBox|CheckBox|LineEdit|DoubleSpinBox|Slider)_", "", str(param_name or ""))
+        return re.sub(r"^(SpinBox|ComboBox|CheckBox|LineEdit|DoubleSpinBox|Slider|TextEdit)_", "", str(param_name or ""))
 
     @staticmethod
     def _looks_like_mojibake(text: str) -> bool:
@@ -54,7 +56,6 @@ class AutoPageI18nMixin:
                 return rendered
         return ""
 
-
     def _module_i18n_ids(self) -> list[str]:
         ids: list[str] = []
 
@@ -80,6 +81,91 @@ class AutoPageI18nMixin:
             add("module")
         return ids
 
+    @staticmethod
+    def _expand_match_tokens(tokens: set[str]) -> set[str]:
+        expanded = set(tokens)
+        aliases = {
+            "times": {"count", "times", "streak", "runs", "attempts"},
+            "count": {"count", "times", "streak", "runs", "attempts"},
+            "mail": {"mail", "claim"},
+            "bait": {"bait", "fish", "claim"},
+            "fish": {"fish", "bait"},
+            "dormitory": {"dormitory", "dorm", "shards"},
+            "dorm": {"dorm", "dormitory", "shards"},
+            "win": {"win", "wins", "streak", "count"},
+            "wins": {"win", "wins", "streak", "count"},
+            "threshold": {"threshold", "confidence"},
+            "mode": {"mode", "run", "stage", "sprint"},
+            "run": {"run", "mode", "sprint", "operation"},
+            "action": {"action", "operation", "run"},
+            "power": {"power", "stamina"},
+            "stamina": {"stamina", "power"},
+            "redeem": {"redeem", "code", "codes"},
+            "close": {"close", "exit", "shutdown"},
+            "wife": {"wife", "character", "partner"},
+        }
+        for token in list(expanded):
+            expanded.update(aliases.get(token, set()))
+        return expanded
+
+    @staticmethod
+    @lru_cache(maxsize=2048)
+    def _best_ui_label_key(module_ids_key: tuple[str, ...], token_key: tuple[str, ...]) -> str:
+        if not module_ids_key or not token_key:
+            return ""
+
+        source_catalog = get_catalog("en")
+        base_tokens = set(token_key)
+        search_tokens = AutoPageI18nMixin._expand_match_tokens(base_tokens)
+
+        best_score = 0
+        best_key = ""
+
+        for module_id in module_ids_key:
+            prefix = f"module.{module_id}.ui."
+            for key, value in source_catalog.items():
+                if not isinstance(key, str) or not key.startswith(prefix):
+                    continue
+                if ".option." in key:
+                    continue
+
+                suffix = key[len(prefix):]
+                if not suffix:
+                    continue
+
+                lower_suffix = suffix.lower()
+                # Exclude non-label UI keys.
+                if any(x in lower_suffix for x in ("tips", "start_", "stop_", "log", "description", "group_")):
+                    continue
+
+                suffix_tokens = AutoPageI18nMixin._tokenize_for_match(suffix)
+                value_tokens = AutoPageI18nMixin._tokenize_for_match(str(value))
+                overlap = len(search_tokens & suffix_tokens)
+                overlap = max(overlap, len(search_tokens & value_tokens))
+                if overlap == 0:
+                    continue
+
+                score = overlap * 10
+                if any(tok in lower_suffix for tok in base_tokens):
+                    score += 4
+                if lower_suffix.endswith(tuple(base_tokens)):
+                    score += 2
+
+                if score > best_score:
+                    best_score = score
+                    best_key = key
+
+        return best_key if best_score >= 10 else ""
+
+    def _field_label_heuristic_key(self, field: SchemaField) -> str:
+        stripped = self._strip_widget_prefix(field.param_name)
+        token_text = f"{field.param_name} {field.field_id} {stripped} {field.label_default}"
+        tokens = self._tokenize_for_match(token_text)
+        if not tokens:
+            return ""
+        module_ids = tuple(self._module_i18n_ids())
+        token_key = tuple(sorted(tokens))
+        return self._best_ui_label_key(module_ids, token_key)
 
     def _field_label_candidates(self, field: SchemaField) -> list[str]:
         stripped = self._strip_widget_prefix(field.param_name)
@@ -106,6 +192,10 @@ class AutoPageI18nMixin:
             f"module.dummy.field.{field.param_name}.label",
             f"module.dummy.field.{field.field_id}.label",
         ])
+
+        heuristic_key = self._field_label_heuristic_key(field)
+        if heuristic_key:
+            candidates.append(heuristic_key)
 
         # De-duplicate while preserving order.
         seen: set[str] = set()
@@ -166,6 +256,7 @@ class AutoPageI18nMixin:
             cleaned.insert(1, "")
 
         return "\n".join(cleaned)
+
     def _tips_text(self, description: str) -> str:
         description_key = self._snake_key(description, max_len=80)
         candidates: list[str] = []
@@ -213,4 +304,3 @@ class AutoPageI18nMixin:
             if len(token) >= 5:
                 tokens.add(token[:5])
         return tokens
-

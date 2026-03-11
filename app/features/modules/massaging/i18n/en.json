@@ -1,3 +1,5 @@
 {
-  "module.dummy.title": "Massaging"
+  "module.dummy.title": "Massaging",
+  "module.massaging.title": "Massaging",
+  "module.massaging.ui.wife": "Character"
 }

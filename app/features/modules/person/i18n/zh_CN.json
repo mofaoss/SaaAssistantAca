@@ -18,5 +18,9 @@
   "module.person.ui.character_4": "角色4：",
   "module.person.ui.not_set": "未输入",
   "module.person.ui.select_characters_for_shards": "选择需要刷碎片的角色",
-  "module.task_shards.title": "角色碎片"
+  "module.task_shards.title": "角色碎片",
+  "module.person.ui.c1": "??1",
+  "module.person.ui.c2": "??2",
+  "module.person.ui.c3": "??3",
+  "module.person.ui.c4": "??4"
 }

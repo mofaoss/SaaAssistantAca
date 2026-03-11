@@ -7,5 +7,9 @@
   "module.person.ui.character_4": "Character 4:",
   "module.person.ui.not_set": "Not set",
   "module.person.ui.select_characters_for_shards": "Select characters for shards",
-  "module.task_shards.title": "Character Shards"
+  "module.task_shards.title": "Character Shards",
+  "module.person.ui.c1": "Character 1",
+  "module.person.ui.c2": "Character 2",
+  "module.person.ui.c3": "Character 3",
+  "module.person.ui.c4": "Character 4"
 }
