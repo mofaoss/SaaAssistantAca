@@ -38,7 +38,24 @@ _TELEMETRY_LOGGER = logging.getLogger("i18n.runtime")
 _TELEMETRY_SEEN: set[str] = set()
 
 
-@dataclass(frozen=True, slots=True)
+class TranslatableString(str):
+    """A real string subclass carrying i18n metadata for high-performance UI paths.
+    This bypasses all attribute/type issues in packaged environments (Nuitka/PyInstaller).
+    """
+    __slots__ = ("_i18n_msg",)
+
+    def __new__(cls, content: str, message: TranslatableMessage):
+        obj = super().__new__(cls, content)
+        # Preserve architectural metadata for auditing/log analysis
+        object.__setattr__(obj, "_i18n_msg", message)
+        return obj
+
+    @property
+    def i18n_msg(self) -> TranslatableMessage:
+        return self._i18n_msg
+
+
+@dataclass(frozen=False)
 class TranslatableMessage:
     source_text: str
     source_lang: str
@@ -56,9 +73,56 @@ class TranslatableMessage:
     callsite_kind: str | None = None
     dynamic_candidate: bool = False
     literal_callsite: bool = False
+    
+    _rendered_cache: str | None = None
 
     def __str__(self) -> str:
-        return render_message(self, context="ui")
+        if self._rendered_cache is None:
+            self._rendered_cache = render_message(self, context="ui")
+        return self._rendered_cache
+
+    def __getattr__(self, name: str) -> Any:
+        # Proxy for safety, but TranslatableString handles most cases now.
+        return getattr(str(self), name)
+
+    def splitlines(self, keepends: bool = False) -> list[str]:
+        return str(self).splitlines(keepends)
+
+    def strip(self, chars: str | None = None) -> str:
+        return str(self).strip(chars)
+
+    def split(self, sep: str | None = None, maxsplit: int = -1) -> list[str]:
+        return str(self).split(sep, maxsplit)
+
+    def replace(self, old: str, new: str, count: int = -1) -> str:
+        return str(self).replace(old, new, count)
+
+    def startswith(self, prefix: str | tuple[str, ...], start: int | None = None, end: int | None = None) -> bool:
+        return str(self).startswith(prefix, start, end)
+
+    def endswith(self, suffix: str | tuple[str, ...], start: int | None = None, end: int | None = None) -> bool:
+        return str(self).endswith(suffix, start, end)
+
+    def lower(self) -> str:
+        return str(self).lower()
+
+    def upper(self) -> str:
+        return str(self).upper()
+
+    def find(self, sub: str, start: int | None = None, end: int | None = None) -> int:
+        return str(self).find(sub, start, end)
+
+    def __len__(self) -> int:
+        return len(str(self))
+
+    def __add__(self, other: Any) -> str:
+        return str(self) + str(other)
+
+    def __radd__(self, other: Any) -> str:
+        return str(other) + str(self)
+
+    def __bool__(self) -> bool:
+        return bool(self.source_text)
 
 
 def _telemetry_warn(event: str, detail: str) -> None:
@@ -333,7 +397,7 @@ def _(
     if stable_msgid is None:
         stable_msgid = f"txt_{hashlib.sha1(source_text.encode('utf-8')).hexdigest()[:12]}"
     source_lang = _resolve_static_source_lang(source_text)
-    return TranslatableMessage(
+    message = TranslatableMessage(
         source_text=source_text,
         source_lang=source_lang,
         msgid=stable_msgid,
@@ -347,6 +411,9 @@ def _(
         dynamic_candidate=False,
         literal_callsite=literal_callsite,
     )
+    if context_hint == "ui":
+        return TranslatableString(str(message), message)
+    return message
 
 
 def _owner_prefix(message: TranslatableMessage) -> str:

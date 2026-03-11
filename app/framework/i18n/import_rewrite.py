@@ -292,6 +292,12 @@ class _I18nTransformer(ast.NodeTransformer):
         return new_node
 
     def _detect_context_hint(self) -> str:
+        # Static detection: if path contains UI indicators, it's a UI callsite.
+        path_str = str(self.file_path).replace("\\", "/").lower()
+        ui_indicators = ["/ui/", "/views/", "/widgets/", "/shared/localizer", "/application/"]
+        if any(ind in path_str for ind in ui_indicators):
+            return "ui"
+            
         if len(self._parents) < 2:
             return "ui"
         parent = self._parents[-2]

@@ -26,12 +26,25 @@ def _is_ui_callsite() -> bool:
     """Detect common UI callsites to auto-materialize TranslatableMessage -> str."""
     try:
         caller = _first_external_callsite_frame()
-        file_path = Path(getattr(getattr(caller, "f_code", None), "co_filename", ""))
+        if caller is None:
+            return False
+            
+        file_path_str = getattr(getattr(caller, "f_code", None), "co_filename", "")
+        if not file_path_str:
+            return False
+            
+        normalized = file_path_str.replace("\\", "/").lower()
+        # Robust detection for UI callsites even in packaged/compiled environments.
+        ui_indicators = {"/ui/", "/views/", "/widgets/", "/shared/localizer"}
+        if any(ind in normalized for ind in ui_indicators):
+            return True
+            
+        # Fallback to parts check for complex path structures.
+        file_path = Path(file_path_str)
         parts = [p.lower() for p in file_path.parts]
-        if "ui" in parts:
+        if "ui" in parts or "views" in parts or "widgets" in parts:
             return True
-        if "views" in parts and "framework" in parts:
-            return True
+            
     except Exception:
         return False
     return False
