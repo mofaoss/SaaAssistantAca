@@ -189,5 +189,8 @@
   "framework.ui.update_successful_3": "en",
   "framework.ui.withdraw_successful": "en",
   "host.on_demand.title": "en",
-  "host.periodic.title": "en"
+  "host.periodic.title": "en",
+  "framework.ui.group_general": "en",
+  "framework.ui.group_visual_calibration": "en",
+  "framework.ui.current_color": "en"
 }

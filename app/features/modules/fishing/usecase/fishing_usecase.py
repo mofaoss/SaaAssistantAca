@@ -8,28 +8,23 @@ import numpy as np
 from rapidfuzz import process
 
 from app.framework.infra.events.signal_bus import signalBus
+from app.framework.infra.config.app_config import config as app_config
 from app.framework.infra.vision.vision import count_color_blocks
 from app.framework.infra.automation.timer import Timer
 
-from app.framework.core.module_system import on_demand_module, Field
+from app.framework.core.module_system import on_demand_module
 
 
 @on_demand_module(
     "Fishing",
+    actions={
+        "Calibrate Color": "action_calibrate_color",
+        "Reset": "action_reset_color",
+    },
     description="### Tips\n"
                 "* Automated fishing with QTE support.\n"
                 "* **Visual Calibration**: Adjust HSV values if fish detection is unreliable.\n"
                 "* **Lure**: Ensure you have enough lures of the selected type.",
-    fields={
-        "SpinBox_fish_times": Field(label="Fishing Times", group="General", layout="half"),
-        "ComboBox_fishing_mode": Field(label="Fishing Mode", group="General", layout="half"),
-        "CheckBox_is_limit_time": Field(label="Enable Time Limit", group="General", layout="full"),
-        "LineEdit_fish_upper": Field(label="HSV Upper", group="Visual Calibration", layout="half"),
-        "LineEdit_fish_lower": Field(label="HSV Lower", group="Visual Calibration", layout="half"),
-        "LineEdit_fish_key": Field(label="Fishing Key", group="General", layout="half"),
-        "ComboBox_lure_type": Field(label="Lure Type", group="Lure Settings", layout="half"),
-        "CheckBox_is_save_fish": Field(label="Save Screenshot", group="General", layout="full"),
-    }
 )
 class FishingModule:
     def __init__(
@@ -71,6 +66,49 @@ class FishingModule:
         self.save_fish = bool(CheckBox_is_save_fish)
         self.fish_key_list = fish_key_list or ['shift', 'space', 'ctrl']
         self.app_config = app_config
+
+    @staticmethod
+    def action_calibrate_color(page=None, logger=None, **_kwargs):
+        from app.features.modules.fishing.ui.subtask import AdjustColor
+
+        thread = AdjustColor()
+        if page is not None:
+            # Keep thread reference on page to avoid premature GC.
+            setattr(page, "_fishing_adjust_color_thread", thread)
+
+            def _refresh_values():
+                try:
+                    if hasattr(page, "_load_values"):
+                        page._load_values()
+                except Exception:
+                    pass
+
+            thread.color_changed.connect(_refresh_values)
+
+        thread.start()
+        if logger is not None:
+            logger.info(_("Opened color calibration", msgid="opened_color_calibration"))
+
+    @staticmethod
+    def action_reset_color(page=None, logger=None, config=None, **_kwargs):
+        cfg = config if config is not None else app_config
+        if cfg is None:
+            return
+
+        for item_name in ("LineEdit_fish_base", "LineEdit_fish_upper", "LineEdit_fish_lower"):
+            cfg_item = getattr(cfg, item_name, None)
+            if cfg_item is None:
+                continue
+            default_value = getattr(cfg_item, "defaultValue", None)
+            if default_value is None:
+                continue
+            cfg.set(cfg_item, default_value)
+
+        if page is not None and hasattr(page, "_load_values"):
+            page._load_values()
+
+        if logger is not None:
+            logger.info(_("Reset HSV values to defaults", msgid="reset_hsv_values_to_defaults"))
 
     def run(self):
         # 每次钓鱼前更新各种设置参数

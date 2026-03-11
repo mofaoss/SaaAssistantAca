@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import builtins
 import inspect
+import re
 from pathlib import Path
 
 from app.framework.i18n.runtime import _ as _runtime_translate, tr, TranslatableMessage, get_catalog, load_i18n_catalogs
@@ -66,10 +67,19 @@ def _infer_owner_hints_from_callsite() -> dict:
             owner_scope = "module"
             owner_module = file_name.parts[mod_idx + 1]
         except Exception:
-            if "framework" in parts:
-                owner_scope = "framework"
+            normalized_for_infer = str(file_name).replace("\\", "/")
+            lower_infer = normalized_for_infer.lower()
+            match = re.search(r"(?:^|[./\\])modules[./\\]([a-z0-9_]+)(?:[./\\]|$)", lower_infer)
+            if match:
+                owner_scope = "module"
+                owner_module = match.group(1)
             else:
-                owner_scope = "framework"
+                dotted = re.search(r"features\.modules\.([a-z0-9_]+)", lower_infer)
+                if dotted:
+                    owner_scope = "module"
+                    owner_module = dotted.group(1)
+                elif "framework" in parts or ".framework." in lower_infer:
+                    owner_scope = "framework"
 
         normalized_path = str(file_name).replace("\\", "/")
         callsite_key = (

@@ -6,6 +6,7 @@ import inspect
 import json
 import logging
 import re
+import sys
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
@@ -31,6 +32,10 @@ _CATALOGS: dict[str, dict[str, str]] = {lang: {} for lang in SUPPORTED_LANGS}
 _LOADED = False
 _TEMPLATE_META: dict[str, dict[str, Any]] = {}
 _TEMPLATE_META_LOADED = False
+_DYNAMIC_RECOVERY_KEYS: set[str] = set()
+_DYNAMIC_KEYS_BY_OWNER_CONTEXT: dict[str, list[str]] = {}
+_SOURCE_TEXT_KEY_BY_OWNER_CONTEXT: dict[str, dict[str, str | None]] = {}
+_SOURCE_TEXT_INDEX_READY = False
 _MSGID_SEMANTIC_RE = re.compile(r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$")
 _MSGID_HASHLIKE_RE = re.compile(r"^(?:[0-9a-f]{8,}|h[0-9a-f]{6,})$")
 
@@ -60,6 +65,7 @@ class TranslatableMessage:
     source_text: str
     source_lang: str
     msgid: str | None = None
+    msgid_explicit: bool = False
     kwargs: dict[str, Any] = field(default_factory=dict)
     owner_scope: str = "framework"
     owner_module: str | None = None
@@ -300,7 +306,9 @@ def _(
     literal_callsite = bool(kwargs.pop("__i18n_literal__", False))
     dynamic_candidate = bool(kwargs.pop("__i18n_dynamic_candidate__", False))
 
-    stable_msgid = _normalize_msgid(msgid)
+    normalized_msgid = _normalize_msgid(msgid)
+    msgid_explicit = normalized_msgid is not None
+    stable_msgid = normalized_msgid
     owner_scope, owner_module = _resolve_owner_metadata(owner_scope_hint, owner_module_hint)
 
     if dynamic or callsite_kind == "dynamic_template":
@@ -321,6 +329,7 @@ def _(
             source_text=source_text,
             source_lang=source_lang,
             msgid=stable_msgid,
+            msgid_explicit=msgid_explicit,
             kwargs=payload,
             owner_scope=owner_scope,
             owner_module=owner_module,
@@ -352,6 +361,7 @@ def _(
             source_text=source_text,
             source_lang=DEFAULT_SOURCE_LANG,
             msgid=stable_msgid,
+            msgid_explicit=msgid_explicit,
             kwargs=dict(kwargs),
             owner_scope=owner_scope,
             owner_module=owner_module,
@@ -381,6 +391,7 @@ def _(
                 source_text=source_text,
                 source_lang=DEFAULT_SOURCE_LANG,
                 msgid=stable_msgid,
+                msgid_explicit=msgid_explicit,
                 kwargs=dict(kwargs),
                 owner_scope=owner_scope,
                 owner_module=owner_module,
@@ -401,6 +412,7 @@ def _(
         source_text=source_text,
         source_lang=source_lang,
         msgid=stable_msgid,
+        msgid_explicit=msgid_explicit,
         kwargs=dict(kwargs),
         owner_scope=owner_scope,
         owner_module=owner_module,
@@ -447,9 +459,49 @@ def _merge_file(lang: str, path: Path) -> None:
     _CATALOGS.setdefault(lang, {}).update({str(k): str(v) for k, v in data.items()})
 
 
+@lru_cache(maxsize=1)
+def _resolve_i18n_project_root() -> Path:
+    """Resolve runtime project root robustly across source and Nuitka layouts."""
+    marker = ("app", "framework", "i18n", "en.json")
+
+    def has_i18n_root(candidate: Path) -> bool:
+        try:
+            return (candidate / marker[0] / marker[1] / marker[2] / marker[3]).is_file()
+        except Exception:
+            return False
+
+    candidates: list[Path] = []
+    try:
+        # Preferred root resolver used by runtime folders/config.
+        from app.framework.infra.runtime.paths import PROJECT_ROOT as runtime_project_root
+
+        candidates.append(Path(runtime_project_root))
+    except Exception:
+        pass
+
+    try:
+        if getattr(sys, "frozen", False):
+            candidates.append(Path(sys.executable).resolve().parent)
+    except Exception:
+        pass
+
+    module_path = Path(__file__).resolve()
+    # Source layout fallback: .../app/framework/i18n/runtime.py -> parents[3] is project root.
+    candidates.append(module_path.parents[3])
+    # Compiled module fallback: .../dist/app.framework.i18n.runtime.pyd -> parent is dist root.
+    candidates.append(module_path.parent)
+
+    for candidate in candidates:
+        if has_i18n_root(candidate):
+            return candidate
+
+    # Last-resort: keep historical behavior.
+    return module_path.parents[3]
+
+
 def load_i18n_catalogs() -> None:
     global _LOADED
-    root = Path(__file__).resolve().parents[3]
+    root = _resolve_i18n_project_root()
 
     framework_i18n = root / "app" / "framework" / "i18n"
     for lang in SUPPORTED_LANGS:
@@ -468,35 +520,125 @@ def load_i18n_catalogs() -> None:
     _LOADED = True
 
 
+def _owner_context_key_from_i18n_key(key: str) -> str | None:
+    parts = key.split(".")
+    if len(parts) >= 3 and parts[0] == "framework":
+        return f"framework.{parts[1]}"
+    if len(parts) >= 4 and parts[0] == "module":
+        return f"module.{parts[1]}.{parts[2]}"
+    return None
+
+
+def _owner_context_key_for_message(message: TranslatableMessage, *, context: str) -> str:
+    return f"{_owner_prefix(message)}.{context}"
+
+
+def _build_source_text_index() -> None:
+    global _SOURCE_TEXT_INDEX_READY
+    if _SOURCE_TEXT_INDEX_READY:
+        return
+    if not _LOADED:
+        load_i18n_catalogs()
+
+    en_catalog = _CATALOGS.get(DEFAULT_SOURCE_LANG, {})
+    for key, source_text in en_catalog.items():
+        if not isinstance(key, str) or not isinstance(source_text, str):
+            continue
+        owner_context_key = _owner_context_key_from_i18n_key(key)
+        if not owner_context_key:
+            continue
+        bucket = _SOURCE_TEXT_KEY_BY_OWNER_CONTEXT.setdefault(owner_context_key, {})
+        existing = bucket.get(source_text)
+        if existing is None:
+            bucket[source_text] = key
+            continue
+        if existing != key:
+            # Mark ambiguous source text to avoid wrong substitutions.
+            bucket[source_text] = None
+
+    _SOURCE_TEXT_INDEX_READY = True
+
+
+def _recover_static_message_without_msgid(
+    message: TranslatableMessage,
+    *,
+    context: str,
+    target_lang: str,
+) -> str | None:
+    _build_source_text_index()
+    owner_context_key = _owner_context_key_for_message(message, context=context)
+    bucket = _SOURCE_TEXT_KEY_BY_OWNER_CONTEXT.get(owner_context_key, {})
+    recovered_key = bucket.get(message.source_text)
+    if not recovered_key:
+        return None
+
+    translated = _CATALOGS.get(target_lang, {}).get(recovered_key)
+    if translated is None and target_lang == "zh_HK":
+        zh_cn_value = _CATALOGS.get("zh_CN", {}).get(recovered_key)
+        if zh_cn_value is not None:
+            translated = _zh_hk_fallback_text(zh_cn_value)
+    if translated is None:
+        translated = _CATALOGS.get(DEFAULT_SOURCE_LANG, {}).get(recovered_key)
+    if translated is None:
+        return None
+
+    _telemetry_warn("static_without_msgid_recovered", recovered_key)
+    return translated
+
+
+def _merge_template_meta_file(path: Path) -> None:
+    if not path.exists():
+        return
+    try:
+        data = json.loads(path.read_text(encoding="utf-8-sig"))
+    except Exception:
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            return
+    if not isinstance(data, dict):
+        return
+
+    for key, meta in data.items():
+        if not (isinstance(key, str) and isinstance(meta, dict)):
+            continue
+        _TEMPLATE_META[key] = meta
+
+        source_template = str(meta.get("source_template") or "")
+        if not source_template:
+            continue
+        if not extract_template_fields(source_template):
+            continue
+
+        _DYNAMIC_RECOVERY_KEYS.add(key)
+        owner_context_key = _owner_context_key_from_i18n_key(key)
+        if not owner_context_key:
+            continue
+        bucket = _DYNAMIC_KEYS_BY_OWNER_CONTEXT.setdefault(owner_context_key, [])
+        if key not in bucket:
+            bucket.append(key)
+
+
 def _load_template_meta() -> None:
     global _TEMPLATE_META_LOADED
     if _TEMPLATE_META_LOADED:
         return
-    root = Path(__file__).resolve().parents[3]
-    meta_path = root / "app" / "framework" / "i18n" / "template_meta.json"
-    if not meta_path.exists():
-        _TEMPLATE_META_LOADED = True
-        return
-    try:
-        data = json.loads(meta_path.read_text(encoding="utf-8-sig"))
-    except Exception:
-        try:
-            data = json.loads(meta_path.read_text(encoding="utf-8"))
-        except Exception:
-            _TEMPLATE_META_LOADED = True
-            return
-    if isinstance(data, dict):
-        for key, meta in data.items():
-            if isinstance(key, str) and isinstance(meta, dict):
-                _TEMPLATE_META[key] = meta
+
+    root = _resolve_i18n_project_root()
+    _merge_template_meta_file(root / "app" / "framework" / "i18n" / "template_meta.json")
+
+    modules_root = root / "app" / "features" / "modules"
+    if modules_root.exists():
+        for module_dir in modules_root.iterdir():
+            if not module_dir.is_dir():
+                continue
+            _merge_template_meta_file(module_dir / "i18n" / "template_meta.json")
+
     _TEMPLATE_META_LOADED = True
 
 
-def _extract_dynamic_payload(
-    source_template: str,
-    rendered_text: str,
-    field_details: dict[str, dict[str, str]] | None,
-) -> dict[str, Any] | None:
+@lru_cache(maxsize=512)
+def _dynamic_payload_pattern(source_template: str) -> tuple[re.Pattern[str], tuple[tuple[str, str], ...]] | None:
     import string
 
     pattern_parts: list[str] = []
@@ -510,8 +652,29 @@ def _extract_dynamic_payload(
             continue
         pattern_parts.append(f"(?P<{base}>.*?)")
         field_order.append((base, format_spec or ""))
-    pattern = "".join(pattern_parts)
-    match = re.fullmatch(pattern, rendered_text, flags=re.DOTALL)
+
+    if not field_order:
+        return None
+
+    try:
+        pattern = re.compile("".join(pattern_parts), flags=re.DOTALL)
+    except Exception:
+        return None
+
+    return pattern, tuple(field_order)
+
+
+def _extract_dynamic_payload(
+    source_template: str,
+    rendered_text: str,
+    field_details: dict[str, dict[str, str]] | None,
+) -> dict[str, Any] | None:
+    compiled = _dynamic_payload_pattern(source_template)
+    if compiled is None:
+        return None
+
+    pattern, field_order = compiled
+    match = pattern.fullmatch(rendered_text)
     if not match:
         return None
 
@@ -585,6 +748,66 @@ def _render_dynamic_candidate_message(message: TranslatableMessage, *, key: str,
     except Exception as exc:
         _telemetry_warn("dynamic_candidate_render_failed", f"{key}:{_coerce_text(exc)}")
         return None
+
+
+def _find_best_matching_template(
+    message: TranslatableMessage,
+    candidate_keys: Iterable[str],
+) -> str | None:
+    best_key: str | None = None
+    best_template_len = -1
+    for candidate_key in candidate_keys:
+        meta = _TEMPLATE_META.get(candidate_key)
+        source_template = ""
+        field_details = None
+        if isinstance(meta, dict):
+            source_template = str(meta.get("source_template") or "")
+            field_details = meta.get("field_details")
+        if not source_template:
+            source_template = str(_CATALOGS.get(DEFAULT_SOURCE_LANG, {}).get(candidate_key) or "")
+        if not source_template:
+            continue
+
+        parsed_payload = _extract_dynamic_payload(
+            source_template=source_template,
+            rendered_text=message.source_text,
+            field_details=field_details if isinstance(field_details, dict) else None,
+        )
+        if not parsed_payload:
+            continue
+
+        template_len = len(source_template)
+        if template_len > best_template_len:
+            best_template_len = template_len
+            best_key = candidate_key
+    return best_key
+
+
+def _recover_dynamic_message_without_msgid(
+    message: TranslatableMessage,
+    *,
+    context: str,
+    target_lang: str,
+) -> str | None:
+    _load_template_meta()
+    
+    # 1. Try scoped search first (Fast path)
+    owner_context_key = _owner_context_key_for_message(message, context=context)
+    candidate_keys = _DYNAMIC_KEYS_BY_OWNER_CONTEXT.get(owner_context_key, [])
+    best_key = _find_best_matching_template(message, candidate_keys)
+
+    # 2. If scoped search fails, try global search (Slow path fallback)
+    # This handles cases where Nuitka obfuscates frame info, causing owner inference failure.
+    if not best_key:
+        best_key = _find_best_matching_template(message, _DYNAMIC_RECOVERY_KEYS)
+
+    if not best_key:
+        return None
+
+    rendered = _render_dynamic_candidate_message(message, key=best_key, target_lang=target_lang)
+    if rendered is not None:
+        _telemetry_warn("dynamic_without_msgid_recovered", best_key)
+    return rendered
 
 
 def _resolve_lang() -> str:
@@ -736,7 +959,25 @@ def translate_message(message: TranslatableMessage, *, context: str, target_lang
             return rendered
         return message.source_text
 
+    # Nuitka/compiled fallback: if AST import rewrite metadata is unavailable,
+    # an author-side f-string with explicit msgid may reach here as a pre-rendered
+    # static string without kwargs. Recover by reverse-parsing through template_meta.
+    if message.msgid_explicit and message.msgid and not message.kwargs:
+        _load_template_meta()
+        if key in _DYNAMIC_RECOVERY_KEYS:
+            rendered = _render_dynamic_candidate_message(message, key=key, target_lang=target_lang)
+            if rendered is not None:
+                _telemetry_warn("dynamic_msgid_recovered_without_rewrite", key)
+                return rendered
+
     translated = _CATALOGS.get(target_lang, {}).get(key)
+    if translated is None and not message.msgid_explicit and not message.kwargs:
+        recovered_static = _recover_static_message_without_msgid(message, context=context, target_lang=target_lang)
+        if recovered_static is not None:
+            return recovered_static
+        recovered_dynamic = _recover_dynamic_message_without_msgid(message, context=context, target_lang=target_lang)
+        if recovered_dynamic is not None:
+            return recovered_dynamic
     if translated is None and target_lang == "zh_HK":
         zh_cn_value = _CATALOGS.get("zh_CN", {}).get(key)
         if zh_cn_value is not None:

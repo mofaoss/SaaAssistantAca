@@ -71,6 +71,7 @@ class ModuleMeta:
     periodic_default_activation_config: list[dict[str, Any]] = field(default_factory=list)
 
     config_schema: list[SchemaField] = field(default_factory=list)
+    actions: dict[str, str] = field(default_factory=dict)  # Label -> MethodName
     source_lang: str = "en"
     i18n_owner_dir: str | None = None
     generated_module_class: type | None = None

@@ -56,7 +56,7 @@ iss_compiler = find_iss_compiler()
 
 
 # subprocess.call(['pip', 'install', '-U', 'nuitka'])
-# subprocess.call(['pip', 'install', '-r', 'requirements.txt'])
+# subprocess.call(['pip', 'install', '-r', 'requirements-prod.txt'])
 # subprocess.call(['pip', 'freeze', '>', 'equirements.txt'])
 
 def generate_new_id(mode):

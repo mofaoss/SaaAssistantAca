@@ -13,21 +13,16 @@ from app.framework.core.module_system import on_demand_module, periodic_module, 
                 "* Automated card matching for drink rewards.\n"
                 "* Ensure you are in the tavern before starting.\n"
                 "* Supports multiple game modes and automatic repeats.",
-    fields={
-        "SpinBox_drink_times": Field(label="Repeat Times", group="Game Settings", layout="half"),
-        "ComboBox_card_mode": Field(label="Game Mode", group="Game Settings", layout="half"),
-        "CheckBox_is_speed_up": Field(label="Speed Up Mode", group="Performance", layout="full"),
-    }
 )
 class DrinkModule:
     def __init__(
         self,
         auto,
         logger,
-        isLog=False,
-        SpinBox_drink_times=1,
-        ComboBox_card_mode=0,
-        CheckBox_is_speed_up=False,
+        isLog: bool = False,
+        SpinBox_drink_times: int = 1,
+        ComboBox_card_mode: int = 0,
+        CheckBox_is_speed_up: bool = False,
     ):
         super().__init__()
         self.mode = int(ComboBox_card_mode)

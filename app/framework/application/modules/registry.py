@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from app.framework.application.modules.contracts import ModuleSpec, ModuleUiBindings
 from app.framework.core.module_system import ModuleHost, get_modules_by_host, make_module_class
@@ -16,15 +16,24 @@ def _fallback_title_from_module_id(module_id: str) -> str:
 
 def _resolve_localized_titles(meta) -> tuple[str, str]:
     key = f"module.{meta.id}.title"
+    legacy_key = "module.dummy.title"
     en_catalog = get_catalog("en")
     zh_cn_catalog = get_catalog("zh_CN")
     zh_hk_catalog = get_catalog("zh_HK")
 
     fallback_title = _fallback_title_from_module_id(meta.id)
-    en_name = (en_catalog.get(key) or meta.en_name or meta.name or fallback_title).strip()
+    en_name = (
+        en_catalog.get(key)
+        or en_catalog.get(legacy_key)
+        or meta.en_name
+        or meta.name
+        or fallback_title
+    ).strip()
     zh_name = (
         zh_cn_catalog.get(key)
         or zh_hk_catalog.get(key)
+        or zh_cn_catalog.get(legacy_key)
+        or zh_hk_catalog.get(legacy_key)
         or en_name
     ).strip()
 
@@ -73,3 +82,4 @@ def get_on_demand_module_specs(*, include_passive: bool = True) -> list[ModuleSp
     if not include_passive:
         metas = [meta for meta in metas if not meta.passive]
     return [_meta_to_spec(meta, ModuleHost.ON_DEMAND) for meta in metas]
+

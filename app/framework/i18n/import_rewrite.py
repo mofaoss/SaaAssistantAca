@@ -493,3 +493,40 @@ def install_import_rewrite() -> None:
     finder = _I18nRewriteFinder()
     sys.meta_path.insert(0, finder)
     _INSTALLED = True
+
+
+# --- Nuitka Plugin Support ---
+# This section allows import_rewrite.py to be used as a Nuitka user plugin.
+# Usage: nuitka --user-plugin=app/framework/i18n/import_rewrite.py ...
+
+class SaaI18nNuitkaPlugin:
+    """Nuitka plugin to apply i18n AST transformations during AOT compilation."""
+    
+    def onModuleSourceCode(self, module_name, source_code):
+        # Only transform app.* modules, excluding the i18n framework itself to avoid recursion.
+        if not module_name.startswith("app.") or "app.framework.i18n" in module_name:
+            return source_code
+
+        try:
+            # Attempt to resolve the physical path for metadata (owner_scope, callsite_key).
+            # We assume the plugin is running from the project root.
+            parts = module_name.split(".")
+            rel_path = Path(*parts).with_suffix(".py")
+            phys_path = PROJECT_ROOT / rel_path
+            if not phys_path.exists():
+                phys_path = PROJECT_ROOT / Path(*parts) / "__init__.py"
+
+            tree = ast.parse(source_code)
+            transformer = _I18nTransformer(phys_path)
+            new_tree = transformer.visit(tree)
+            ast.fix_missing_locations(new_tree)
+            
+            # ast.unparse is available in Python 3.9+
+            return ast.unparse(new_tree)
+        except Exception:
+            # Fallback to original source if transformation fails.
+            return source_code
+
+
+def create_plugin_instance():
+    return SaaI18nNuitkaPlugin()

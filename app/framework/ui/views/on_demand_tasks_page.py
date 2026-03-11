@@ -1,4 +1,4 @@
-﻿import re
+import re
 from functools import partial
 
 from PySide6.QtCore import QEasingCurve, QParallelAnimationGroup, QPropertyAnimation, QPoint
@@ -185,6 +185,78 @@ class OnDemandTasksPage(QFrame, BaseInterface):
                 "card_widget_attr": bindings.card_widget_attr,
             }
 
+    @staticmethod
+    def _resolve_task_button(page: QWidget | None, task_id: str, configured_attr: str | None):
+        if page is None:
+            return None
+
+        attr_candidates = [
+            configured_attr,
+            "PushButton_start",
+            f"PushButton_start_{task_id}",
+        ]
+        for attr in attr_candidates:
+            if not attr:
+                continue
+            button = getattr(page, attr, None)
+            if button is not None and hasattr(button, "clicked"):
+                return button
+
+        object_name_candidates = [
+            configured_attr,
+            f"PushButton_start_{task_id}",
+            "PushButton_start",
+        ]
+        for object_name in object_name_candidates:
+            if not object_name:
+                continue
+            button = page.findChild(QWidget, object_name)
+            if button is not None and hasattr(button, "clicked"):
+                return button
+
+        return None
+
+    @staticmethod
+    def _resolve_task_card(page: QWidget | None, task_id: str, configured_attr: str | None):
+        if page is None:
+            return None
+
+        attr_candidates = [
+            configured_attr,
+            "SimpleCardWidget_option",
+            f"SimpleCardWidget_{task_id}",
+            "settings_container",
+        ]
+        for attr in attr_candidates:
+            if not attr:
+                continue
+            card = getattr(page, attr, None)
+            if isinstance(card, QWidget):
+                return card
+
+        object_name_candidates = [
+            configured_attr,
+            f"SimpleCardWidget_{task_id}",
+            "SimpleCardWidget_option",
+        ]
+        for object_name in object_name_candidates:
+            if not object_name:
+                continue
+            card = page.findChild(QWidget, object_name)
+            if isinstance(card, QWidget):
+                return card
+
+        return None
+
+
+    @staticmethod
+    def _coerce_line_edit_text(value) -> str:
+        if value is None:
+            return ""
+        if isinstance(value, (list, tuple, set)):
+            return ", ".join(str(item) for item in value)
+        return str(value)
+
     def _collapse_module_local_sidebar(self, page: QWidget, local_log_card: QWidget | None):
         if local_log_card is not None:
             local_log_card.setMinimumWidth(0)
@@ -254,8 +326,8 @@ class OnDemandTasksPage(QFrame, BaseInterface):
         running_task_id = self.on_demand_runner.state.current_task_id
         for task_id, meta in meta_dict.items():
             page = getattr(self, meta["page_attr"], None)
-            btn = getattr(page, meta["start_button_attr"], None) if page is not None else None
-            card = getattr(page, meta["card_widget_attr"], None) if page is not None else None
+            btn = self._resolve_task_button(page, task_id, meta["start_button_attr"])
+            card = self._resolve_task_card(page, task_id, meta["card_widget_attr"])
 
             if not btn:
                 continue
@@ -299,8 +371,8 @@ class OnDemandTasksPage(QFrame, BaseInterface):
             page = getattr(self, meta["page_attr"], None)
             if not page:
                 continue
-            btn = getattr(page, meta["start_button_attr"], None)
-            card = getattr(page, meta["card_widget_attr"], None)
+            btn = self._resolve_task_button(page, _task_id, meta["start_button_attr"])
+            card = self._resolve_task_card(page, _task_id, meta["card_widget_attr"])
             if not btn:
                 continue
             if is_running:
@@ -331,7 +403,7 @@ class OnDemandTasksPage(QFrame, BaseInterface):
             page = getattr(self, meta["page_attr"], None)
             if page is None:
                 continue
-            button = getattr(page, meta["start_button_attr"], None)
+            button = self._resolve_task_button(page, task_id, meta["start_button_attr"])
             if button is None:
                 continue
             button.clicked.connect(
@@ -356,7 +428,7 @@ class OnDemandTasksPage(QFrame, BaseInterface):
                 elif isinstance(widget, ComboBox):
                     widget.setCurrentIndex(config_item.value)
                 elif isinstance(widget, LineEdit):
-                    widget.setText(config_item.value)
+                    widget.setText(self._coerce_line_edit_text(config_item.value))
                 elif isinstance(widget, SpinBox):
                     widget.setValue(config_item.value)
                 elif isinstance(widget, Slider):
@@ -492,6 +564,3 @@ class OnDemandTasksPage(QFrame, BaseInterface):
 
     def get_shared_log_browser(self):
         return self._active_log_browser
-
-
-

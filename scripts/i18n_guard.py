@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import ast
 import json
+import re
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -15,8 +16,10 @@ LOGGER_LEVELS = {"info", "warning", "error"}
 UI_TEXT_METHODS = {"setText", "setToolTip", "setPlaceholderText", "setWindowTitle"}
 BANNED_HELPERS = {"t", "td"}
 BANNED_DECL_FIELDS = {"en_name", "cn_name", "tw_name"}
-MSGID_SEMANTIC_RE = __import__("re").compile(r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$")
-MSGID_HASHLIKE_RE = __import__("re").compile(r"^(?:[0-9a-f]{8,}|h[0-9a-f]{6,})$")
+MSGID_SEMANTIC_RE = re.compile(r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$")
+MSGID_HASHLIKE_RE = re.compile(r"^(?:[0-9a-f]{8,}|h[0-9a-f]{6,})$")
+PLACEHOLDER_ASCII_PUNCT = set(" \t\r\n?!,.:;()[]{}-_/\\")
+PLACEHOLDER_FULLWIDTH_ORDS = {0xFF01, 0xFF08, 0xFF09, 0xFF0C, 0xFF1A, 0xFF1B, 0xFF1F, 0x3002}
 
 
 @dataclass
@@ -103,6 +106,91 @@ def _added_lines_map() -> dict[Path, set[int]]:
 def _all_python_files() -> list[Path]:
     files = list((ROOT / "app").rglob("*.py")) + list((ROOT / "scripts").rglob("*.py"))
     return sorted(set(files))
+
+
+def _changed_i18n_json_files() -> list[Path]:
+    try:
+        proc = subprocess.run(
+            ["git", "status", "--porcelain"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except Exception:
+        return []
+
+    files: list[Path] = []
+    for raw in proc.stdout.splitlines():
+        if not raw:
+            continue
+        line = raw[3:]
+        if " -> " in line:
+            line = line.split(" -> ", 1)[1]
+        p = ROOT / line.strip()
+        rel = p.relative_to(ROOT).as_posix() if p.exists() else ""
+        if p.suffix == ".json" and "/i18n/" in f"/{rel}" and p.exists():
+            files.append(p)
+    return sorted(set(files))
+
+
+def _all_i18n_json_files() -> list[Path]:
+    files = list((ROOT / "app").rglob("*.json"))
+    return sorted([p for p in files if "/i18n/" in f"/{p.relative_to(ROOT).as_posix()}"])
+
+
+def _is_unusable_translation_value(value: str) -> bool:
+    stripped = str(value or "").strip()
+    if not stripped:
+        return False
+
+    has_question = any(ch == "?" or ord(ch) == 0xFF1F for ch in stripped)
+    if not has_question:
+        return False
+
+    for ch in stripped:
+        if ch in PLACEHOLDER_ASCII_PUNCT:
+            continue
+        if ord(ch) in PLACEHOLDER_FULLWIDTH_ORDS:
+            continue
+        return False
+    return True
+
+
+def _scan_i18n_file(path: Path) -> list[Finding]:
+    findings: list[Finding] = []
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    except Exception:
+        return findings
+
+    if not isinstance(payload, dict):
+        return findings
+
+    rel = str(path.relative_to(ROOT))
+    for key, value in payload.items():
+        if not isinstance(value, str):
+            continue
+        if _is_unusable_translation_value(value):
+            findings.append(
+                Finding(
+                    "error",
+                    rel,
+                    1,
+                    f"Unusable placeholder translation for key '{key}'",
+                )
+            )
+        if key.endswith(".description") and "\\n" in value:
+            findings.append(
+                Finding(
+                    "error",
+                    rel,
+                    1,
+                    f"Description key '{key}' must use real newlines instead of literal \\n",
+                )
+            )
+
+    return findings
 
 
 def _is_logger_call(func: ast.AST) -> bool:
@@ -241,6 +329,10 @@ def main() -> int:
     for path in files:
         allowed = None if args.all else changed_line_map.get(path, set())
         findings.extend(_scan_file(path, allowed_lines=allowed))
+
+    i18n_files = _all_i18n_json_files() if args.all else _changed_i18n_json_files()
+    for path in i18n_files:
+        findings.extend(_scan_i18n_file(path))
 
     errors = [f for f in findings if f.kind == "error"]
 

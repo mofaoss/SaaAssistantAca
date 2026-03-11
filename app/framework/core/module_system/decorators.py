@@ -146,6 +146,22 @@ def _validate_declaration_fields(fields: dict[str, str | Field] | None) -> None:
                 _validate_english_declaration(meta.help, field=f"fields[{param}] help")
 
 
+def _validate_declaration_actions(actions: dict[str, str] | None) -> None:
+    if not actions:
+        return
+    for label, method_name in actions.items():
+        _validate_english_declaration(str(label), field=f"actions[{label}] label")
+        if not isinstance(method_name, str) or not method_name.strip():
+            raise ValueError(f"actions[{label}] method must be a non-empty string")
+        normalized = method_name.strip()
+        if not re.fullmatch(r"^[A-Za-z_][A-Za-z0-9_]*$", normalized):
+            raise ValueError(
+                f"actions[{label}] method must be a valid class method name, got: {method_name!r}"
+            )
+
+
+
+
 def _resolve_symbol(symbol_path: str):
     module_path, symbol_name = symbol_path.rsplit(":", 1)
     mod = importlib.import_module(module_path)
@@ -206,22 +222,19 @@ def _extract_preferred_class_name_from_module(module_path: str, host: ModuleHost
     if not classes:
         return None
 
+    # Priority 1: Match preferred suffixes
+    preferred = []
     if host == ModuleHost.PERIODIC:
-        for name in classes:
-            if name.endswith("Page"):
-                return name
-        for name in classes:
-            if name.endswith("Interface"):
-                return name
+        preferred = [n for n in classes if n.endswith("Page") or n.endswith("Interface")]
     else:
-        for name in classes:
-            if name.endswith("Interface"):
-                return name
-        for name in classes:
-            if name.endswith("Page"):
-                return name
+        preferred = [n for n in classes if n.endswith("Interface") or n.endswith("Page")]
+    
+    if preferred:
+        return preferred[0]
 
-    return classes[0]
+    # If no preferred suffix is found, we do NOT return any random class.
+    # This prevents misidentifying internal logic classes (like AdjustColor) as UI pages.
+    return None
 
 
 def _infer_page_class_path(target, host: ModuleHost) -> str | None:
@@ -275,6 +288,7 @@ def _build_meta(
     host: ModuleHost,
     name: str,
     fields: dict[str, str | Field] | None,
+    actions: dict[str, str] | None,
     module_id: str | None,
     order: int | None = None,
     enabled: bool = True,
@@ -283,6 +297,7 @@ def _build_meta(
 ) -> ModuleMeta:
     _validate_english_declaration(name, field="module name")
     _validate_declaration_fields(fields)
+    _validate_declaration_actions(actions)
 
     module_name = _module_name_from_target(target)
     inferred_id = infer_module_id(target)
@@ -314,7 +329,6 @@ def _build_meta(
         run_method = getattr(target, "run", None)
         if callable(run_method):
             runner = run_method
-            schema_target = run_method
         else:
             runner = lambda *args, **kwargs: None
 
@@ -347,6 +361,7 @@ def _build_meta(
             module_id=resolved_id,
             fields=fields,
         ),
+        actions=dict(actions or {}),
     )
     meta.ui_bindings = resolved_ui_bindings
     if resolved_page_class_path:
@@ -364,6 +379,7 @@ def _register_with_host(
     host: ModuleHost,
     name: str,
     fields: dict[str, str | Field] | None = None,
+    actions: dict[str, str] | None = None,
     module_id: str | None = None,
     order: int | None = None,
     enabled: bool = True,
@@ -376,6 +392,7 @@ def _register_with_host(
             host=host,
             name=name,
             fields=fields,
+            actions=actions,
             module_id=module_id,
             order=order,
             enabled=enabled,
@@ -392,13 +409,17 @@ def on_demand_module(
     name: str,
     *,
     fields: dict[str, str | Field] | None = None,
+    actions: dict[str, str] | None = None,
     module_id: str | None = None,
+    description: str = "",
 ):
     return _register_with_host(
         host=ModuleHost.ON_DEMAND,
         name=name,
         fields=fields,
+        actions=actions,
         module_id=module_id,
+        description=description,
     )
 
 
@@ -406,13 +427,17 @@ def periodic_module(
     name: str,
     *,
     fields: dict[str, str | Field] | None = None,
+    actions: dict[str, str] | None = None,
     module_id: str | None = None,
+    description: str = "",
 ):
     return _register_with_host(
         host=ModuleHost.PERIODIC,
         name=name,
         fields=fields,
+        actions=actions,
         module_id=module_id,
+        description=description,
     )
 
 
