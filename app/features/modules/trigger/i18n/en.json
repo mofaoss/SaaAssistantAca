@@ -20,5 +20,9 @@
   "module.trigger.ui.log": "Log",
   "module.trigger.ui.nita_auto_e": "Nita Auto E",
   "module.trigger.ui.nita_e_auto_qte": "Nita E Auto QTE",
-  "module.trigger.ui.trigger_list": "Trigger List"
+  "module.trigger.ui.trigger_list": "Trigger List",
+  "module.trigger.field.auto_f.label": "Checkbox Trigger Auto F",
+  "module.trigger.field.auto_f.help": "Automatically press F when collect prompt appears",
+  "module.trigger.field.nita_auto_e.label": "Checkbox Trigger Auto E",
+  "module.trigger.field.nita_auto_e.help": "Automatically press E during QTE stage"
 }

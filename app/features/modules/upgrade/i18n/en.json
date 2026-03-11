@@ -1,5 +1,6 @@
 {
   "module.dummy.title": "Weapon Upgrade",
   "module.task_weapon.title": "Weapon Upgrade",
-  "module.upgrade.ui.enable_weapon_upgrade": "Enable Weapon Upgrade"
+  "module.upgrade.ui.enable_weapon_upgrade": "Enable Weapon Upgrade",
+  "module.weapon_upgrade.title": "Weapon Upgrade"
 }

@@ -10,5 +10,6 @@
   "module.collect_supplies.ui.reset_successful": "Reset Successful",
   "module.collect_supplies.ui.successfully_reset_import_and_display_content": "Successfully reset import and display {content}",
   "module.dummy.title": "Collect Supplies",
-  "module.task_supplies.title": "Collect Supplies"
+  "module.task_supplies.title": "Collect Supplies",
+  "module.collect_supplies.title": "Collect Supplies"
 }

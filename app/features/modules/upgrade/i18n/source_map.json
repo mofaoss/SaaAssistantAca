@@ -13,5 +13,6 @@
   "module.upgrade.log.txt_ccd91a348c2d": "zh_CN",
   "module.upgrade.log.txt_e688c14cbc54": "zh_CN",
   "module.upgrade.log.txt_ed2323f4b9af": "zh_CN",
-  "module.upgrade.ui.enable_weapon_upgrade": "en"
+  "module.upgrade.ui.enable_weapon_upgrade": "en",
+  "module.weapon_upgrade.title": "en"
 }

@@ -12,5 +12,6 @@
   "module.use_power.ui.event_stages": "Event Stages",
   "module.use_power.ui.no_potion": "No Potion",
   "module.use_power.ui.operation_logistics": "Operation Logistics",
-  "module.use_power.ui.stamina_usage_mode": "Stamina usage mode"
+  "module.use_power.ui.stamina_usage_mode": "Stamina usage mode",
+  "module.use_power.title": "Use Stamina"
 }

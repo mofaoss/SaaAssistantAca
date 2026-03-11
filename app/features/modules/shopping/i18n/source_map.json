@@ -4,6 +4,7 @@
   "module.shopping.log.open_shop_timeout": "en",
   "module.shopping.log.purchase_timeout": "en",
   "module.shopping.log.shop_scroll_failed_all_fallback_points_were_ineffective": "en",
+  "module.shopping.title": "en",
   "module.shopping.ui.insufficient_currency": "en",
   "module.shopping.ui.open_shop_timeout": "en",
   "module.shopping.ui.purchase_timeout": "en",

@@ -2,6 +2,7 @@
   "module.action.description": "zh_CN",
   "module.action.title": "en",
   "module.dummy.title": "en",
+  "module.operation.title": "en",
   "module.operation_action.field.ComboBox_run.option.0": "zh_CN",
   "module.operation_action.field.ComboBox_run.option.1": "zh_CN",
   "module.operation_action.log.txt_25f747b8c522": "zh_CN",
