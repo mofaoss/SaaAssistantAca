@@ -11,5 +11,7 @@
   "module.enter_game.ui.failed_to_resolve_launch_arguments": "无法解析启动参数",
   "module.enter_game.ui.find_game_path_in_launcher": "启动器中查看游戏路径",
   "module.enter_game.ui.tutorial": "查看教程",
-  "module.task_login.title": "自动登录"
+  "module.task_login.title": "自动登录",
+  "module.enter_game.ui.game_directory": "游戏路径",
+  "module.enter_game.description": "### 提示\n* 先在设置中选择你的区服\n* 勾选“自动打开游戏”后，调度会在需要时自动拉起游戏\n* 在下方填写启动器设置里显示的游戏安装路径"
 }

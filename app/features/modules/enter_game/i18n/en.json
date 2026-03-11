@@ -17,5 +17,7 @@
   "module.enter_game.ui.find_game_path_in_launcher": "Find game path in launcher",
   "module.enter_game.ui.game_executable_not_found_under_start_path": "Game executable not found under: {start_path}",
   "module.enter_game.ui.tutorial": "Tutorial",
-  "module.task_login.title": "Auto Login"
+  "module.task_login.title": "Auto Login",
+  "module.enter_game.ui.game_directory": "Game directory",
+  "module.enter_game.description": "### Tips\n* Select your server in Settings first\n* Enable \"Auto open game\" to let scheduler launch the game automatically\n* Fill in the game installation path shown in your launcher settings"
 }

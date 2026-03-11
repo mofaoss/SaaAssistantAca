@@ -18,5 +18,9 @@
   "module.person.ui.character_4": "en",
   "module.person.ui.not_set": "en",
   "module.person.ui.select_characters_for_shards": "en",
-  "module.task_shards.title": "en"
+  "module.task_shards.title": "en",
+  "module.person.ui.c1": "en",
+  "module.person.ui.c2": "en",
+  "module.person.ui.c3": "en",
+  "module.person.ui.c4": "en"
 }

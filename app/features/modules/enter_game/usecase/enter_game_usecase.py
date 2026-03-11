@@ -16,7 +16,7 @@ from qfluentwidgets import Flyout, FlyoutView, InfoBar, InfoBarPosition
 from app.framework.core.interfaces.game_environment import IGameEnvironment
 from app.framework.infra.automation.timer import Timer
 from app.framework.infra.system.windows import get_hwnd
-from app.framework.core.module_system import on_demand_module, periodic_module
+from app.framework.core.module_system import Field, on_demand_module, periodic_module
 
 from app.features.utils.home_navigation import back_to_home
 from app.framework.i18n import _
@@ -27,13 +27,29 @@ _last_game_process = None
 _last_launch_ts = 0.0
 
 
-@periodic_module("Auto Login")
+@periodic_module(
+    "Auto Login",
+    description="### Tips\n* Select your server in Settings first\n* Enable \"Auto open game\" to let scheduler launch the game automatically\n* Fill in the game installation path shown in your launcher settings",
+    fields={
+        "CheckBox_open_game_directly": Field(label="Auto open game"),
+        "LineEdit_game_directory": Field(label="Game directory"),
+    },
+)
 class EnterGameModule:
-    def __init__(self, auto, logger, isLog=False):
+    def __init__(
+        self,
+        auto,
+        logger,
+        isLog: bool = False,
+        CheckBox_open_game_directly: bool = False,
+        LineEdit_game_directory: str = "./",
+    ):
         self.auto = auto
         self.logger = logger
         self.is_log = bool(isLog)
         self.enter_game_flag = False
+        self.auto_open_game = bool(CheckBox_open_game_directly)
+        self.game_directory = str(LineEdit_game_directory or "./")
 
     def run(self):
         self.handle_game()

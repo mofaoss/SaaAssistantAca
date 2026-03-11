@@ -21,5 +21,7 @@
   "module.enter_game.ui.find_game_path_in_launcher": "en",
   "module.enter_game.ui.game_executable_not_found_under_start_path": "en",
   "module.enter_game.ui.tutorial": "en",
-  "module.task_login.title": "en"
+  "module.task_login.title": "en",
+  "module.enter_game.ui.game_directory": "en",
+  "module.enter_game.description": "en"
 }
