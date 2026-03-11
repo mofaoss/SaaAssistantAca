@@ -1,5 +1,6 @@
 {
   "module.dummy.title": "体力扫荡",
+  "module.task_stamina.description": "### 提示\n* 自动通过执行任务消耗体力\n* 可自动使用体力药（记忆嵌片）\n* 支持活动关卡与常规后勤",
   "module.task_stamina.title": "体力扫荡",
   "module.use_power.log.cn_text_0015_8": "第{attempt}次未找到活动任务入口，准备重试",
   "module.use_power.log.cn_text_0016_8": "第{attempt}次活动奖励页面未打开，准备重试",
@@ -22,9 +23,16 @@
   "module.use_power.log.txt_d78394cce7f4": "刷常规后勤超时",
   "module.use_power.log.txt_d99122bbcf29": "刷活动体力超时",
   "module.use_power.log.txt_ed71b62bb094": "已进入活动奖励页面，当前无可领取奖励",
-  "module.use_power.ui.auto_use_expiring": "自动使用期限",
-  "module.use_power.ui.day_potion": "天内的体力药",
-  "module.use_power.ui.event_stages": "活动材料本",
-  "module.use_power.ui.operation_logistics": "刷常规后勤",
-  "module.use_power.ui.stamina_usage_mode": "选择体力使用方式"
+  "module.use_power.ui.auto_use_expiring": "自动使用即将过期体力药",
+  "module.use_power.ui.day_1": "1天内",
+  "module.use_power.ui.day_2": "2天内",
+  "module.use_power.ui.day_3": "3天内",
+  "module.use_power.ui.day_4": "4天内",
+  "module.use_power.ui.day_5": "5天内",
+  "module.use_power.ui.day_6": "6天内",
+  "module.use_power.ui.day_potion": "天内体力药",
+  "module.use_power.ui.event_stages": "活动关卡",
+  "module.use_power.ui.no_potion": "不使用体力药",
+  "module.use_power.ui.operation_logistics": "常规后勤",
+  "module.use_power.ui.stamina_usage_mode": "体力使用方式"
 }

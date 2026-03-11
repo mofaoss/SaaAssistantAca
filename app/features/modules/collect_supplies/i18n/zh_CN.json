@@ -16,5 +16,8 @@
   "module.collect_supplies.ui.reset": "重置",
   "module.collect_supplies.ui.reset_successful": "重置成功",
   "module.dummy.title": "领取补给",
-  "module.task_supplies.title": "领取补给"
+  "module.task_supplies.title": "领取补给",
+  "module.task_supplies.description": "### 提示\n* 默认会领取供应站体力和好友体力\n* 可勾选自动兑换在线兑换码\n* 也可通过文本框批量导入兑换码（每行一个）",
+  "module.task_supplies.action.on_import_codes_click.label": "导入",
+  "module.task_supplies.action.on_reset_codes_click.label": "重置"
 }

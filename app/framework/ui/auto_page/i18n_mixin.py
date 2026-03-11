@@ -56,6 +56,41 @@ class AutoPageI18nMixin:
                 return rendered
         return ""
 
+    @staticmethod
+    def _owner_slug_from_dir(owner_dir: str) -> str:
+        owner_match = re.search(r"(?:^|[./\\])modules[./\\]([a-z0-9_]+)(?:[./\\]|$)", str(owner_dir or "").lower())
+        return owner_match.group(1) if owner_match else ""
+
+    def _related_module_ids(self, owner_slug: str) -> list[str]:
+        related: list[str] = []
+        try:
+            from app.framework.core.module_system.registry import get_all_modules
+        except Exception:
+            return related
+
+        current_class = getattr(self.module_meta, "module_class", None)
+        current_name = self._snake_key(getattr(self.module_meta, "name", ""), max_len=80)
+
+        for meta in get_all_modules():
+            candidate_id = str(getattr(meta, "id", "") or "").strip()
+            if not candidate_id:
+                continue
+
+            same_module = False
+            if current_class is not None and getattr(meta, "module_class", None) is current_class:
+                same_module = True
+            else:
+                other_owner_slug = self._owner_slug_from_dir(str(getattr(meta, "i18n_owner_dir", "") or ""))
+                if owner_slug and other_owner_slug == owner_slug:
+                    same_module = True
+                elif current_name and self._snake_key(getattr(meta, "name", ""), max_len=80) == current_name:
+                    same_module = True
+
+            if same_module and candidate_id not in related:
+                related.append(candidate_id)
+
+        return related
+
     def _module_i18n_ids(self) -> list[str]:
         ids: list[str] = []
 
@@ -70,17 +105,20 @@ class AutoPageI18nMixin:
             add(module_id[5:])
 
         owner_dir = str(getattr(self.module_meta, "i18n_owner_dir", "") or "")
-        owner_match = re.search(r"(?:^|[./\\])modules[./\\]([a-z0-9_]+)(?:[./\\]|$)", owner_dir.lower())
-        if owner_match:
-            add(owner_match.group(1))
+        owner_slug = self._owner_slug_from_dir(owner_dir)
+        add(owner_slug)
 
         module_name = getattr(self.module_meta, "name", "")
         add(self._snake_key(module_name, max_len=80))
 
+        for related_id in self._related_module_ids(owner_slug):
+            add(related_id)
+            if related_id.startswith("task_"):
+                add(related_id[5:])
+
         if not ids:
             add("module")
         return ids
-
     @staticmethod
     def _expand_match_tokens(tokens: set[str]) -> set[str]:
         expanded = set(tokens)
@@ -167,6 +205,34 @@ class AutoPageI18nMixin:
         token_key = tuple(sorted(tokens))
         return self._best_ui_label_key(module_ids, token_key)
 
+
+    @staticmethod
+    @lru_cache(maxsize=256)
+    def _tips_key_candidates(module_ids_key: tuple[str, ...]) -> tuple[str, ...]:
+        source_catalog = get_catalog("en")
+        collected: list[str] = []
+        seen: set[str] = set()
+
+        for module_id in module_ids_key:
+            direct_candidates = (
+                f"module.{module_id}.description",
+                f"module.{module_id}.ui.description",
+                f"module.{module_id}.ui.tips",
+            )
+            for key in direct_candidates:
+                if key in source_catalog and key not in seen:
+                    collected.append(key)
+                    seen.add(key)
+
+            tips_prefix = f"module.{module_id}.ui.tips"
+            for key in source_catalog.keys():
+                if not isinstance(key, str) or not key.startswith(tips_prefix):
+                    continue
+                if key not in seen:
+                    collected.append(key)
+                    seen.add(key)
+
+        return tuple(collected)
     def _field_label_candidates(self, field: SchemaField) -> list[str]:
         stripped = self._strip_widget_prefix(field.param_name)
         ui_name = self._snake_key(stripped)
@@ -259,8 +325,9 @@ class AutoPageI18nMixin:
 
     def _tips_text(self, description: str) -> str:
         description_key = self._snake_key(description, max_len=80)
+        module_ids = self._module_i18n_ids()
         candidates: list[str] = []
-        for module_id in self._module_i18n_ids():
+        for module_id in module_ids:
             candidates.extend([
                 f"module.{module_id}.description",
                 f"module.{module_id}.ui.description",
@@ -268,6 +335,9 @@ class AutoPageI18nMixin:
                 f"module.{module_id}.ui.{description_key}",
                 f"module.{module_id}.ui.tips_{description_key}",
             ])
+
+        # Legacy tips keys often use long slugged names (module.xxx.ui.tips_*).
+        candidates.extend(self._tips_key_candidates(tuple(module_ids)))
         candidates.append(description)
 
         translated = self._first_translated(candidates)

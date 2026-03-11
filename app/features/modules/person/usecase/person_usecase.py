@@ -6,11 +6,20 @@ from app.framework.i18n.runtime import _
 from app.framework.infra.automation.timer import Timer
 from app.features.utils.home_navigation import back_to_home
 
-from app.framework.core.module_system import on_demand_module, periodic_module
+from app.framework.core.module_system import Field, on_demand_module, periodic_module
 
+
+_PERSON_FIELDS = {
+    "CheckBox_is_use_chip": Field(id="auto_use_2_chips_when_not_enough"),
+    "LineEdit_c1": Field(id="c1"),
+    "LineEdit_c2": Field(id="c2"),
+    "LineEdit_c3": Field(id="c3"),
+    "LineEdit_c4": Field(id="c4"),
+}
 
 @periodic_module(
     "Character Shards",
+    fields=_PERSON_FIELDS,
     description="### Tips\n* Automatically farms character shards from Personal Stories.\n* Input the names of characters you want to farm.\n* Enable 'Use Memory Chip' if you want to use chips when out of attempts.",
 )
 class PersonModule:

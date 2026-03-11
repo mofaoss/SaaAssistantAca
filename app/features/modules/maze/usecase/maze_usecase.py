@@ -3,11 +3,19 @@ from app.framework.i18n.runtime import _
 
 from app.framework.infra.automation.timer import Timer
 
-from app.framework.core.module_system import on_demand_module, periodic_module
+from app.framework.core.module_system import Field, on_demand_module, periodic_module
 
+
+_MAZE_FIELDS = {
+    "ComboBox_mode_maze": Field(
+        id="run_mode",
+        options=((0, "Single Run"), (1, "Repeat Run")),
+    ),
+}
 
 @on_demand_module(
     "Maze",
+    fields=_MAZE_FIELDS,
     description="### Tips\n* Automatically performs Paradoxical Labyrinth (Maze) battles.\n* Choose between single run or multi-run modes.\n* Start from the maze entrance or difficulty selection screen.",
 )
 class MazeModule:

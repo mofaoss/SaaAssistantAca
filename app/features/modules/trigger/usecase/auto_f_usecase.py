@@ -13,12 +13,10 @@ from app.framework.infra.vision.vision import count_color_blocks
     fields={
         "CheckBox_trigger_auto_f": Field(
             id="auto_f",
-            label="Auto F",
             help="Automatically press F when collect prompt appears",
         ),
         "CheckBox_trigger_auto_e": Field(
             id="nita_auto_e",
-            label="Nita Auto E",
             help="Automatically press E during QTE stage",
         ),
     },
@@ -86,7 +84,7 @@ class TriggerModule:
 
     def run(self):
         if not self.enable_auto_f and not self.enable_auto_e:
-            self.logger.warning(
+            self.logger.debug(
                 _(
                     "Trigger skipped: all options are disabled",
                     msgid="trigger_skipped_all_options_disabled",
@@ -94,7 +92,7 @@ class TriggerModule:
             )
             return
 
-        self.logger.info(
+        self.logger.debug(
             _(
                 "Trigger started in background mode",
                 msgid="trigger_started_in_background_mode",

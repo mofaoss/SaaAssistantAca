@@ -3,11 +3,19 @@ from app.framework.i18n.runtime import _
 
 from app.framework.infra.automation.timer import Timer
 
-from app.framework.core.module_system import on_demand_module, periodic_module
+from app.framework.core.module_system import Field, on_demand_module
 
+
+_ALIEN_FIELDS = {
+    "ComboBox_mode": Field(
+        id="run_mode",
+        options=((0, "Endless Mode"), (1, "Stage Mode")),
+    ),
+}
 
 @on_demand_module(
     "Alien Guardian",
+    fields=_ALIEN_FIELDS,
     description="### Tips\n"
                 "* Click Start after battle begins\n"
                 "* Recommended support pals: Steel Shot and Blazing Pitcher\n"
@@ -135,5 +143,3 @@ class AlienGuardianModule:
             if timeout.reached():
                 self.logger.error(_("异星守护战斗超时"))
                 break
-
-

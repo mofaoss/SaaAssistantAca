@@ -4,15 +4,22 @@ from app.framework.i18n.runtime import _
 from app.framework.infra.automation.timer import Timer
 from app.features.utils.home_navigation import back_to_home
 
-from app.framework.core.module_system import on_demand_module, periodic_module
+from app.framework.core.module_system import Field, on_demand_module, periodic_module
 
+
+_OPERATION_FIELDS = {
+    "SpinBox_action_times": Field(id="run_times", layout="full"),
+    "ComboBox_run": Field(id="run_mode", layout="full", options=((0, "Toggle Sprint"), (1, "Hold Sprint"))),
+}
 
 @on_demand_module(
     "Operation",
+    fields=_OPERATION_FIELDS,
     description="### Tips\n* Automatically performs Operation (Normal Training) missions.\n* Configure the number of times to run and the sprint mode.\n* Start from the home screen or the operation selection screen.",
 )
 @periodic_module(
     "Operation",
+    fields=_OPERATION_FIELDS,
     description="### Tips\n* Automatically performs Operation (Normal Training) missions.\n* Configure the number of times to run and the sprint mode.\n* Start from the home screen or the operation selection screen.",
 )
 class OperationModule:

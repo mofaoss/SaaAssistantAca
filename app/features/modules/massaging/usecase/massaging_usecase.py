@@ -3,12 +3,20 @@ from app.framework.i18n.runtime import _
 
 from app.framework.infra.automation.timer import Timer
 
-from app.framework.core.module_system import on_demand_module
+from app.framework.core.module_system import Field, on_demand_module
 
-@on_demand_module(
-    "Massaging",
-    description="### Tips\n* Automatically performs character massaging.\n* Choose the character you want to massage.\n* Start after entering the massaging interface or standing in front of the management book.",
-)
+_MASSAGING_FIELDS = {
+    "ComboBox_wife": Field(
+        id="wife",
+        options=((0, "Character 1"), (1, "Character 2"), (2, "Character 3"), (3, "Character 4"), (4, "Character 5")),
+    ),
+}
+# 暂时还未成功实现，不接入主界面，后续有机会再完善
+# @on_demand_module(
+#     "Massaging",
+#     fields=_MASSAGING_FIELDS,
+#     description="### Tips\n* Automatically performs character massaging.\n* Choose the character you want to massage.\n* Start after entering the massaging interface or standing in front of the management book.",
+# )
 class MassagingModule:
     def __init__(self, auto, logger, isLog: bool = False, ComboBox_wife: int = 0):
         super().__init__()
@@ -94,4 +102,3 @@ class MassagingModule:
             if timeout.reached():
                 self.logger.error(_("按摩超时"))
                 break
-

@@ -13,5 +13,8 @@
   "module.enter_game.ui.tutorial": "查看教程",
   "module.task_login.title": "自动登录",
   "module.enter_game.ui.game_directory": "游戏路径",
-  "module.enter_game.description": "### 提示\n* 先在设置中选择你的区服\n* 勾选“自动打开游戏”后，调度会在需要时自动拉起游戏\n* 在下方填写启动器设置里显示的游戏安装路径"
+  "module.enter_game.description": "### 提示\n* 先在设置中选择你的区服\n* 勾选“自动打开游戏”后，调度会在需要时自动拉起游戏\n* 在下方填写启动器设置里显示的游戏安装路径",
+  "module.task_login.description": "### 提示\n* 请先在设置中选择区服\n* 勾选“自动打开游戏”后，任务触发时会自动拉起游戏\n* 请填写启动器内显示的游戏安装路径",
+  "module.task_login.action.select_game_directory.label": "选择",
+  "module.task_login.action.show_path_tutorial.label": "查看教程"
 }

@@ -4,10 +4,12 @@ from qfluentwidgets import CheckBox, ScrollArea, StrongBodyLabel
 
 from app.framework.infra.config.app_config import is_non_chinese_ui_language
 from app.framework.i18n import _
+from app.framework.core.module_system import module_page
 from app.framework.ui.widgets.tree import TreeFrame_person, TreeFrame_weapon
 from app.framework.ui.views.periodic_base import ModulePageBase
 
 
+@module_page("task_shop")
 class ShopPage(ModulePageBase):
     def __init__(self, parent=None):
         super().__init__("page_shop", parent=parent, host_context="periodic", use_default_layout=True)

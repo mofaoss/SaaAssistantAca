@@ -19,6 +19,7 @@ LATIN_RE = re.compile(r"[A-Za-z]")
 NON_ALNUM_RE = re.compile(r"[^a-z0-9]+")
 HASHLIKE_SUFFIX_RE = re.compile(r"^(?:[0-9a-f]{8,}|h[0-9a-f]{6,}|txt_[0-9a-f]{8,}|tmpl_[0-9a-f]{8,})$")
 SYNTHETIC_CN_SUFFIX_RE = re.compile(r"^cn_text_\d+(?:_\d+)?$")
+LEGACY_TIPS_KEY_RE = re.compile(r"^module\.([a-z0-9_]+)\.ui\.tips_[a-z0-9_]+$")
 
 
 def _load_json(path: Path) -> dict:
@@ -211,6 +212,88 @@ def _is_nonsemantic_static_key(key: str) -> bool:
     suffix = key.rsplit(".", 1)[-1]
     return bool(SYNTHETIC_CN_SUFFIX_RE.fullmatch(suffix) or HASHLIKE_SUFFIX_RE.fullmatch(suffix))
 
+def _normalize_markdown_text(value: str) -> str:
+    text = str(value or "").replace("\r\n", "\n").replace("\r", "\n").strip()
+    if not text:
+        return ""
+
+    lines: list[str] = []
+    for raw in text.split("\n"):
+        line = raw.strip()
+        if not line:
+            continue
+        lower = line.lower()
+        if lower.startswith("### tips") or line.startswith("### ??"):
+            continue
+        if line.startswith("- "):
+            line = f"* {line[2:].strip()}"
+        lines.append(line)
+    return "\n".join(lines).strip()
+
+
+def _prune_legacy_tips_aliases(
+    maps: dict[str, dict[str, str]],
+    source_map: dict[str, str],
+    template_meta: dict[str, dict],
+    stats: dict[str, int],
+) -> None:
+    candidate_keys = set(source_map.keys())
+    for lang in LANGS:
+        candidate_keys.update(maps.get(lang, {}).keys())
+
+    for key in sorted(candidate_keys):
+        matched = LEGACY_TIPS_KEY_RE.match(key)
+        if not matched:
+            continue
+
+        module_id = matched.group(1)
+        desc_key = f"module.{module_id}.description"
+        desc_present = desc_key in source_map or any(desc_key in maps.get(lang, {}) for lang in LANGS)
+        if not desc_present:
+            continue
+
+        for lang in LANGS:
+            tip_val = maps.get(lang, {}).get(key)
+            if tip_val is None:
+                continue
+            if desc_key not in maps.get(lang, {}):
+                maps[lang][desc_key] = tip_val
+                stats["legacy_tips_alias_migrated"] += 1
+
+        if desc_key not in source_map and key in source_map:
+            source_map[desc_key] = source_map[key]
+        if desc_key not in template_meta and key in template_meta:
+            template_meta[desc_key] = template_meta[key]
+
+        tip_norm = {
+            _normalize_markdown_text(maps.get(lang, {}).get(key, ""))
+            for lang in LANGS
+            if maps.get(lang, {}).get(key)
+        }
+        desc_norm = {
+            _normalize_markdown_text(maps.get(lang, {}).get(desc_key, ""))
+            for lang in LANGS
+            if maps.get(lang, {}).get(desc_key)
+        }
+
+        if not tip_norm:
+            continue
+
+        removable = bool(tip_norm & desc_norm)
+        if not removable:
+            removable = all(
+                (not maps.get(lang, {}).get(key)) or (maps.get(lang, {}).get(desc_key) is not None)
+                for lang in LANGS
+            )
+        if not removable:
+            continue
+
+        for lang in LANGS:
+            maps.get(lang, {}).pop(key, None)
+        source_map.pop(key, None)
+        template_meta.pop(key, None)
+        stats["legacy_tips_alias_pruned"] += 1
+
 
 def _normalize_owner_keys(owner: str, maps: dict[str, dict[str, str]], source_map: dict[str, str], template_meta: dict[str, dict], stats: dict[str, int]) -> tuple[dict[str, dict[str, str]], dict[str, str], dict[str, dict]]:
     template_meta = _normalize_template_meta(template_meta)
@@ -398,6 +481,9 @@ def _normalize_owner_keys(owner: str, maps: dict[str, dict[str, str]], source_ma
             template_meta.pop(drop_key, None)
             stats["static_duplicate_merged"] += 1
 
+    # 6) prune legacy long-form tips aliases when canonical module.<id>.description exists.
+    _prune_legacy_tips_aliases(maps, source_map, template_meta, stats)
+
     return maps, source_map, template_meta
 
 
@@ -497,6 +583,8 @@ def main() -> int:
     print(f"dynamic_template_spec_loss_duplicate_count={stats['dynamic_template_spec_loss_duplicate_count']}")
     print(f"hashlike_merged={stats['hashlike_merged']}")
     print(f"static_duplicate_merged={stats['static_duplicate_merged']}")
+    print(f"legacy_tips_alias_migrated={stats['legacy_tips_alias_migrated']}")
+    print(f"legacy_tips_alias_pruned={stats['legacy_tips_alias_pruned']}")
     return 0
 
 

@@ -1,5 +1,10 @@
 {
   "module.dummy.title": "Massaging",
   "module.massaging.title": "Massaging",
-  "module.massaging.ui.wife": "Character"
+  "module.massaging.ui.wife": "Character",
+  "module.massaging.ui.character_1": "Character 1",
+  "module.massaging.ui.character_2": "Character 2",
+  "module.massaging.ui.character_3": "Character 3",
+  "module.massaging.ui.character_4": "Character 4",
+  "module.massaging.ui.character_5": "Character 5"
 }

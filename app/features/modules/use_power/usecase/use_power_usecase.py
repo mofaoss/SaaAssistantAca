@@ -1,4 +1,4 @@
-﻿import re
+import re
 import time
 from pathlib import Path
 from app.framework.i18n.runtime import _
@@ -10,11 +10,32 @@ from app.features.utils.randoms import random_rectangle_point
 from app.framework.infra.automation.timer import Timer
 from app.features.utils.home_navigation import back_to_home
 
-from app.framework.core.module_system import on_demand_module, periodic_module
+from app.framework.core.module_system import Field, on_demand_module, periodic_module
 
+
+_USE_POWER_FIELDS = {
+    "CheckBox_is_use_power": Field(id="auto_use_expiring"),
+    "ComboBox_power_day": Field(
+        id="day_potion",
+        options=(
+            (-1, "No Potion"),
+            (0, "Day 1"),
+            (1, "Day 2"),
+            (2, "Day 3"),
+            (3, "Day 4"),
+            (4, "Day 5"),
+            (5, "Day 6"),
+        ),
+    ),
+    "ComboBox_power_usage": Field(
+        id="stamina_usage_mode",
+        options=((0, "Event Stages"), (1, "Operation Logistics")),
+    ),
+}
 
 @periodic_module(
     "Use Stamina",
+    fields=_USE_POWER_FIELDS,
     description="### Tips\n* Automatically consumes Presence (Stamina) by running missions.\n* Can automatically use Stamina medicines (Memory Chips).\n* Supports Event stages or Tactical Drill (Routine Logistics) stages.",
 )
 class UsePowerModule:
@@ -637,6 +658,7 @@ class UsePowerModule:
             return True, False
 
         return False, False
+
 
 
 

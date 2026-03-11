@@ -16,6 +16,7 @@ from qfluentwidgets import Flyout, FlyoutView, InfoBar, InfoBarPosition
 from app.framework.core.interfaces.game_environment import IGameEnvironment
 from app.framework.infra.automation.timer import Timer
 from app.framework.infra.system.windows import get_hwnd
+from app.framework.infra.config.app_config import config
 from app.framework.core.module_system import Field, on_demand_module, periodic_module
 
 from app.features.utils.home_navigation import back_to_home
@@ -31,8 +32,12 @@ _last_launch_ts = 0.0
     "Auto Login",
     description="### Tips\n* Select your server in Settings first\n* Enable \"Auto open game\" to let scheduler launch the game automatically\n* Fill in the game installation path shown in your launcher settings",
     fields={
-        "CheckBox_open_game_directly": Field(label="Auto open game"),
-        "LineEdit_game_directory": Field(label="Game directory"),
+        "CheckBox_open_game_directly": Field(),
+        "LineEdit_game_directory": Field(),
+    },
+    actions={
+        "Tutorial": "show_path_tutorial",
+        "Browse": "select_game_directory",
     },
 )
 class EnterGameModule:
@@ -54,6 +59,52 @@ class EnterGameModule:
     def run(self):
         self.handle_game()
         back_to_home(self.auto, self.logger)
+
+    @staticmethod
+    def build_path_tutorial_payload(is_non_chinese_ui: bool) -> dict[str, str]:
+        title = "How to find the game path" if is_non_chinese_ui else "\u5982\u4f55\u67e5\u627e\u5bf9\u5e94\u6e38\u620f\u8def\u5f84"
+        content = (
+            "No matter which server/channel you play, first select your server in Settings.\n"
+            "For global server, choose a path like \"E:\\SteamLibrary\\steamapps\\common\\SNOWBREAK\".\n"
+            "For CN/Bilibili server, open the Snowbreak launcher and find launcher settings.\n"
+            "Then choose the game installation path shown there."
+            if is_non_chinese_ui
+            else
+            "\u4e0d\u7ba1\u4f60\u662f\u54ea\u4e2a\u6e20\u9053\u670d\u73a9\u5bb6\uff0c\u7b2c\u4e00\u6b65\u90fd\u5e94\u8be5\u5148\u53bb\u8bbe\u7f6e\u91cc\u9009\u670d\u3002\n"
+            "\u56fd\u9645\u670d\u53ef\u9009\u62e9\u7c7b\u4f3c \"E:\\SteamLibrary\\steamapps\\common\\SNOWBREAK\" \u7684\u76ee\u5f55\u3002\n"
+            "\u5b98\u670d\u548c B \u670d\u8bf7\u5148\u6253\u5f00\u5c18\u767d\u542f\u52a8\u5668\uff0c\u5728\u542f\u52a8\u5668\u8bbe\u7f6e\u4e2d\u67e5\u770b\u6e38\u620f\u5b89\u88c5\u76ee\u5f55\u3002\n"
+            "\u7136\u540e\u5728\u4e0b\u65b9\u8def\u5f84\u4e2d\u9009\u62e9\u8be5\u76ee\u5f55\u5373\u53ef\u3002"
+        )
+
+        module_root = Path(__file__).resolve().parents[1]
+        image_candidates = [
+            module_root / "assets" / "images" / "path_tutorial.png",
+            module_root.parents[1] / "assets" / "enter_game" / "path_tutorial.png",
+        ]
+        image_path = next((str(p) for p in image_candidates if p.exists()), str(image_candidates[0]))
+        return {
+            "title": title,
+            "content": content,
+            "image": image_path,
+        }
+    def show_path_tutorial(self, *, host=None, page=None, button=None, **_kwargs):
+        service = EnterGameService(is_non_chinese_ui=getattr(host, "_is_non_chinese_ui", False), app_config=config)
+        anchor = button or page or host
+        if anchor is None or host is None:
+            return
+        service.show_path_tutorial(host=host, anchor_widget=anchor, tutorial_page=self)
+
+    def select_game_directory(self, *, host=None, page=None, **_kwargs):
+        if page is None or host is None:
+            return
+        line_edit = getattr(page, "LineEdit_game_directory", None)
+        if line_edit is None:
+            return
+        folder = EnterGameService.select_game_directory(parent=host, current_directory=line_edit.text())
+        if not folder or str(folder) == str(line_edit.text()):
+            return
+        line_edit.setText(folder)
+        line_edit.editingFinished.emit()
 
     def handle_starter_new(self):
         """处理官方新启动器窗口。"""
@@ -357,9 +408,7 @@ class EnterGameService(IGameEnvironment):
         if tutorial_page is not None and hasattr(tutorial_page, "build_path_tutorial_payload"):
             payload = tutorial_page.build_path_tutorial_payload(getattr(host, "_is_non_chinese_ui", False))
         if not payload:
-            from app.features.modules.enter_game.ui.enter_game_periodic_page import EnterGamePage
-
-            payload = EnterGamePage.build_path_tutorial_payload(getattr(host, "_is_non_chinese_ui", False))
+            payload = EnterGameModule.build_path_tutorial_payload(getattr(host, "_is_non_chinese_ui", False))
 
         view = FlyoutView(
             title=payload.get("title", ""),
@@ -374,7 +423,7 @@ class EnterGameService(IGameEnvironment):
 
     @staticmethod
     def select_game_directory(parent, current_directory: str) -> str | None:
-        folder = QFileDialog.getExistingDirectory(parent, "选择游戏文件夹", "./")
+        folder = QFileDialog.getExistingDirectory(parent, "\u9009\u62e9\u6e38\u620f\u6587\u4ef6\u5939", "./")
         if not folder or str(folder) == str(current_directory):
             return None
         return folder

@@ -1,5 +1,14 @@
 {
+  "module.dummy.field.auto_f.help": "Automatically press F when collect prompt appears",
+  "module.dummy.field.auto_f.label": "Checkbox Trigger Auto F",
+  "module.dummy.field.nita_auto_e.help": "Automatically press E during QTE stage",
+  "module.dummy.field.nita_auto_e.label": "Checkbox Trigger Auto E",
   "module.dummy.title": "Trigger",
+  "module.trigger.description": "### 提示\n* 自动辅助以后台模式运行，不会阻塞其他按需任务\n* 开启“自动 F”可自动处理交互拾取提示\n* 开启“妮塔自动 E”可在 QTE 时机自动按 E",
+  "module.trigger.log.error": "Error",
+  "module.trigger.log.game_task_is_not_running": "Game/Task is not running",
+  "module.trigger.log.trigger_skipped_all_options_disabled": "Trigger skipped: all options are disabled",
+  "module.trigger.log.trigger_started_in_background_mode": "Trigger started in background mode",
   "module.trigger.title": "Trigger",
   "module.trigger.ui.auto_collect": "Auto Collect",
   "module.trigger.ui.auto_f": "Auto F",
@@ -11,14 +20,5 @@
   "module.trigger.ui.log": "Log",
   "module.trigger.ui.nita_auto_e": "Nita Auto E",
   "module.trigger.ui.nita_e_auto_qte": "Nita E Auto QTE",
-  "module.trigger.ui.tips_launch_the_game_before_enabling_this_feature_these_are_toggle_switches_once": "### Tips\n* Launch the game before enabling this feature\n* These are toggle switches. Once enabled, detection keeps running and triggers automatically when conditions match\n* It does not block manual gameplay, acting as semi-automation assistance",
-  "module.trigger.ui.trigger_list": "Trigger List",
-  "module.trigger.log.error": "Error",
-  "module.trigger.log.game_task_is_not_running": "Game/Task is not running",
-  "module.dummy.field.auto_f.label": "Auto F",
-  "module.dummy.field.auto_f.help": "Automatically press F when collect prompt appears",
-  "module.dummy.field.nita_auto_e.label": "Nita Auto E",
-  "module.dummy.field.nita_auto_e.help": "Automatically press E during QTE stage",
-  "module.trigger.log.trigger_started_in_background_mode": "Trigger started in background mode",
-  "module.trigger.log.trigger_skipped_all_options_disabled": "Trigger skipped: all options are disabled"
+  "module.trigger.ui.trigger_list": "Trigger List"
 }

@@ -77,19 +77,23 @@ def _resolve_field_meta(
     type_hint: Any,
     default_val: Any,
     field_decl: str | Field | None,
-) -> tuple[str, str, str | None, str, str, str | None, str, str | None, str | None]:
+) -> tuple[str, str, str | None, str, str, str | None, str, str | None, str | None, tuple[Any, ...] | None]:
 
     # Default Inference
     inf_group, inf_layout = _infer_layout_and_group(param_name, type_hint, default_val)
 
     if isinstance(field_decl, Field):
         field_id = field_decl.id or param_name
-        label_default = field_decl.label or _clean_label(param_name)
+        # Developer ergonomics: when `label` is omitted, reuse `id` as the
+        # humanized label seed before falling back to param name.
+        label_seed = field_decl.label or field_decl.id or param_name
+        label_default = _clean_label(label_seed)
         help_default = field_decl.help
         group = field_decl.group or inf_group
         layout = field_decl.layout
         icon = field_decl.icon
         description_md = field_decl.description_md
+        options = tuple(field_decl.options) if field_decl.options is not None else None
     else:
         field_id = param_name
         label_default = field_decl if isinstance(field_decl, str) else _clean_label(param_name)
@@ -98,10 +102,11 @@ def _resolve_field_meta(
         layout = inf_layout
         icon = None
         description_md = None
+        options = None
 
     label_key = f"module.{module_id}.field.{field_id}.label"
     help_key = f"module.{module_id}.field.{field_id}.help"
-    return field_id, label_default, help_default, label_key, help_key, group, layout, icon, description_md
+    return field_id, label_default, help_default, label_key, help_key, group, layout, icon, description_md, options
 
 
 def build_config_schema(
@@ -112,10 +117,15 @@ def build_config_schema(
 ) -> list[SchemaField]:
     sig = inspect.signature(func)
     schema: list[SchemaField] = []
+    explicit_fields = fields is not None
     field_defs: dict[str, str | Field] = fields or {}
 
     for name, param in sig.parameters.items():
         if name in RUNTIME_PARAMS or name.startswith("_") or name.lower() in {"auto", "logger", "islog", "app_config", "automation", "config_provider", "cancel_token", "task_context"}:
+            continue
+        # If module declares `fields`, treat it as explicit UI schema.
+        # Non-declared params remain runtime/internal constructor args.
+        if explicit_fields and name not in field_defs:
             continue
 
         type_hint = param.annotation
@@ -129,7 +139,7 @@ def build_config_schema(
         if type_hint is inspect._empty and default_val is not None:
             type_hint = type(default_val)
 
-        field_id, label_default, help_default, label_key, help_key, group, layout, icon, description_md = _resolve_field_meta(
+        field_id, label_default, help_default, label_key, help_key, group, layout, icon, description_md, options = _resolve_field_meta(
             module_id=module_id,
             param_name=name,
             type_hint=type_hint,
@@ -152,6 +162,7 @@ def build_config_schema(
                 layout=layout,
                 icon=icon,
                 description_md=description_md,
+                options=options,
             )
         )
     return schema

@@ -19,5 +19,8 @@
   "module.collect_supplies.ui.reset_successful": "en",
   "module.collect_supplies.ui.successfully_reset_import_and_display_content": "en",
   "module.dummy.title": "en",
+  "module.task_supplies.action.on_import_codes_click.label": "zh_CN",
+  "module.task_supplies.action.on_reset_codes_click.label": "zh_CN",
+  "module.task_supplies.description": "zh_CN",
   "module.task_supplies.title": "en"
 }

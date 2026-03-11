@@ -12,7 +12,11 @@ class ModuleHost(str, Enum):
 
 @dataclass(frozen=True, slots=True)
 class Field:
-    """Decorator-time field metadata for stable i18n field IDs and layout hints."""
+    """Decorator-time field metadata for stable i18n field IDs and layout hints.
+
+    `label` is optional: when omitted, UI label falls back to a humanized `id`
+    (or parameter name when `id` is also omitted).
+    """
 
     id: str | None = None
     label: str | None = None
@@ -21,6 +25,7 @@ class Field:
     layout: Literal["full", "half", "row"] = "full"
     icon: str | None = None
     description_md: str | None = None
+    options: tuple[Any, ...] | None = None
 
 
 @dataclass(slots=True)
@@ -38,6 +43,7 @@ class SchemaField:
     layout: Literal["full", "half", "row"] = "full"
     icon: str | None = None
     description_md: str | None = None
+    options: tuple[Any, ...] | None = None
 
 
 @dataclass(slots=True)

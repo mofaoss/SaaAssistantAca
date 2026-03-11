@@ -37,13 +37,15 @@ def _changed_python_files() -> list[Path]:
             cwd=ROOT,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             check=False,
         )
     except Exception:
         return []
 
     files: list[Path] = []
-    for raw in proc.stdout.splitlines():
+    for raw in (proc.stdout or "").splitlines():
         if not raw:
             continue
         line = raw[3:]
@@ -64,6 +66,8 @@ def _added_lines_map() -> dict[Path, set[int]]:
             cwd=ROOT,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             check=False,
         )
     except Exception:
@@ -72,7 +76,7 @@ def _added_lines_map() -> dict[Path, set[int]]:
     result: dict[Path, set[int]] = {}
     current_file: Path | None = None
 
-    for line in proc.stdout.splitlines():
+    for line in (proc.stdout or "").splitlines():
         if line.startswith("+++ b/"):
             rel = line[6:].strip()
             if rel.endswith(".py"):
@@ -115,13 +119,15 @@ def _changed_i18n_json_files() -> list[Path]:
             cwd=ROOT,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             check=False,
         )
     except Exception:
         return []
 
     files: list[Path] = []
-    for raw in proc.stdout.splitlines():
+    for raw in (proc.stdout or "").splitlines():
         if not raw:
             continue
         line = raw[3:]

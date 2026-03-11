@@ -147,6 +147,23 @@ def _validate_declaration_fields(fields: dict[str, str | Field] | None) -> None:
                 _validate_english_declaration(meta.label, field=f"fields[{param}] label")
             if meta.help:
                 _validate_english_declaration(meta.help, field=f"fields[{param}] help")
+            if meta.options:
+                for idx, option in enumerate(meta.options):
+                    label: str | None = None
+                    if isinstance(option, dict):
+                        raw_label = option.get("label")
+                        if isinstance(raw_label, str):
+                            label = raw_label
+                    elif isinstance(option, (tuple, list)) and len(option) == 2:
+                        left, right = option
+                        if isinstance(right, str) and not isinstance(left, str):
+                            label = right
+                        elif isinstance(left, str) and not isinstance(right, str):
+                            label = left
+                        elif isinstance(right, str):
+                            label = right
+                    if label:
+                        _validate_english_declaration(label, field=f"fields[{param}] options[{idx}] label")
 
 
 def _validate_declaration_actions(actions: dict[str, str] | None) -> None:

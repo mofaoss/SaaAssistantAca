@@ -47,6 +47,7 @@ class AutoPageBase(AutoPageActionsMixin, AutoPageI18nMixin, QWidget):
         super().__init__(parent)
         self.module_meta = module_meta
         self.host_context = host_context
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.field_widgets: dict[str, QWidget] = {}
         self.action_buttons: dict[str, PushButton] = {}
         self._action_instances: dict[type, object] = {}
@@ -61,21 +62,14 @@ class AutoPageBase(AutoPageActionsMixin, AutoPageI18nMixin, QWidget):
         module_id = getattr(module_meta, 'id', 'unknown')
         self.setObjectName(f"page_{module_id}")
 
-        self.main_layout = QHBoxLayout(self)
+        self.main_layout = QVBoxLayout(self)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.main_layout.setSpacing(16)
+        self.main_layout.setSpacing(12)
 
-        # Left Panel (Stretch 2)
-        self.left_panel = QWidget()
-        self.left_panel_layout = QVBoxLayout(self.left_panel)
-        self.left_panel_layout.setContentsMargins(0, 0, 0, 0)
-        self.left_panel_layout.setSpacing(12)
-
-        # Scroll Area
-        self.scroll_area = ScrollArea(self.left_panel)
+        self.scroll_area = ScrollArea(self)
         self.settings_container = QWidget()
         self.settings_layout = QVBoxLayout(self.settings_container)
-        self.settings_layout.setContentsMargins(0, 0, 12, 0)
+        self.settings_layout.setContentsMargins(0, 0, 0, 0)
         self.settings_layout.setSpacing(8)
         self.settings_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
@@ -83,28 +77,23 @@ class AutoPageBase(AutoPageActionsMixin, AutoPageI18nMixin, QWidget):
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setStyleSheet("ScrollArea {background: transparent; border: none}")
         self.scroll_area.viewport().setStyleSheet("background: transparent")
-
-        self.left_panel_layout.addWidget(self.scroll_area, 1)
+        self.main_layout.addWidget(self.scroll_area, 1)
 
         # Optional custom module actions (e.g., calibration helpers)
-        self.actions_bar = QWidget(self.left_panel)
+        self.actions_bar = QWidget(self)
         self.actions_layout = QHBoxLayout(self.actions_bar)
         self.actions_layout.setContentsMargins(0, 0, 0, 0)
         self.actions_layout.setSpacing(8)
         self.actions_bar.setVisible(False)
-        self.left_panel_layout.addWidget(self.actions_bar)
+        self.main_layout.addWidget(self.actions_bar)
 
         if self._should_show_start_button():
             self.PushButton_start = self._create_start_button(module_id)
-            self.left_panel_layout.addWidget(self.PushButton_start)
-
-        self.main_layout.addWidget(self.left_panel, 2)
+            self.main_layout.addWidget(self.PushButton_start)
 
         if self._should_show_log_panel():
             self.SimpleCardWidget_log = self._create_log_panel(module_id)
-            self.main_layout.addWidget(self.SimpleCardWidget_log, 1)
-        else:
-            self.main_layout.setStretch(0, 1)
+            self.main_layout.addWidget(self.SimpleCardWidget_log)
 
         self._build_from_schema(getattr(module_meta, "config_schema", []))
         self._build_actions()
@@ -115,10 +104,19 @@ class AutoPageBase(AutoPageActionsMixin, AutoPageI18nMixin, QWidget):
         return True
 
     def _should_show_log_panel(self) -> bool:
-        return True
+        return False
 
     def _should_show_actions(self) -> bool:
         return True
+
+    def _tips_position(self) -> str:
+        return "top"
+
+    def _allow_half_layout(self) -> bool:
+        return True
+
+    def _form_field_growth_policy(self) -> QFormLayout.FieldGrowthPolicy:
+        return QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow
 
     def _non_ui_field_names(self) -> set[str]:
         return set()
@@ -129,8 +127,45 @@ class AutoPageBase(AutoPageActionsMixin, AutoPageI18nMixin, QWidget):
             return False
         return name not in self._non_ui_field_names()
 
+    def _deduplicate_render_fields(self, schema: list[SchemaField]) -> list[SchemaField]:
+        """Keep one canonical field when multiple params map to the same UI semantic key."""
+        by_semantic: dict[str, list[SchemaField]] = {}
+        for field in schema:
+            if not self._should_render_field(field):
+                continue
+            semantic = self._strip_widget_prefix(field.param_name)
+            by_semantic.setdefault(semantic, []).append(field)
+
+        prefix_rank = {
+            "CheckBox_": 0,
+            "ComboBox_": 1,
+            "SpinBox_": 2,
+            "DoubleSpinBox_": 3,
+            "Slider_": 4,
+            "LineEdit_": 5,
+            "TextEdit_": 6,
+        }
+
+        def score(field: SchemaField) -> tuple[int, int]:
+            name = str(field.param_name or "")
+            prefix_score = 99
+            for prefix, rank in prefix_rank.items():
+                if name.startswith(prefix):
+                    prefix_score = rank
+                    break
+            hint, default = self._field_hint_and_default(field)
+            container_penalty = 1 if (get_origin(hint) in (list, tuple, set, dict) or isinstance(default, (list, tuple, set, dict))) else 0
+            return prefix_score, container_penalty
+
+        kept_names: set[str] = set()
+        for fields in by_semantic.values():
+            selected = sorted(fields, key=score)[0]
+            kept_names.add(selected.param_name)
+
+        return [field for field in schema if field.param_name in kept_names]
+
     def _create_start_button(self, module_id: str) -> PrimaryPushButton:
-        button = PrimaryPushButton(self.left_panel)
+        button = PrimaryPushButton(self)
         button.setObjectName(f"PushButton_start_{module_id}")
         button.setFixedHeight(45)
         button.clicked.connect(self._handle_start_click)
@@ -193,6 +228,47 @@ class AutoPageBase(AutoPageActionsMixin, AutoPageI18nMixin, QWidget):
 
         stripped = self._strip_widget_prefix(field.param_name)
         return humanize_name(stripped) or str(field.label_default)
+
+    def _help_for(self, field: SchemaField) -> str:
+        help_default = str(getattr(field, "help_default", "") or "").strip()
+        candidates: list[str] = [str(getattr(field, "help_key", "") or "")]
+        for module_id in self._module_i18n_ids():
+            candidates.extend([
+                f"module.{module_id}.field.{field.param_name}.help",
+                f"module.{module_id}.field.{field.field_id}.help",
+                f"module.{module_id}.ui.{self._snake_key(help_default, max_len=80)}",
+            ])
+        candidates.extend([
+            f"module.dummy.field.{field.param_name}.help",
+            f"module.dummy.field.{field.field_id}.help",
+        ])
+        translated = self._first_translated([c for c in candidates if c])
+        if translated:
+            return translated
+
+        if help_default:
+            fallback = tr(help_default, fallback=help_default)
+            return fallback if fallback else help_default
+        return ""
+
+    def _field_header_widget(self, field: SchemaField, parent: QWidget) -> QWidget:
+        title = BodyLabel(self._label_for(field), parent)
+        help_text = self._help_for(field).strip()
+        if not help_text:
+            return title
+
+        host = QWidget(parent)
+        layout = QVBoxLayout(host)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(2)
+        layout.addWidget(title)
+
+        help_label = BodyLabel(help_text, host)
+        help_label.setWordWrap(True)
+        help_label.setStyleSheet("color: rgba(128, 128, 128, 0.9);")
+        layout.addWidget(help_label)
+        return host
+
     def _config_item(self, field: SchemaField):
         return getattr(config, field.param_name, None)
 
@@ -247,7 +323,14 @@ class AutoPageBase(AutoPageActionsMixin, AutoPageI18nMixin, QWidget):
                 return "DoubleSpinBox"
             return "SpinBox"
 
-        if self._config_options(field):
+        if hint is bool or isinstance(default_value, bool):
+            return "CheckBox"
+
+        options = self._config_options(field)
+        if self._looks_like_boolean_options(options):
+            return "CheckBox"
+
+        if options:
             return "ComboBox"
 
         origin = get_origin(hint)
@@ -256,9 +339,8 @@ class AutoPageBase(AutoPageActionsMixin, AutoPageI18nMixin, QWidget):
         if hint in (dict,) or origin in (dict,) or isinstance(default_value, dict):
             return "TextEdit"
         if hint in (list, tuple, set) or origin in (list, tuple, set) or isinstance(default_value, (list, tuple, set)):
-            default_options = self._iterable_default_options(default_value)
-            if default_options:
-                return "ComboBox"
+            # List-like values are free-form containers by default.
+            # Render as text editors unless explicit options are declared.
             return "LineEdit" if forced_line_edit else "TextEdit"
         if forced_line_edit:
             return "LineEdit"
@@ -278,6 +360,12 @@ class AutoPageBase(AutoPageActionsMixin, AutoPageI18nMixin, QWidget):
 
     @staticmethod
     def _config_options(field: SchemaField) -> list[Any]:
+        declared_options = getattr(field, "options", None)
+        if isinstance(declared_options, tuple):
+            return list(declared_options)
+        if isinstance(declared_options, list):
+            return declared_options
+
         cfg_item = getattr(config, field.param_name, None)
         candidates = []
         if cfg_item is not None:
@@ -304,6 +392,24 @@ class AutoPageBase(AutoPageActionsMixin, AutoPageI18nMixin, QWidget):
         if isinstance(hint, type) and issubclass(hint, Enum):
             return [item.value for item in hint]
         return []
+
+
+    @staticmethod
+    def _is_bool_like(value: Any) -> bool:
+        if isinstance(value, bool):
+            return True
+        if isinstance(value, int) and value in {0, 1}:
+            return True
+        lowered = str(value).strip().lower()
+        return lowered in {"0", "1", "true", "false", "yes", "no", "on", "off"}
+
+    def _looks_like_boolean_options(self, options: list[Any]) -> bool:
+        if not options:
+            return False
+        normalized = {str(item).strip().lower() for item in options}
+        if len(normalized) > 2:
+            return False
+        return all(self._is_bool_like(item) for item in options)
 
     @staticmethod
     def _normalize_option(raw_option: Any) -> tuple[Any, str | None]:
@@ -590,7 +696,12 @@ class AutoPageBase(AutoPageActionsMixin, AutoPageI18nMixin, QWidget):
         if kind == "TextEdit":
             return QPlainTextEdit(parent)
 
-        return LineEdit(parent)
+        line_edit = LineEdit(parent)
+        # Generic UX rule: filesystem-like fields should stay readable.
+        stripped = self._strip_widget_prefix(field.param_name).lower()
+        if any(token in stripped for token in ("path", "directory", "folder", "file")):
+            line_edit.setMinimumWidth(320)
+        return line_edit
 
     @staticmethod
     def _value_matches(left: Any, right: Any) -> bool:
@@ -831,14 +942,15 @@ class AutoPageBase(AutoPageActionsMixin, AutoPageI18nMixin, QWidget):
             swatch.setStyleSheet(f"background: {color_hex}; border: 1px solid rgba(20,20,20,0.35); border-radius: 6px;")
 
     def _build_from_schema(self, schema: list[SchemaField]):
-        module_id = getattr(self.module_meta, 'id', 'module')
         self._rendered_group_keys.clear()
         self._color_previews.clear()
         self.action_buttons.clear()
 
-        # 1. Tips
-        description = getattr(self.module_meta, 'description', "")
-        if description:
+        description = getattr(self.module_meta, "description", "")
+
+        def build_tips_card() -> QWidget | None:
+            if not description:
+                return None
             tips_card = SimpleCardWidget(self)
             tips_layout = QVBoxLayout(tips_card)
             tips_layout.setContentsMargins(12, 12, 12, 12)
@@ -847,17 +959,21 @@ class AutoPageBase(AutoPageActionsMixin, AutoPageI18nMixin, QWidget):
             tips_label.setWordWrap(True)
             tips_label.setText(self._tips_text(str(description)))
             tips_layout.addWidget(tips_label)
-            self.settings_layout.addWidget(tips_card)
+            return tips_card
 
-        # 2. Group Fields
+        filtered_schema = self._deduplicate_render_fields(schema)
+
         groups: dict[str | None, list[SchemaField]] = {}
-        for field in schema:
-            if not self._should_render_field(field):
-                continue
+        for field in filtered_schema:
             groups.setdefault(field.group, []).append(field)
 
         ordered_groups = sorted(groups.items(), key=lambda item: self._group_rank(item[0]))
         self._resolved_action_specs = self._resolve_action_groups(ordered_groups)
+
+        if self._tips_position() != "bottom":
+            tips_card = build_tips_card()
+            if tips_card is not None:
+                self.settings_layout.addWidget(tips_card)
 
         for group_name, fields in ordered_groups:
             display_name = self._group_label(group_name)
@@ -867,42 +983,61 @@ class AutoPageBase(AutoPageActionsMixin, AutoPageI18nMixin, QWidget):
             self.settings_layout.addWidget(header)
 
             group_card = SimpleCardWidget(self.settings_container)
-            group_card.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
+            group_card.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
 
             form_layout = QFormLayout(group_card)
             form_layout.setContentsMargins(16, 12, 16, 12)
             form_layout.setSpacing(12)
             form_layout.setHorizontalSpacing(16)
-            form_layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.FieldsStayAtSizeHint)
+            form_layout.setFieldGrowthPolicy(self._form_field_growth_policy())
             form_layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
 
-            pending_half_field = None
+            pending_half_fields: list[tuple[QWidget, QWidget]] = []
+
+            def flush_half_fields() -> None:
+                nonlocal pending_half_fields
+                if not pending_half_fields:
+                    return
+                if len(pending_half_fields) == 1:
+                    label_w, field_w = pending_half_fields[0]
+                    form_layout.addRow(label_w, field_w)
+                    pending_half_fields = []
+                    return
+
+                row_host = QWidget(group_card)
+                row_layout = QHBoxLayout(row_host)
+                row_layout.setContentsMargins(0, 0, 0, 0)
+                row_layout.setSpacing(12)
+
+                for label_w, field_w in pending_half_fields[:2]:
+                    col_host = QWidget(row_host)
+                    col_layout = QVBoxLayout(col_host)
+                    col_layout.setContentsMargins(0, 0, 0, 0)
+                    col_layout.setSpacing(6)
+                    col_layout.addWidget(label_w)
+                    col_layout.addWidget(field_w)
+                    row_layout.addWidget(col_host, 1)
+
+                form_layout.addRow(row_host)
+                pending_half_fields = []
+
+            half_allowed = self._allow_half_layout()
             for field in fields:
                 widget = self._widget_for_field(field, group_card)
                 widget.setObjectName(field.param_name)
                 self.field_widgets[field.param_name] = widget
-                label = BodyLabel(self._label_for(field), group_card)
+                label = self._field_header_widget(field, group_card)
 
-                if field.layout == "half":
-                    if pending_half_field is None:
-                        row_w = QWidget()
-                        h_layout = QHBoxLayout(row_w)
-                        h_layout.setContentsMargins(0, 0, 0, 0)
-                        h_layout.setSpacing(24)
-                        h_layout.addWidget(label)
-                        h_layout.addWidget(widget)
-                        h_layout.addStretch(1)
-                        form_layout.addRow(row_w)
-                        pending_half_field = h_layout
-                    else:
-                        pending_half_field.takeAt(pending_half_field.count() - 1)
-                        pending_half_field.addWidget(label)
-                        pending_half_field.addWidget(widget)
-                        pending_half_field.addStretch(1)
-                        pending_half_field = None
+                field_layout = field.layout if half_allowed else "full"
+                if field_layout == "half":
+                    pending_half_fields.append((label, widget))
+                    if len(pending_half_fields) == 2:
+                        flush_half_fields()
                 else:
-                    pending_half_field = None
+                    flush_half_fields()
                     form_layout.addRow(label, widget)
+
+            flush_half_fields()
 
             group_actions = self._group_actions_for(group_name)
             if group_actions:
@@ -937,6 +1072,11 @@ class AutoPageBase(AutoPageActionsMixin, AutoPageI18nMixin, QWidget):
 
             self.settings_layout.addWidget(group_card)
             self.settings_layout.addSpacing(4)
+
+        if self._tips_position() == "bottom":
+            tips_card = build_tips_card()
+            if tips_card is not None:
+                self.settings_layout.addWidget(tips_card)
 
         self.settings_layout.addStretch(1)
 

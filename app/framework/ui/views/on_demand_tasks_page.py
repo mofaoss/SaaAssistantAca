@@ -4,7 +4,7 @@ from functools import partial
 from PySide6.QtCore import QEasingCurve, QParallelAnimationGroup, QPropertyAnimation, QPoint
 from PySide6.QtWidgets import QFrame, QSizePolicy, QWidget, QVBoxLayout
 from rapidfuzz import process
-from qfluentwidgets import SpinBox, CheckBox, ComboBox, LineEdit, Slider
+from qfluentwidgets import SpinBox, CheckBox, ComboBox, LineEdit, Slider, SwitchButton
 
 from app.framework.infra.config.app_config import config
 from app.framework.infra.events.signal_bus import signalBus
@@ -320,14 +320,11 @@ class OnDemandTasksPage(QFrame, BaseInterface):
             self._background_task_threads.pop(task_id, None)
         return running
 
-    def _toggle_background_task(self, task_id: str):
+    def _start_background_task(self, task_id: str):
+        if self._is_background_task_running(task_id):
+            return
         meta = self._get_task_metadata().get(task_id)
         if not meta:
-            return
-
-        thread = self._background_task_threads.get(task_id)
-        if thread is not None and thread.isRunning():
-            thread.stop()
             return
 
         module_class = meta.get("module_class")
@@ -345,6 +342,74 @@ class OnDemandTasksPage(QFrame, BaseInterface):
         self._background_task_threads[task_id] = thread
         thread.start()
         self._refresh_task_ui()
+
+    def _stop_background_task(self, task_id: str):
+        thread = self._background_task_threads.get(task_id)
+        if thread is None:
+            return
+        if thread.isRunning():
+            thread.stop()
+            return
+        self._background_task_threads.pop(task_id, None)
+        self._refresh_task_ui()
+
+    def _task_id_for_widget(self, widget: QWidget | None) -> str | None:
+        if widget is None:
+            return None
+        for task_id, meta in self._get_task_metadata().items():
+            page = getattr(self, meta.get("page_attr", ""), None)
+            if page is None:
+                continue
+            if widget is page or page.isAncestorOf(widget):
+                return task_id
+        return None
+
+    def _background_should_run(self, task_id: str) -> bool:
+        meta = self._get_task_metadata().get(task_id, {})
+        module_class = meta.get("module_class")
+        if module_class is None:
+            return False
+
+        predicate = getattr(module_class, "should_background_run", None)
+        if callable(predicate):
+            try:
+                return bool(predicate(config))
+            except TypeError:
+                try:
+                    return bool(predicate())
+                except Exception:
+                    return False
+            except Exception:
+                return False
+
+        page = getattr(self, meta.get("page_attr", ""), None)
+        module_meta = getattr(page, "module_meta", None)
+        schema = list(getattr(module_meta, "config_schema", []) or [])
+        if not schema:
+            return False
+
+        for field in schema:
+            field_name = str(getattr(field, "param_name", "") or "")
+            if not field_name.startswith("CheckBox_"):
+                continue
+            cfg_item = getattr(config, field_name, None)
+            if cfg_item is None:
+                continue
+            if bool(getattr(cfg_item, "value", False)):
+                return True
+        return False
+
+    def _sync_background_task(self, task_id: str):
+        if self._background_should_run(task_id):
+            self._start_background_task(task_id)
+            return
+        self._stop_background_task(task_id)
+
+    def _toggle_background_task(self, task_id: str):
+        if self._is_background_task_running(task_id):
+            self._stop_background_task(task_id)
+            return
+        self._start_background_task(task_id)
 
     def _on_background_thread_state_changed(self, task_id: str, is_running: bool):
         if not is_running:
@@ -441,8 +506,18 @@ class OnDemandTasksPage(QFrame, BaseInterface):
 
         current_page_name = current_page.objectName()
         task_id = self._page_name_to_task_id.get(current_page_name)
-        if task_id in self._get_task_metadata():
-            self._handle_universal_start_stop(task_id)
+        meta = self._get_task_metadata().get(task_id)
+        if not meta:
+            return
+
+        # Modules without a host-level start button (e.g. background toggles)
+        # are controlled by their own switches, not by global start shortcuts.
+        page = getattr(self, meta.get("page_attr", ""), None)
+        button = self._resolve_task_button(page, task_id, meta.get("start_button_attr"))
+        if button is None:
+            return
+
+        self._handle_universal_start_stop(task_id)
 
     def _on_global_state_changed(self, is_running: bool, zh_name: str, en_name: str, source: str):
         if source in {"on_demand", "additional"}:
@@ -488,6 +563,8 @@ class OnDemandTasksPage(QFrame, BaseInterface):
             if config_item:
                 if isinstance(widget, CheckBox):
                     widget.setChecked(config_item.value)
+                elif isinstance(widget, SwitchButton):
+                    widget.setChecked(bool(config_item.value))
                 elif isinstance(widget, ComboBox):
                     widget.setCurrentIndex(config_item.value)
                 elif isinstance(widget, LineEdit):
@@ -508,6 +585,8 @@ class OnDemandTasksPage(QFrame, BaseInterface):
         for children in children_list:
             if isinstance(children, CheckBox):
                 children.stateChanged.connect(partial(self.save_changed, children))
+            elif isinstance(children, SwitchButton):
+                children.checkedChanged.connect(partial(self.save_changed, children))
             elif isinstance(children, ComboBox):
                 children.currentIndexChanged.connect(partial(self.save_changed, children))
             elif isinstance(children, SpinBox):
@@ -525,6 +604,8 @@ class OnDemandTasksPage(QFrame, BaseInterface):
             config.set(config_item, widget.value())
         elif isinstance(widget, CheckBox):
             config.set(config_item, widget.isChecked())
+        elif isinstance(widget, SwitchButton):
+            config.set(config_item, widget.isChecked())
         elif isinstance(widget, LineEdit):
             if widget.objectName().split('_')[1] == 'fish' and widget.objectName().split('_')[2] != 'key':
                 if self.is_valid_format(widget.text()):
@@ -537,6 +618,12 @@ class OnDemandTasksPage(QFrame, BaseInterface):
             config.set(config_item, widget.value())
             if hasattr(self, "page_water_bomb") and hasattr(self.page_water_bomb, 'load_config'):
                 self.page_water_bomb.load_config()
+
+        task_id = self._task_id_for_widget(widget)
+        if task_id:
+            meta = self._get_task_metadata().get(task_id, {})
+            if self._execution_policy(meta) == "background":
+                self._sync_background_task(task_id)
 
     def onCurrentIndexChanged(self, index):
         widget = self.stackedWidget.widget(index)
@@ -564,7 +651,7 @@ class OnDemandTasksPage(QFrame, BaseInterface):
     def set_simple_card_enable(self, simple_card, enable: bool):
         children = get_all_children(simple_card)
         for child in children:
-            if isinstance(child, (CheckBox, LineEdit, SpinBox, ComboBox)):
+            if isinstance(child, (CheckBox, SwitchButton, LineEdit, SpinBox, ComboBox)):
                 if child.objectName() == 'LineEdit_fish_base' and enable:
                     continue
                 child.setEnabled(enable)

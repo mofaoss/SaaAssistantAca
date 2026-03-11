@@ -182,7 +182,7 @@ class Config(QConfig):
 
     # --- 体力设置 (Power) ---
     ComboBox_power_day    = OptionsConfigItem("home_interface_power", "ComboBox_power_day", -1, OptionsValidator([-1, 0, 1, 2, 3, 4, 5]))
-    ComboBox_power_usage  = OptionsConfigItem("home_interface_power", "ComboBox_power_usage", -1, OptionsValidator([-1, 0, 1, 2, 3, 4, 5]))
+    ComboBox_power_usage  = OptionsConfigItem("home_interface_power", "ComboBox_power_usage", 0, OptionsValidator([0, 1]))
     CheckBox_is_use_power = ConfigItem("home_interface_power", "CheckBox_is_use_power", False, BoolValidator())
     update_data           = ConfigItem("home_interface_power", "update_data", None)
     task_name             = ConfigItem("home_interface_power", "task_name", "")

@@ -4,6 +4,7 @@
   "module.dummy.field.nita_auto_e.help": "en",
   "module.dummy.field.nita_auto_e.label": "en",
   "module.dummy.title": "en",
+  "module.trigger.description": "en",
   "module.trigger.log.error": "en",
   "module.trigger.log.game_task_is_not_running": "en",
   "module.trigger.log.trigger_skipped_all_options_disabled": "en",
@@ -19,6 +20,5 @@
   "module.trigger.ui.log": "en",
   "module.trigger.ui.nita_auto_e": "en",
   "module.trigger.ui.nita_e_auto_qte": "en",
-  "module.trigger.ui.tips_launch_the_game_before_enabling_this_feature_these_are_toggle_switches_once": "en",
   "module.trigger.ui.trigger_list": "en"
 }

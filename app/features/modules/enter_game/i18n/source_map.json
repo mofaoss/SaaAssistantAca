@@ -1,5 +1,8 @@
 {
+  "module.dummy.field.CheckBox_open_game_directly.label": "en",
+  "module.dummy.field.LineEdit_game_directory.label": "en",
   "module.dummy.title": "en",
+  "module.enter_game.description": "en",
   "module.enter_game.legacy.22bfd52ce240": "en",
   "module.enter_game.legacy.f80650f28a54": "en",
   "module.enter_game.legacy.fc3cf53d556a": "en",
@@ -19,9 +22,11 @@
   "module.enter_game.ui.clicking_the_start_button_will_action_automatica": "en",
   "module.enter_game.ui.failed_to_resolve_launch_arguments": "en",
   "module.enter_game.ui.find_game_path_in_launcher": "en",
+  "module.enter_game.ui.game_directory": "en",
   "module.enter_game.ui.game_executable_not_found_under_start_path": "en",
   "module.enter_game.ui.tutorial": "en",
-  "module.task_login.title": "en",
-  "module.enter_game.ui.game_directory": "en",
-  "module.enter_game.description": "en"
+  "module.task_login.action.select_game_directory.label": "zh_CN",
+  "module.task_login.action.show_path_tutorial.label": "zh_CN",
+  "module.task_login.description": "zh_CN",
+  "module.task_login.title": "en"
 }
