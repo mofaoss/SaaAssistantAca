@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib
 import pkgutil
+import sys
 from pathlib import Path
 
 
@@ -12,15 +13,25 @@ def _is_usecase_module_name(name: str) -> bool:
 
 def _discover_by_pkgutil(pkg) -> list[str]:
     imported: list[str] = []
+    # walk_packages is generally robust in Nuitka if --include-package is used.
     for _, name, _ in pkgutil.walk_packages(pkg.__path__, pkg.__name__ + "."):
         if not _is_usecase_module_name(name):
             continue
-        importlib.import_module(name)
-        imported.append(name)
+        try:
+            importlib.import_module(name)
+            imported.append(name)
+        except Exception:
+            # Skip modules that fail to import during discovery
+            continue
     return imported
 
 
 def _discover_by_filesystem(pkg) -> list[str]:
+    # In frozen environments (Nuitka/PyInstaller), .py files are typically 
+    # removed/compiled into blobs. Filesystem scanning will fail.
+    if getattr(sys, "frozen", False):
+        return []
+
     imported: list[str] = []
     seen: set[str] = set()
     for base in getattr(pkg, "__path__", []):
@@ -36,9 +47,12 @@ def _discover_by_filesystem(pkg) -> list[str]:
             module_name = pkg.__name__ + "." + ".".join(rel.parts)
             if module_name in seen or not _is_usecase_module_name(module_name):
                 continue
-            importlib.import_module(module_name)
-            seen.add(module_name)
-            imported.append(module_name)
+            try:
+                importlib.import_module(module_name)
+                seen.add(module_name)
+                imported.append(module_name)
+            except Exception:
+                continue
     return imported
 
 

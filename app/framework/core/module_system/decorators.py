@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import ast
 import importlib
+import inspect
+import pkgutil
 import re
 from pathlib import Path
 
@@ -169,55 +170,58 @@ def _module_name_from_target(target) -> str | None:
     return pkg.split(".")[-1]
 
 
-def _ui_dir_from_module_name(module_name: str) -> Path:
-    root = Path(__file__).resolve().parents[4]
-    return root / "app" / "features" / "modules" / module_name / "ui"
-
-
-def _candidate_ui_files(ui_dir: Path, host: ModuleHost) -> list[Path]:
-    if not ui_dir.exists():
+def _candidate_ui_modules(module_name: str, host: ModuleHost) -> list[str]:
+    ui_package_path = f"app.features.modules.{module_name}.ui"
+    try:
+        ui_pkg = importlib.import_module(ui_package_path)
+    except ImportError:
         return []
 
-    all_py = [p for p in ui_dir.glob("*.py") if p.name != "__init__.py"]
-    priority: list[Path] = []
+    found_modules = []
+    if hasattr(ui_pkg, "__path__"):
+        for _, name, ispkg in pkgutil.iter_modules(ui_pkg.__path__):
+            if not ispkg and name != "__init__":
+                found_modules.append(f"{ui_package_path}.{name}")
 
+    priority: list[str] = []
     if host == ModuleHost.PERIODIC:
-        priority.extend(sorted([p for p in all_py if p.name.endswith("_periodic_page.py")]))
-        priority.extend(sorted([p for p in all_py if p.name.endswith("_interface.py")]))
+        priority.extend(sorted([m for m in found_modules if m.endswith("_periodic_page")]))
+        priority.extend(sorted([m for m in found_modules if m.endswith("_interface")]))
     else:
-        priority.extend(sorted([p for p in all_py if p.name.endswith("_interface.py")]))
+        priority.extend(sorted([m for m in found_modules if m.endswith("_interface")]))
 
-    seen = {p.name for p in priority}
-    priority.extend(sorted([p for p in all_py if p.name not in seen]))
+    seen = set(priority)
+    priority.extend(sorted([m for m in found_modules if m not in seen]))
     return priority
 
 
-def _extract_preferred_class_name(py_file: Path, host: ModuleHost) -> str | None:
+def _extract_preferred_class_name_from_module(module_path: str, host: ModuleHost) -> str | None:
     try:
-        tree = ast.parse(py_file.read_text(encoding="utf-8-sig"))
+        mod = importlib.import_module(module_path)
     except Exception:
         return None
 
-    class_names = [n.name for n in tree.body if isinstance(n, ast.ClassDef)]
-    if not class_names:
+    classes = [name for name, obj in inspect.getmembers(mod, inspect.isclass)
+               if obj.__module__ == module_path]
+    if not classes:
         return None
 
     if host == ModuleHost.PERIODIC:
-        for name in class_names:
+        for name in classes:
             if name.endswith("Page"):
                 return name
-        for name in class_names:
+        for name in classes:
             if name.endswith("Interface"):
                 return name
     else:
-        for name in class_names:
+        for name in classes:
             if name.endswith("Interface"):
                 return name
-        for name in class_names:
+        for name in classes:
             if name.endswith("Page"):
                 return name
 
-    return class_names[0]
+    return classes[0]
 
 
 def _infer_page_class_path(target, host: ModuleHost) -> str | None:
@@ -225,15 +229,10 @@ def _infer_page_class_path(target, host: ModuleHost) -> str | None:
     if not module_name:
         return None
 
-    ui_dir = _ui_dir_from_module_name(module_name)
-    for py_file in _candidate_ui_files(ui_dir, host):
-        class_name = _extract_preferred_class_name(py_file, host)
-        if not class_name:
-            continue
-
-        rel = py_file.relative_to(Path(__file__).resolve().parents[4]).with_suffix("")
-        module_import = ".".join(rel.parts)
-        return f"{module_import}:{class_name}"
+    for module_path in _candidate_ui_modules(module_name, host):
+        class_name = _extract_preferred_class_name_from_module(module_path, host)
+        if class_name:
+            return f"{module_path}:{class_name}"
 
     return None
 
