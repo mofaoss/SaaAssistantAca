@@ -808,6 +808,12 @@ class PeriodicTasksView(ScrollArea):
 
         for page in self.periodic_pages_by_task_id.values():
             widget = getattr(page, widget_attr, None)
+            if widget is None and hasattr(page, "field_widgets"):
+                fields = getattr(page, "field_widgets", {})
+                if isinstance(fields, dict):
+                    widget = fields.get(widget_attr)
+            if widget is None and hasattr(page, "findChild"):
+                widget = page.findChild(QWidget, widget_attr)
             if widget is not None:
                 self._module_widget_cache[widget_attr] = widget
                 return widget
@@ -893,4 +899,5 @@ class PeriodicTasksView(ScrollArea):
         self.PushButton_no_select.setText(self._ui_text("清空", "Clear"))
         self.hint_label.setText(self._ui_text("拖动调整顺序", "Drag to sort"))
         self.TitleLabel_3.setText(self._ui_text("日程提醒", "Event Reminder"))
+
 
