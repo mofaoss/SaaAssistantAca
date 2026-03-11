@@ -10,15 +10,19 @@ from app.framework.core.module_system import on_demand_module, periodic_module
 from app.framework.i18n import _
 
 
-@periodic_module("Execute Exit")
+@periodic_module(
+    "Execute Exit",
+    description="### Tips\n"
+                "* Closes the game, proxy, or shuts down the system after all tasks are completed.",
+)
 class CloseGameModule:
     def __init__(
         self,
         auto,
         logger,
-        CheckBox_close_game=False,
-        CheckBox_shutdown=False,
-        CheckBox_close_proxy=False,
+        CheckBox_close_game: bool = False,
+        CheckBox_shutdown: bool = False,
+        CheckBox_close_proxy: bool = False,
     ):
         self.auto = auto
         self.logger = logger

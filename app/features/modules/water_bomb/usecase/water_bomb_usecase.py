@@ -9,16 +9,19 @@ from app.features.modules.water_bomb.decision import Round, Status
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@on_demand_module("Water Bomb")
+@on_demand_module(
+    "Water Bomb",
+    description="### Tips\n* Automatically plays the Heart-pounding Water Bomb (Buckshot Roulette) mini-game.\n* Uses an optimal strategy to maximize win probability.\n* Configure thresholds for recognition and target win count.",
+)
 class WaterBombModule:
     def __init__(
         self,
         auto,
         logger,
-        Slider_count_threshold=70,
-        Slider_template_threshold=70,
-        SpinBox_water_win_times=1,
-        isLog=False,
+        Slider_count_threshold: int = 70,
+        Slider_template_threshold: int = 70,
+        SpinBox_water_win_times: int = 1,
+        isLog: bool = False,
     ):
         self.auto = auto
         self.logger = logger

@@ -26,9 +26,12 @@ from app.framework.infra.automation.timer import Timer
 from app.features.utils.home_navigation import back_to_home
 
 
-@periodic_module("Weapon Upgrade")
+@periodic_module(
+    "Weapon Upgrade",
+    description="### Tips\n* Automatically upgrades weapons in your inventory.\n* It will sort weapons by level and select the first one to upgrade.\n* Ensure you have enough upgrade materials.",
+)
 class WeaponUpgradeModule:
-    def __init__(self, auto, logger, isLog=True, enable_weapon_upgrade=True):
+    def __init__(self, auto, logger, isLog: bool = True, enable_weapon_upgrade: bool = True):
         self.auto = auto
         self.logger = logger
         self.is_log = bool(isLog)

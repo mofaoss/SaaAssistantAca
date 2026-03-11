@@ -6,9 +6,12 @@ from app.framework.infra.automation.timer import Timer
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@on_demand_module("Maze")
+@on_demand_module(
+    "Maze",
+    description="### Tips\n* Automatically performs Paradoxical Labyrinth (Maze) battles.\n* Choose between single run or multi-run modes.\n* Start from the maze entrance or difficulty selection screen.",
+)
 class MazeModule:
-    def __init__(self, auto, logger, isLog=False, ComboBox_mode_maze=0):
+    def __init__(self, auto, logger, isLog: bool = False, ComboBox_mode_maze: int = 0):
         self.auto = auto
         self.logger = logger
         self.is_log = bool(isLog)

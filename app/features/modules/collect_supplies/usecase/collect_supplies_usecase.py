@@ -14,7 +14,14 @@ from app.framework.core.module_system import on_demand_module, periodic_module
 from app.framework.i18n import _
 
 
-@periodic_module("Collect Supplies")
+@periodic_module(
+    "Collect Supplies",
+    description="### Tips \n* Default: Always claim Supply Station stamina and friend stamina \n* Enable \"Redeem Code\" to fetch and redeem online codes automatically\n* Online codes are maintained by developers and may not always be updated in time\n* You can import a txt file for batch redeem (one code per line)",
+    actions={
+        "Import": "on_import_codes_click",
+        "Reset": "on_reset_codes_click",
+    }
+)
 class CollectSuppliesModule:
     def __init__(
         self,
@@ -22,14 +29,15 @@ class CollectSuppliesModule:
         logger=None,
         *,
         app_config=None,
-        isLog=False,
-        CheckBox_mail=False,
-        CheckBox_fish_bait=False,
-        CheckBox_dormitory=False,
-        CheckBox_redeem_code=False,
-        update_data='',
-        used_codes=None,
-        import_codes=None,
+        isLog: bool = False,
+        CheckBox_mail: bool = False,
+        CheckBox_fish_bait: bool = False,
+        CheckBox_dormitory: bool = False,
+        CheckBox_redeem_code: bool = False,
+        TextEdit_import_codes: str = '',
+        update_data: str = '',
+        used_codes: list = None,
+        import_codes: list = None,
         redeem_codes_usecase=None,
         redeem_codes_view=None,
     ):
@@ -41,6 +49,7 @@ class CollectSuppliesModule:
         self.enable_fish_bait = bool(CheckBox_fish_bait)
         self.enable_dormitory = bool(CheckBox_dormitory)
         self.enable_redeem_code = bool(CheckBox_redeem_code)
+        self.import_codes_text = TextEdit_import_codes
         self.update_data = update_data
         self.used_codes = list(used_codes or [])
         self.import_codes = list(import_codes or [])
@@ -64,9 +73,13 @@ class CollectSuppliesModule:
         self.friends_power()
         self.station_power()
 
-    def on_reset_codes_click(self, host, text_edit):
+    def on_reset_codes_click(self, page=None, **_kwargs):
         if self.redeem_codes_usecase is None:
-            raise RuntimeError("redeem_codes_usecase is not configured")
+            # Try to get from page if possible (legacy fallback)
+            # raise RuntimeError("redeem_codes_usecase is not configured")
+            return
+        
+        text_edit = getattr(page, "TextEdit_import_codes", None) if page else None
         content = self.redeem_codes_usecase.reset_codes(text_edit)
         InfoBar.success(
             title=_('Reset Successful', msgid='reset_successful'),
@@ -75,17 +88,22 @@ class CollectSuppliesModule:
             isClosable=True,
             position=InfoBarPosition.TOP_RIGHT,
             duration=2000,
-            parent=host,
+            parent=page,
         )
 
-    def on_import_codes_click(self, host, text_edit):
+    def on_import_codes_click(self, page=None, **_kwargs):
         if self.redeem_codes_view is None:
-            raise RuntimeError("redeem_codes_view is not configured")
+            # raise RuntimeError("redeem_codes_view is not configured")
+            return
         if self.redeem_codes_usecase is None:
-            raise RuntimeError("redeem_codes_usecase is not configured")
-        raw_codes = self.redeem_codes_view.prompt_import_codes(host)
+            # raise RuntimeError("redeem_codes_usecase is not configured")
+            return
+            
+        raw_codes = self.redeem_codes_view.prompt_import_codes(page)
         if raw_codes is None:
             return
+            
+        text_edit = getattr(page, "TextEdit_import_codes", None) if page else None
         self.redeem_codes_usecase.import_codes(raw_codes, text_edit)
 
     def friends_power(self):

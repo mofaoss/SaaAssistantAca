@@ -8,6 +8,28 @@ from pathlib import Path
 from app.framework.i18n.runtime import _ as _runtime_translate, tr, TranslatableMessage, get_catalog, load_i18n_catalogs
 
 
+def _frame_module_name(frame) -> str:
+    try:
+        return str(getattr(getattr(frame, "f_globals", {}), "get", lambda *_: "")("__name__", "") or "")
+    except Exception:
+        return ""
+
+
+def _is_i18n_internal_frame(frame) -> bool:
+    module_name = _frame_module_name(frame).lower()
+    if module_name.startswith("app.framework.i18n"):
+        return True
+
+    file_name = getattr(getattr(frame, "f_code", None), "co_filename", "")
+    normalized = str(file_name).replace("\\", "/").lower()
+    if "/app/framework/i18n/" in normalized:
+        return True
+    dotted = normalized.replace("/", ".")
+    if "app.framework.i18n." in dotted:
+        return True
+    return False
+
+
 def _first_external_callsite_frame():
     """Return the first frame outside app.framework.i18n package."""
     frame = inspect.currentframe()
@@ -15,9 +37,7 @@ def _first_external_callsite_frame():
         return None
     frame = frame.f_back
     while frame is not None:
-        file_name = getattr(getattr(frame, "f_code", None), "co_filename", "")
-        normalized = str(file_name).replace("\\", "/").lower()
-        if "/app/framework/i18n/" not in normalized:
+        if not _is_i18n_internal_frame(frame):
             return frame
         frame = frame.f_back
     return None
@@ -29,6 +49,11 @@ def _is_ui_callsite() -> bool:
         caller = _first_external_callsite_frame()
         if caller is None:
             return False
+
+        module_name = _frame_module_name(caller).lower()
+        module_ui_indicators = (".ui.", ".views.", ".widgets.", ".shared.localizer")
+        if any(ind in module_name for ind in module_ui_indicators):
+            return True
             
         file_path_str = getattr(getattr(caller, "f_code", None), "co_filename", "")
         if not file_path_str:
@@ -58,32 +83,52 @@ def _infer_owner_hints_from_callsite() -> dict:
         caller = _first_external_callsite_frame()
         code = getattr(caller, "f_code", None)
         file_name = Path(getattr(code, "co_filename", ""))
+        module_name = _frame_module_name(caller)
+        lower_module_name = module_name.lower()
         parts = [p.lower() for p in file_name.parts]
 
         owner_scope = "framework"
         owner_module = None
-        try:
-            mod_idx = parts.index("modules")
-            owner_scope = "module"
-            owner_module = file_name.parts[mod_idx + 1]
-        except Exception:
-            normalized_for_infer = str(file_name).replace("\\", "/")
-            lower_infer = normalized_for_infer.lower()
-            match = re.search(r"(?:^|[./\\])modules[./\\]([a-z0-9_]+)(?:[./\\]|$)", lower_infer)
-            if match:
+        if lower_module_name.startswith("app.features.modules."):
+            tail = module_name[len("app.features.modules."):]
+            module_id = re.split(r"[.:/\\]", tail, maxsplit=1)[0]
+            if module_id:
                 owner_scope = "module"
-                owner_module = match.group(1)
-            else:
-                dotted = re.search(r"features\.modules\.([a-z0-9_]+)", lower_infer)
-                if dotted:
+                owner_module = module_id
+        elif "features.modules." in lower_module_name:
+            tail = module_name.split("features.modules.", 1)[1]
+            module_id = re.split(r"[.:/\\]", tail, maxsplit=1)[0]
+            if module_id:
+                owner_scope = "module"
+                owner_module = module_id
+        else:
+            try:
+                mod_idx = parts.index("modules")
+                owner_scope = "module"
+                owner_module = file_name.parts[mod_idx + 1]
+            except Exception:
+                normalized_for_infer = str(file_name).replace("\\", "/")
+                lower_infer = normalized_for_infer.lower()
+                match = re.search(r"(?:^|[./\\])modules[./\\]([a-z0-9_]+)(?:[./\\]|$)", lower_infer)
+                if match:
                     owner_scope = "module"
-                    owner_module = dotted.group(1)
-                elif "framework" in parts or ".framework." in lower_infer:
-                    owner_scope = "framework"
+                    owner_module = match.group(1)
+                else:
+                    dotted = re.search(r"features\.modules\.([a-z0-9_]+)", lower_infer)
+                    if dotted:
+                        owner_scope = "module"
+                        owner_module = dotted.group(1)
+                    elif "framework" in parts or ".framework." in lower_infer or ".framework." in lower_module_name:
+                        owner_scope = "framework"
 
         normalized_path = str(file_name).replace("\\", "/")
+        callsite_anchor = normalized_path if normalized_path and normalized_path != "." else ""
+        if not callsite_anchor and module_name:
+            callsite_anchor = module_name.replace(".", "/")
+        if not callsite_anchor:
+            callsite_anchor = "<unknown>"
         callsite_key = (
-            f"{normalized_path}:{getattr(caller, 'f_lineno', 0)}:0"
+            f"{callsite_anchor}:{getattr(caller, 'f_lineno', 0)}:0"
             if caller is not None
             else None
         )

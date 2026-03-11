@@ -7,9 +7,12 @@ from app.features.utils.home_navigation import back_to_home
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@periodic_module("Claim Rewards")
+@periodic_module(
+    "Claim Rewards",
+    description="### Tips\n* Automatically claims daily/weekly task rewards and battle pass (Credential) rewards.",
+)
 class GetRewardModule:
-    def __init__(self, auto, logger, isLog=False):
+    def __init__(self, auto, logger, isLog: bool = False):
         self.auto = auto
         self.logger = logger
         self.is_log = bool(isLog)

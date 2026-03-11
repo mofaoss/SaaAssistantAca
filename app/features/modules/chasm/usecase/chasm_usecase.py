@@ -8,9 +8,14 @@ from app.features.utils.home_navigation import back_to_home
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@periodic_module("Neural Sim")
+@periodic_module(
+    "Neural Sim",
+    description="### Tips\n"
+                "* Neural Simulation opens every Tuesday at 10:00\n"
+                "* Automatically performs Quick Evaluation and collects rewards",
+)
 class ChasmModule:
-    def __init__(self, auto, logger, isLog=False):
+    def __init__(self, auto, logger, isLog: bool = False):
         self.auto = auto
         self.logger = logger
         self.is_log = bool(isLog)

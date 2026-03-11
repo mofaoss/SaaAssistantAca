@@ -6,9 +6,15 @@ from app.framework.infra.automation.timer import Timer
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@on_demand_module("Alien Guardian")
+@on_demand_module(
+    "Alien Guardian",
+    description="### Tips\n"
+                "* Click Start after battle begins\n"
+                "* Recommended support pals: Steel Shot and Blazing Pitcher\n"
+                "* Stage mode is semi-automatic: manual shooting and manual next-stage selection are required",
+)
 class AlienGuardianModule:
-    def __init__(self, auto, logger, ComboBox_mode=0):
+    def __init__(self, auto, logger, ComboBox_mode: int = 0):
         self.auto = auto
         self.logger = logger
         self.mode = int(ComboBox_mode)

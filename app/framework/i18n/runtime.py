@@ -34,8 +34,16 @@ _TEMPLATE_META: dict[str, dict[str, Any]] = {}
 _TEMPLATE_META_LOADED = False
 _DYNAMIC_RECOVERY_KEYS: set[str] = set()
 _DYNAMIC_KEYS_BY_OWNER_CONTEXT: dict[str, list[str]] = {}
+_CATALOG_DYNAMIC_KEYS: set[str] = set()
+_CATALOG_DYNAMIC_KEYS_BY_OWNER_CONTEXT: dict[str, list[str]] = {}
+_CATALOG_DYNAMIC_INDEX_READY = False
+_DYNAMIC_RECOVERY_MATCH_CACHE: dict[tuple[str, str], str | None] = {}
+_DYNAMIC_RECOVERY_CACHE_MAX = 2048
 _SOURCE_TEXT_KEY_BY_OWNER_CONTEXT: dict[str, dict[str, str | None]] = {}
+_SOURCE_TEXT_KEY_GLOBAL: dict[str, str | None] = {}
 _SOURCE_TEXT_INDEX_READY = False
+_PAYLOAD_TEXT_TRANSLATION_CACHE: dict[tuple[str, str, str], str] = {}
+_PAYLOAD_TEXT_TRANSLATION_CACHE_MAX = 2048
 _MSGID_SEMANTIC_RE = re.compile(r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$")
 _MSGID_HASHLIKE_RE = re.compile(r"^(?:[0-9a-f]{8,}|h[0-9a-f]{6,})$")
 
@@ -79,7 +87,7 @@ class TranslatableMessage:
     callsite_kind: str | None = None
     dynamic_candidate: bool = False
     literal_callsite: bool = False
-    
+
     _rendered_cache: str | None = None
 
     def __str__(self) -> str:
@@ -231,7 +239,34 @@ def validate_msgid(msgid: str | None) -> str | None:
 
 
 def _infer_owner_from_frame(frame) -> tuple[str, str | None]:
+    try:
+        module_name = str(getattr(getattr(frame, "f_globals", {}), "get", lambda *_: "")("__name__", "") or "")
+    except Exception:
+        module_name = ""
+
+    if module_name:
+        lower_module = module_name.lower()
+        if lower_module.startswith("app.features.modules."):
+            tail = module_name[len("app.features.modules."):]
+            module_id = re.split(r"[.:/\\]", tail, maxsplit=1)[0]
+            if module_id:
+                return "module", module_id
+        if "features.modules." in lower_module:
+            tail = module_name.split("features.modules.", 1)[1]
+            module_id = re.split(r"[.:/\\]", tail, maxsplit=1)[0]
+            if module_id:
+                return "module", module_id
+        if lower_module.startswith("app.framework") or ".framework." in lower_module:
+            return "framework", None
+
     file_name = Path(getattr(frame, "f_code", None).co_filename if frame else "")
+    normalized = str(file_name).replace("\\", "/").lower()
+    module_match = re.search(r"(?:^|[./\\])modules[./\\]([a-z0-9_]+)(?:[./\\]|$)", normalized)
+    if module_match:
+        return "module", module_match.group(1)
+    dotted_match = re.search(r"features\.modules\.([a-z0-9_]+)", normalized)
+    if dotted_match:
+        return "module", dotted_match.group(1)
     parts = [p.lower() for p in file_name.parts]
     try:
         mod_idx = parts.index("modules")
@@ -501,6 +536,10 @@ def _resolve_i18n_project_root() -> Path:
 
 def load_i18n_catalogs() -> None:
     global _LOADED
+    global _SOURCE_TEXT_INDEX_READY
+    global _CATALOG_DYNAMIC_INDEX_READY
+    global _DYNAMIC_RECOVERY_MATCH_CACHE
+    global _PAYLOAD_TEXT_TRANSLATION_CACHE
     root = _resolve_i18n_project_root()
 
     framework_i18n = root / "app" / "framework" / "i18n"
@@ -518,7 +557,10 @@ def load_i18n_catalogs() -> None:
             for lang in SUPPORTED_LANGS:
                 _merge_file(lang, i18n_dir / f"{lang}.json")
     _LOADED = True
-
+    _SOURCE_TEXT_INDEX_READY = False
+    _CATALOG_DYNAMIC_INDEX_READY = False
+    _DYNAMIC_RECOVERY_MATCH_CACHE.clear()
+    _PAYLOAD_TEXT_TRANSLATION_CACHE.clear()
 
 def _owner_context_key_from_i18n_key(key: str) -> str | None:
     parts = key.split(".")
@@ -540,6 +582,9 @@ def _build_source_text_index() -> None:
     if not _LOADED:
         load_i18n_catalogs()
 
+    _SOURCE_TEXT_KEY_BY_OWNER_CONTEXT.clear()
+    _SOURCE_TEXT_KEY_GLOBAL.clear()
+
     en_catalog = _CATALOGS.get(DEFAULT_SOURCE_LANG, {})
     for key, source_text in en_catalog.items():
         if not isinstance(key, str) or not isinstance(source_text, str):
@@ -551,14 +596,17 @@ def _build_source_text_index() -> None:
         existing = bucket.get(source_text)
         if existing is None:
             bucket[source_text] = key
-            continue
-        if existing != key:
+        elif existing != key:
             # Mark ambiguous source text to avoid wrong substitutions.
             bucket[source_text] = None
 
+        global_existing = _SOURCE_TEXT_KEY_GLOBAL.get(source_text)
+        if global_existing is None:
+            _SOURCE_TEXT_KEY_GLOBAL[source_text] = key
+        elif global_existing != key:
+            _SOURCE_TEXT_KEY_GLOBAL[source_text] = None
+
     _SOURCE_TEXT_INDEX_READY = True
-
-
 def _recover_static_message_without_msgid(
     message: TranslatableMessage,
     *,
@@ -586,6 +634,67 @@ def _recover_static_message_without_msgid(
     return translated
 
 
+
+def _translate_payload_plain_text(
+    source_text: str,
+    *,
+    owner_context_key: str | None,
+    target_lang: str,
+) -> str:
+    if not source_text:
+        return source_text
+
+    cache_key = (owner_context_key or "__global__", target_lang, source_text)
+    cached = _PAYLOAD_TEXT_TRANSLATION_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+
+    _build_source_text_index()
+    recovered_key: str | None = None
+    if owner_context_key:
+        recovered_key = _SOURCE_TEXT_KEY_BY_OWNER_CONTEXT.get(owner_context_key, {}).get(source_text)
+    if not recovered_key:
+        recovered_key = _SOURCE_TEXT_KEY_GLOBAL.get(source_text)
+
+    translated = source_text
+    if recovered_key:
+        translated = _CATALOGS.get(target_lang, {}).get(recovered_key) or translated
+        if translated == source_text and target_lang == "zh_HK":
+            zh_cn_value = _CATALOGS.get("zh_CN", {}).get(recovered_key)
+            if zh_cn_value is not None:
+                translated = _zh_hk_fallback_text(zh_cn_value)
+
+    if len(_PAYLOAD_TEXT_TRANSLATION_CACHE) >= _PAYLOAD_TEXT_TRANSLATION_CACHE_MAX:
+        _PAYLOAD_TEXT_TRANSLATION_CACHE.clear()
+    _PAYLOAD_TEXT_TRANSLATION_CACHE[cache_key] = translated
+    return translated
+
+
+def _localize_dynamic_payload_values(
+    payload: dict[str, Any],
+    *,
+    owner_context_key: str | None,
+    target_lang: str,
+) -> dict[str, Any]:
+    if not payload:
+        return payload
+
+    localized_payload: dict[str, Any] = {}
+    changed = False
+    for key, value in payload.items():
+        if isinstance(value, str):
+            localized = _translate_payload_plain_text(
+                value,
+                owner_context_key=owner_context_key,
+                target_lang=target_lang,
+            )
+            localized_payload[key] = localized
+            if localized != value:
+                changed = True
+            continue
+        localized_payload[key] = value
+
+    return localized_payload if changed else payload
 def _merge_template_meta_file(path: Path) -> None:
     if not path.exists():
         return
@@ -619,11 +728,62 @@ def _merge_template_meta_file(path: Path) -> None:
             bucket.append(key)
 
 
+def _cache_dynamic_recovery_match(owner_context_key: str, rendered_text: str, best_key: str | None) -> None:
+    if len(_DYNAMIC_RECOVERY_MATCH_CACHE) >= _DYNAMIC_RECOVERY_CACHE_MAX:
+        _DYNAMIC_RECOVERY_MATCH_CACHE.clear()
+    _DYNAMIC_RECOVERY_MATCH_CACHE[(owner_context_key, rendered_text)] = best_key
+
+def _get_cached_dynamic_recovery_match(owner_context_key: str, rendered_text: str) -> tuple[bool, str | None]:
+    cache_key = (owner_context_key, rendered_text)
+    if cache_key not in _DYNAMIC_RECOVERY_MATCH_CACHE:
+        return False, None
+    return True, _DYNAMIC_RECOVERY_MATCH_CACHE.get(cache_key)
+
+
+def _build_catalog_dynamic_index() -> None:
+    global _CATALOG_DYNAMIC_INDEX_READY
+    if _CATALOG_DYNAMIC_INDEX_READY:
+        return
+    if not _LOADED:
+        load_i18n_catalogs()
+
+    _CATALOG_DYNAMIC_KEYS.clear()
+    _CATALOG_DYNAMIC_KEYS_BY_OWNER_CONTEXT.clear()
+
+    for lang in (DEFAULT_SOURCE_LANG, "zh_CN", "zh_HK"):
+        catalog = _CATALOGS.get(lang, {})
+        for key, value in catalog.items():
+            if not (isinstance(key, str) and isinstance(value, str)):
+                continue
+            if not extract_template_fields(value):
+                continue
+            _CATALOG_DYNAMIC_KEYS.add(key)
+            owner_context_key = _owner_context_key_from_i18n_key(key)
+            if not owner_context_key:
+                continue
+            bucket = _CATALOG_DYNAMIC_KEYS_BY_OWNER_CONTEXT.setdefault(owner_context_key, [])
+            if key not in bucket:
+                bucket.append(key)
+
+    _CATALOG_DYNAMIC_INDEX_READY = True
+
+
+def _is_dynamic_recovery_key(key: str) -> bool:
+    _load_template_meta()
+    if key in _DYNAMIC_RECOVERY_KEYS:
+        return True
+    _build_catalog_dynamic_index()
+    return key in _CATALOG_DYNAMIC_KEYS
+
+
 def _load_template_meta() -> None:
     global _TEMPLATE_META_LOADED
+    global _DYNAMIC_RECOVERY_MATCH_CACHE
+    global _PAYLOAD_TEXT_TRANSLATION_CACHE
     if _TEMPLATE_META_LOADED:
         return
-
+    _DYNAMIC_RECOVERY_MATCH_CACHE.clear()
+    _PAYLOAD_TEXT_TRANSLATION_CACHE.clear()
     root = _resolve_i18n_project_root()
     _merge_template_meta_file(root / "app" / "framework" / "i18n" / "template_meta.json")
 
@@ -725,6 +885,13 @@ def _render_dynamic_candidate_message(message: TranslatableMessage, *, key: str,
     if not parsed_payload:
         return None
 
+    owner_context_key = _owner_context_key_from_i18n_key(key)
+    parsed_payload = _localize_dynamic_payload_values(
+        parsed_payload,
+        owner_context_key=owner_context_key,
+        target_lang=target_lang,
+    )
+
     translated_template = _CATALOGS.get(target_lang, {}).get(key)
     if translated_template is None and target_lang == "zh_HK":
         zh_cn_template = _CATALOGS.get("zh_CN", {}).get(key)
@@ -749,7 +916,6 @@ def _render_dynamic_candidate_message(message: TranslatableMessage, *, key: str,
         _telemetry_warn("dynamic_candidate_render_failed", f"{key}:{_coerce_text(exc)}")
         return None
 
-
 def _find_best_matching_template(
     message: TranslatableMessage,
     candidate_keys: Iterable[str],
@@ -764,7 +930,12 @@ def _find_best_matching_template(
             source_template = str(meta.get("source_template") or "")
             field_details = meta.get("field_details")
         if not source_template:
-            source_template = str(_CATALOGS.get(DEFAULT_SOURCE_LANG, {}).get(candidate_key) or "")
+            source_template = str(
+                _CATALOGS.get(DEFAULT_SOURCE_LANG, {}).get(candidate_key)
+                or _CATALOGS.get("zh_CN", {}).get(candidate_key)
+                or _CATALOGS.get("zh_HK", {}).get(candidate_key)
+                or ""
+            )
         if not source_template:
             continue
 
@@ -790,16 +961,29 @@ def _recover_dynamic_message_without_msgid(
     target_lang: str,
 ) -> str | None:
     _load_template_meta()
-    
+    _build_catalog_dynamic_index()
+
     # 1. Try scoped search first (Fast path)
     owner_context_key = _owner_context_key_for_message(message, context=context)
-    candidate_keys = _DYNAMIC_KEYS_BY_OWNER_CONTEXT.get(owner_context_key, [])
-    best_key = _find_best_matching_template(message, candidate_keys)
+    cached_hit, best_key = _get_cached_dynamic_recovery_match(owner_context_key, message.source_text)
+    if not cached_hit:
+        candidate_keys = list(dict.fromkeys(
+            _DYNAMIC_KEYS_BY_OWNER_CONTEXT.get(owner_context_key, [])
+            + _CATALOG_DYNAMIC_KEYS_BY_OWNER_CONTEXT.get(owner_context_key, [])
+        ))
+        best_key = _find_best_matching_template(message, candidate_keys)
+        _cache_dynamic_recovery_match(owner_context_key, message.source_text, best_key)
 
     # 2. If scoped search fails, try global search (Slow path fallback)
     # This handles cases where Nuitka obfuscates frame info, causing owner inference failure.
     if not best_key:
-        best_key = _find_best_matching_template(message, _DYNAMIC_RECOVERY_KEYS)
+        global_owner_key = "__global__"
+        global_hit, global_best_key = _get_cached_dynamic_recovery_match(global_owner_key, message.source_text)
+        if not global_hit:
+            global_keys = list(dict.fromkeys(list(_DYNAMIC_RECOVERY_KEYS) + list(_CATALOG_DYNAMIC_KEYS)))
+            global_best_key = _find_best_matching_template(message, global_keys)
+            _cache_dynamic_recovery_match(global_owner_key, message.source_text, global_best_key)
+        best_key = global_best_key
 
     if not best_key:
         return None
@@ -855,6 +1039,12 @@ def _zh_hk_fallback_text(text: str) -> str:
 def _render_dynamic_message(message: TranslatableMessage, *, key: str, target_lang: str) -> str:
     source_template = message.template_skeleton or message.source_text
     payload = message.kwargs or {}
+    owner_context_key = _owner_context_key_from_i18n_key(key)
+    payload = _localize_dynamic_payload_values(
+        payload,
+        owner_context_key=owner_context_key,
+        target_lang=target_lang,
+    )
     original_rendered = message.source_text
 
     translated_template = _CATALOGS.get(target_lang, {}).get(key)
@@ -963,8 +1153,7 @@ def translate_message(message: TranslatableMessage, *, context: str, target_lang
     # an author-side f-string with explicit msgid may reach here as a pre-rendered
     # static string without kwargs. Recover by reverse-parsing through template_meta.
     if message.msgid_explicit and message.msgid and not message.kwargs:
-        _load_template_meta()
-        if key in _DYNAMIC_RECOVERY_KEYS:
+        if _is_dynamic_recovery_key(key):
             rendered = _render_dynamic_candidate_message(message, key=key, target_lang=target_lang)
             if rendered is not None:
                 _telemetry_warn("dynamic_msgid_recovered_without_rewrite", key)
@@ -1058,4 +1247,3 @@ def tr(key: str, fallback: str | None = None, **kwargs: Any) -> str:
         or key
     )
     return _safe_format(value, kwargs)
-

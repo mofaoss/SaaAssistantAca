@@ -29,12 +29,21 @@ class _SyncState:
         return float(self.profile.patrol_refresh_interval_sec if self.mode == 1 else self.profile.fixed_interval_sec)
 
 
-@on_demand_module("Capture Pals")
+@on_demand_module(
+    "Capture Pals",
+    description="### Tips\n"
+                "* Auto-capture pals based on community strategy\n"
+                "* Configure support skill key to C before running\n"
+                "* Ensure full-screen 16:9 and stay on Partner/Adventure island selection page\n"
+                "* Patrol mode exits and re-enters map each cycle to refresh targets\n"
+                "* Fixed Point: Press C then F at intervals\n"
+                "* Patrol: Exit and re-enter map after each capture",
+)
 class CapturePalsModule:
-    """
+    \"\"\"
     尘白抓帕鲁模块
     目标：保持功能与行为语义不变，但结构更清晰、稳定、易维护。
-    """
+    \"\"\"
 
     ENTER_WAIT_SEC = 6
     MAX_FAILED_F_ATTEMPTS = 10
@@ -49,16 +58,16 @@ class CapturePalsModule:
         self,
         auto,
         logger,
-        isLog=False,
-        CheckBox_capture_pals_partner=True,
-        CheckBox_capture_pals_adventure=True,
-        CheckBox_capture_pals_sync=False,
-        SpinBox_capture_pals_partner_fixed_interval=35.0,
-        SpinBox_capture_pals_partner_patrol_interval=2.0,
-        SpinBox_capture_pals_adventure_fixed_interval=300.0,
-        SpinBox_capture_pals_adventure_patrol_interval=1200.0,
-        ComboBox_capture_pals_partner_mode=0,
-        ComboBox_capture_pals_adventure_mode=0,
+        isLog: bool = False,
+        CheckBox_capture_pals_partner: bool = True,
+        CheckBox_capture_pals_adventure: bool = True,
+        CheckBox_capture_pals_sync: bool = False,
+        SpinBox_capture_pals_partner_fixed_interval: float = 35.0,
+        SpinBox_capture_pals_partner_patrol_interval: float = 2.0,
+        SpinBox_capture_pals_adventure_fixed_interval: float = 300.0,
+        SpinBox_capture_pals_adventure_patrol_interval: float = 1200.0,
+        ComboBox_capture_pals_partner_mode: int = 0,
+        ComboBox_capture_pals_adventure_mode: int = 0,
     ):
         self.auto = auto
         self.logger = logger

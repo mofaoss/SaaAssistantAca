@@ -3,8 +3,14 @@ from app.framework.i18n.runtime import _
 
 from app.framework.infra.automation.timer import Timer
 
+from app.framework.core.module_system import on_demand_module
+
+@on_demand_module(
+    "Massaging",
+    description="### Tips\n* Automatically performs character massaging.\n* Choose the character you want to massage.\n* Start after entering the massaging interface or standing in front of the management book.",
+)
 class MassagingModule:
-    def __init__(self, auto, logger, isLog=False, ComboBox_wife=0):
+    def __init__(self, auto, logger, isLog: bool = False, ComboBox_wife: int = 0):
         super().__init__()
         self.auto = auto
         self.logger = logger

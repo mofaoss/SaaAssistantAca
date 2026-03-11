@@ -9,26 +9,31 @@ from app.features.utils.home_navigation import back_to_home
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@periodic_module("Character Shards")
+@periodic_module(
+    "Character Shards",
+    description="### Tips\n* Automatically farms character shards from Personal Stories.\n* Input the names of characters you want to farm.\n* Enable 'Use Memory Chip' if you want to use chips when out of attempts.",
+)
 class PersonModule:
     def __init__(
         self,
         auto,
         logger,
-        isLog=False,
-        all_characters=0,
-        CheckBox_is_use_chip=False,
-        home_interface_person=None,
+        isLog: bool = False,
+        all_characters: int = 0,
+        CheckBox_is_use_chip: bool = False,
+        LineEdit_c1: str = "",
+        LineEdit_c2: str = "",
+        LineEdit_c3: str = "",
+        LineEdit_c4: str = "",
     ):
         self.auto = auto
         self.logger = logger
         self.power_times = None
-        self.select_person_dic = home_interface_person or {}
         self.character_list = [
-            self.select_person_dic.get("LineEdit_c1", ""),
-            self.select_person_dic.get("LineEdit_c2", ""),
-            self.select_person_dic.get("LineEdit_c3", ""),
-            self.select_person_dic.get("LineEdit_c4", ""),
+            str(LineEdit_c1).strip(),
+            str(LineEdit_c2).strip(),
+            str(LineEdit_c3).strip(),
+            str(LineEdit_c4).strip(),
         ]
         self.pages = math.ceil(int(all_characters) / 4) + 1
         self.use_chip_enabled = bool(CheckBox_is_use_chip)

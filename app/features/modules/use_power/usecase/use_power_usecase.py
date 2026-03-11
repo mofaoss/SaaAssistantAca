@@ -13,18 +13,21 @@ from app.features.utils.home_navigation import back_to_home
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@periodic_module("Use Stamina")
+@periodic_module(
+    "Use Stamina",
+    description="### Tips\n* Automatically consumes Presence (Stamina) by running missions.\n* Can automatically use Stamina medicines (Memory Chips).\n* Supports Event stages or Tactical Drill (Routine Logistics) stages.",
+)
 class UsePowerModule:
     def __init__(
         self,
         auto,
         logger,
-        isLog=False,
-        CheckBox_is_use_power=False,
-        ComboBox_power_day=0,
-        ComboBox_power_usage=0,
-        update_data='',
-        task_name='',
+        isLog: bool = False,
+        CheckBox_is_use_power: bool = False,
+        ComboBox_power_day: int = 0,
+        ComboBox_power_usage: int = 0,
+        update_data: str = '',
+        task_name: str = '',
     ):
         self.auto = auto
         self.logger = logger

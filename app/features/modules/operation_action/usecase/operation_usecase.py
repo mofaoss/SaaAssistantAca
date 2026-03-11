@@ -7,10 +7,16 @@ from app.features.utils.home_navigation import back_to_home
 from app.framework.core.module_system import on_demand_module, periodic_module
 
 
-@on_demand_module("Operation")
-@periodic_module("Operation")
+@on_demand_module(
+    "Operation",
+    description="### Tips\n* Automatically performs Operation (Normal Training) missions.\n* Configure the number of times to run and the sprint mode.\n* Start from the home screen or the operation selection screen.",
+)
+@periodic_module(
+    "Operation",
+    description="### Tips\n* Automatically performs Operation (Normal Training) missions.\n* Configure the number of times to run and the sprint mode.\n* Start from the home screen or the operation selection screen.",
+)
 class OperationModule:
-    def __init__(self, auto, logger, isLog=False, SpinBox_action_times=1, ComboBox_run=0):
+    def __init__(self, auto, logger, isLog: bool = False, SpinBox_action_times: int = 1, ComboBox_run: int = 0):
         self.auto = auto
         self.logger = logger
         self.is_log = bool(isLog)
