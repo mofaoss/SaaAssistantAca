@@ -1343,6 +1343,27 @@
     "is_runtime_visible": true,
     "mixed_source_template": false
   },
+  "framework.log.tmpl_2b2d21527813": {
+    "kind": "dynamic_template",
+    "template_id": "tmpl_2b2d21527813",
+    "msgid": "tmpl_2b2d21527813",
+    "source_template": "Game path is not configured. Please set it up according to the tutorial first.",
+    "fields": [],
+    "field_details": {},
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/ui/views/main_window.py",
+    "line": 470,
+    "col": 35,
+    "function_name": "_finalize_startup",
+    "class_name": "MainWindow",
+    "context": "log",
+    "source_language": "en",
+    "template_hash": "2b2d21527813b56efb1a0f1790670f7cd9bc5b5d",
+    "callsite_key": "app/framework/ui/views/main_window.py:470:35",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
   "framework.log.tmpl_666fc20e834f": {
     "kind": "dynamic_template",
     "template_id": "tmpl_666fc20e834f",
@@ -1498,6 +1519,27 @@
     "is_runtime_visible": true,
     "mixed_source_template": false
   },
+  "framework.log.tmpl_d33be1ec822c": {
+    "kind": "dynamic_template",
+    "template_id": "tmpl_d33be1ec822c",
+    "msgid": "tmpl_d33be1ec822c",
+    "source_template": "\"Auto login\" is not checked",
+    "fields": [],
+    "field_details": {},
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/ui/views/main_window.py",
+    "line": 475,
+    "col": 31,
+    "function_name": "_finalize_startup",
+    "class_name": "MainWindow",
+    "context": "log",
+    "source_language": "en",
+    "template_hash": "d33be1ec822cd039f5e79d08eb908821d8bfb6ac",
+    "callsite_key": "app/framework/ui/views/main_window.py:475:31",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
   "framework.log.tmpl_da80b3c7d9b7": {
     "kind": "dynamic_template",
     "template_id": "tmpl_da80b3c7d9b7",
@@ -1607,6 +1649,27 @@
     "source_language": "en",
     "template_hash": "f3769c553f17ac3614cdf5723b77522681fae0dd",
     "callsite_key": "app/framework/infra/automation/window_tracker.py:338:32",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
+  "framework.log.tmpl_f868deb42c41": {
+    "kind": "dynamic_template",
+    "template_id": "tmpl_f868deb42c41",
+    "msgid": "tmpl_f868deb42c41",
+    "source_template": "Starting daily tasks automatically",
+    "fields": [],
+    "field_details": {},
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/ui/views/main_window.py",
+    "line": 472,
+    "col": 32,
+    "function_name": "_finalize_startup",
+    "class_name": "MainWindow",
+    "context": "log",
+    "source_language": "en",
+    "template_hash": "f868deb42c413aa668dae47a4aee6107d85972f0",
+    "callsite_key": "app/framework/ui/views/main_window.py:472:32",
     "is_runtime_visible": true,
     "mixed_source_template": false
   },
@@ -2450,6 +2513,62 @@
     "source_language": "en",
     "template_hash": "9a1c1f1e4af63ac005480c794a6ac20621b223ed",
     "callsite_key": "app/framework/core/task_engine/threads.py:325:30",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
+  "framework.ui.tmpl_1f50b0e8dda5": {
+    "kind": "dynamic_template",
+    "template_id": "tmpl_1f50b0e8dda5",
+    "msgid": "tmpl_1f50b0e8dda5",
+    "source_template": "A fatal error occurred:\n{error_msg}",
+    "fields": [
+      "error_msg"
+    ],
+    "field_details": {
+      "error_msg": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/ui/views/main_window.py",
+    "line": 850,
+    "col": 14,
+    "function_name": "handle_exception",
+    "class_name": null,
+    "context": "ui",
+    "source_language": "en",
+    "template_hash": "1f50b0e8dda5eb351e8d85b85303239e144f63e5",
+    "callsite_key": "app/framework/ui/views/main_window.py:850:14",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
+  "framework.ui.tmpl_6238eeb8fbf4": {
+    "kind": "dynamic_template",
+    "template_id": "tmpl_6238eeb8fbf4",
+    "msgid": "tmpl_6238eeb8fbf4",
+    "source_template": "The program has encountered an uncaught critical exception. The error has been saved to crash.log. Please take a screenshot and report it to the group admin:\n\n{exc_value}",
+    "fields": [
+      "exc_value"
+    ],
+    "field_details": {
+      "exc_value": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/ui/views/main_window.py",
+    "line": 865,
+    "col": 57,
+    "function_name": "handle_exception",
+    "class_name": null,
+    "context": "ui",
+    "source_language": "en",
+    "template_hash": "6238eeb8fbf4f99840d47fdcb2d618ee89b98536",
+    "callsite_key": "app/framework/ui/views/main_window.py:865:57",
     "is_runtime_visible": true,
     "mixed_source_template": false
   },

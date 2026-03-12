@@ -511,7 +511,7 @@ class MainWindow(FluentWindow, BaseInterface):
         )
         info_bar = InfoBar.warning(
             # title=self._ui_text("检测到新版本", "New version available"),
-            title=_("New version available")
+            title=_("New version available"),
             content=content_html,
             orient=Qt.Orientation.Horizontal,
             isClosable=True,
