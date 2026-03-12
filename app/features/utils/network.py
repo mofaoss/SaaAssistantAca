@@ -339,7 +339,7 @@ def handle_update_logic(raw_data: Dict[str, Any], online_data: Dict[str, Any], r
                 url = f"https://www.cbjq.com/api.php?op=search_api&action=get_article_detail&catid={response.data.updateData.linkCatId}&id={response.data.updateData.linkId}"
                 _refresh_tips(parent, url=url)
                 InfoBar.success(
-                    title=_('更新成功'),
+                    title=_('更新成功', msgid='update_successful'),
                     content=_(f'New {content} detected', msgid='new_content_detected'),
                     orient=Qt.Orientation.Horizontal,
                     isClosable=True,
@@ -364,7 +364,7 @@ def handle_update_logic_fallback(data, online_data, parent):
         url = f"https://www.cbjq.com/api.php?op=search_api&action=get_article_detail&catid={catId}&id={linkId}"
         _refresh_tips(parent, url=url)
         InfoBar.success(
-            title=_('更新成功'),
+            title=_('更新成功', msgid='update_successful'),
             content=_('检测到新的兑换码活动信息', msgid='new_redeem_code_event_information_detected_2'),
             orient=Qt.Orientation.Horizontal,
             isClosable=True,

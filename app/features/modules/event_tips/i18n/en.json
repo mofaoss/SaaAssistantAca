@@ -3,5 +3,6 @@
   "module.event_tips.ui.failed_to_update_event_schedule": "Failed to update event schedule",
   "module.event_tips.ui.no_local_information_stored_and_no_url_fetched": "No local information stored and no URL fetched",
   "module.event_tips.log.successfully_fetched_event_schedule": "Successfully fetched event schedule",
+  "module.event_tips.log.event_status_trace_raw_title_key_raw_status_text_raw_status_parsed_parsed_status": "event_status_trace raw_title={key} raw_status_text={raw_status} parsed={parsed_status} locale_used={value_4} final_display={value_5}",
   "module.event_tips.log.error_occurred_while_updating_controls_e": "Error occurred while updating controls: {e}"
 }

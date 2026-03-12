@@ -26,6 +26,7 @@ from app.framework.i18n.template_render import extract_template_field_details
 
 APP_ROOT = ROOT / "app"
 MODULES_ROOT = APP_ROOT / "features" / "modules"
+FEATURES_UTILS_ROOT = APP_ROOT / "features" / "utils"
 FRAMEWORK_ROOT = APP_ROOT / "framework"
 SUPPORTED_SOURCE_LANGS = ["en", "zh_CN"]
 
@@ -233,17 +234,23 @@ def _owner_from_file(path: Path) -> tuple[str, str | None]:
     parts = list(rel.parts)
     if len(parts) >= 5 and parts[0] == "app" and parts[1] == "features" and parts[2] == "modules":
         return "module", parts[3]
+    if len(parts) >= 4 and parts[0] == "app" and parts[1] == "features" and parts[2] == "utils":
+        return "module", "utils"
     return "framework", None
 
 
 def _owner_i18n_dir(owner_scope: str, owner_module: str | None) -> Path:
     if owner_scope == "module" and owner_module:
+        if owner_module == "utils":
+            return FEATURES_UTILS_ROOT / "i18n"
         return MODULES_ROOT / owner_module / "i18n"
     return FRAMEWORK_ROOT / "i18n"
 
 
 def _existing_owner_i18n_dirs() -> dict[tuple[str, str | None], Path]:
     owners: dict[tuple[str, str | None], Path] = {("framework", None): FRAMEWORK_ROOT / "i18n"}
+    if FEATURES_UTILS_ROOT.exists():
+        owners[("module", "utils")] = FEATURES_UTILS_ROOT / "i18n"
     if MODULES_ROOT.exists():
         for module_dir in MODULES_ROOT.iterdir():
             if not module_dir.is_dir() or module_dir.name.startswith("__"):
@@ -382,7 +389,11 @@ def _expr_to_field_name(expr: ast.AST, idx: int) -> str:
     return f"value_{idx}"
 
 
-def _extract_dynamic_template(joined: ast.JoinedStr) -> tuple[str, list[str]]:
+def _escape_braces(text: str) -> str:
+    return text.replace("{", "{{").replace("}", "}}")
+
+
+def _extract_dynamic_template(joined: ast.JoinedStr, state_idx: list[int], used: set[str]) -> tuple[str, list[str]]:
     def _format_spec_to_text(spec: ast.AST | None) -> str | None:
         if spec is None:
             return ""
@@ -413,23 +424,29 @@ def _extract_dynamic_template(joined: ast.JoinedStr) -> tuple[str, list[str]]:
 
     chunks: list[str] = []
     fields: list[str] = []
-    used: set[str] = set()
-    idx = 1
+    
     for value in joined.values:
         if isinstance(value, ast.Constant) and isinstance(value.value, str):
-            chunks.append(value.value)
+            # IMPORTANT: Match transformer by escaping braces in literal parts
+            chunks.append(_escape_braces(value.value))
             continue
         if not isinstance(value, ast.FormattedValue):
             continue
-        field_name = _expr_to_field_name(value.value, idx)
-        while field_name in used:
-            idx += 1
-            field_name = f"{field_name}_{idx}"
+        
+        base_key = _expr_to_field_name(value.value, state_idx[0])
+        field_name = base_key
+        if field_name in used:
+            while True:
+                state_idx[0] += 1
+                field_name = f"{base_key}_{state_idx[0]}"
+                if field_name not in used:
+                    break
+        
         used.add(field_name)
         fields.append(field_name)
         placeholder = _placeholder(value, field_name)
         chunks.append(placeholder if placeholder is not None else ("{" + field_name + "}"))
-        idx += 1
+        state_idx[0] += 1
     return "".join(chunks), fields
 
 
@@ -440,170 +457,59 @@ def _flatten_concat_parts(expr: ast.AST) -> list[ast.AST] | None:
         if left is None or right is None:
             return None
         return left + right
-    if isinstance(expr, (ast.Constant, ast.Name, ast.Attribute, ast.Subscript, ast.Call, ast.JoinedStr, ast.BinOp)):
-        return [expr]
-    return None
-
-
-def _extract_dynamic_concat(expr: ast.AST) -> tuple[str, list[str]] | None:
-    parts = _flatten_concat_parts(expr)
-    if not parts or len(parts) < 2:
-        return None
-    chunks: list[str] = []
-    fields: list[str] = []
-    used: set[str] = set()
-    idx = 1
-    has_dynamic = False
-    for part in parts:
-        if isinstance(part, ast.Constant) and isinstance(part.value, str):
-            chunks.append(part.value)
-            continue
-        has_dynamic = True
-        field = _expr_to_field_name(part, idx)
-        while field in used:
-            idx += 1
-            field = f"{field}_{idx}"
-        used.add(field)
-        fields.append(field)
-        chunks.append("{" + field + "}")
-        idx += 1
-    if not has_dynamic:
-        return None
-    return "".join(chunks), fields
-
-
-def _extract_dynamic_format(expr: ast.AST) -> tuple[str, list[str]] | None:
-    if not (isinstance(expr, ast.Call) and isinstance(expr.func, ast.Attribute) and expr.func.attr == "format"):
-        return None
-    base = expr.func.value
-    if not (isinstance(base, ast.Constant) and isinstance(base.value, str)):
-        return None
-    fields: list[str] = []
-    used: set[str] = set()
-    idx = 1
-    for _arg in expr.args:
-        field = f"value_{idx}"
-        while field in used:
-            idx += 1
-            field = f"value_{idx}"
-        used.add(field)
-        fields.append(field)
-        idx += 1
-    for kw in expr.keywords:
-        if kw.arg and kw.arg not in used:
-            used.add(kw.arg)
-            fields.append(kw.arg)
-    return base.value, fields
-
-
-def _extract_dynamic_percent(expr: ast.AST) -> tuple[str, list[str]] | None:
-    if not (isinstance(expr, ast.BinOp) and isinstance(expr.op, ast.Mod)):
-        return None
-    if not (isinstance(expr.left, ast.Constant) and isinstance(expr.left.value, str)):
-        return None
-    fmt = expr.left.value
-    fields: list[str] = []
-    idx = 1
-    chunks: list[str] = []
-    cursor = 0
-    for match in PERCENT_TOKEN_RE.finditer(fmt):
-        chunks.append(fmt[cursor:match.start()])
-        cursor = match.end()
-        spec = match.group("spec")
-        named = match.group("named")
-        if spec == "%":
-            chunks.append("%")
-            continue
-        if named:
-            field = named
-        else:
-            field = f"value_{idx}"
-            idx += 1
-        fields.append(field)
-        type_char = spec[-1]
-        body = spec[:-1]
-        conversion_suffix = ""
-        format_suffix = ""
-        if type_char in {"r", "a"}:
-            conversion_suffix = f"!{type_char}"
-            if body:
-                format_suffix = f":{body}"
-        else:
-            format_type = type_char
-            if type_char in {"i", "u"}:
-                format_type = "d"
-            if type_char == "s":
-                format_suffix = f":{body}" if body else ""
-            else:
-                format_suffix = f":{body}{format_type}" if body else f":{format_type}"
-        chunks.append("{" + field + conversion_suffix + format_suffix + "}")
-    if not fields:
-        return None
-    chunks.append(fmt[cursor:])
-    return "".join(chunks), fields
-
-
-def _find_enclosing_stmt(node: ast.AST, parents: dict[ast.AST, ast.AST]) -> ast.stmt | None:
-    cur: ast.AST | None = node
-    while cur is not None:
-        if isinstance(cur, ast.stmt):
-            return cur
-        cur = parents.get(cur)
-    return None
-
-
-def _find_enclosing_body(node: ast.AST, parents: dict[ast.AST, ast.AST]) -> tuple[list[ast.stmt], int] | None:
-    stmt = _find_enclosing_stmt(node, parents)
-    if stmt is None:
-        return None
-    cur: ast.AST | None = stmt
-    while cur is not None:
-        parent = parents.get(cur)
-        if parent is None:
-            break
-        for attr in ("body", "orelse", "finalbody"):
-            seq = getattr(parent, attr, None)
-            if isinstance(seq, list) and cur in seq:
-                return seq, seq.index(cur)
-        cur = parent
-    return None
-
-
-def _resolve_name_assignment_expr(name_node: ast.Name, parents: dict[ast.AST, ast.AST]) -> ast.AST | None:
-    body_info = _find_enclosing_body(name_node, parents)
-    if body_info is None:
-        return None
-    body, idx = body_info
-    for cursor in range(idx - 1, -1, -1):
-        stmt = body[cursor]
-        if isinstance(stmt, ast.Assign):
-            for target in stmt.targets:
-                if isinstance(target, ast.Name) and target.id == name_node.id:
-                    return stmt.value
-        if isinstance(stmt, ast.AnnAssign) and isinstance(stmt.target, ast.Name) and stmt.target.id == name_node.id:
-            return stmt.value
-    return None
+    return [expr]
 
 
 def _extract_dynamic_template_from_expr(expr: ast.AST, parents: dict[ast.AST, ast.AST], depth: int = 0) -> tuple[str, list[str]] | None:
-    if depth > 2:
+    if depth > 5: # Increased depth for complex logs
         return None
-    if isinstance(expr, ast.JoinedStr):
-        return _extract_dynamic_template(expr)
-    from_concat = _extract_dynamic_concat(expr)
-    if from_concat is not None:
-        return from_concat
-    from_format = _extract_dynamic_format(expr)
-    if from_format is not None:
-        return from_format
-    from_percent = _extract_dynamic_percent(expr)
-    if from_percent is not None:
-        return from_percent
-    if isinstance(expr, ast.Name):
-        bound = _resolve_name_assignment_expr(expr, parents)
-        if bound is not None:
-            return _extract_dynamic_template_from_expr(bound, parents, depth + 1)
-    return None
+    
+    parts = _flatten_concat_parts(expr)
+    if not parts:
+        return None
+    
+    # Check if there is actually any dynamic content
+    has_dynamic = False
+    for p in parts:
+        if isinstance(p, (ast.JoinedStr, ast.FormattedValue)):
+            has_dynamic = True
+            break
+        if isinstance(p, ast.BinOp): # Might be complex
+            has_dynamic = True
+            break
+    
+    if not has_dynamic and len(parts) == 1:
+        # Simple constants are handled by the main loop
+        return None
+
+    state_idx = [1]
+    used: set[str] = set()
+    all_chunks = []
+    all_fields = []
+    
+    for part in parts:
+        if isinstance(part, ast.Constant) and isinstance(part.value, str):
+            all_chunks.append(_escape_braces(part.value))
+        elif isinstance(part, ast.JoinedStr):
+            tmpl, flds = _extract_dynamic_template(part, state_idx, used)
+            all_chunks.append(tmpl)
+            all_fields.extend(flds)
+        else:
+            # Treats other expressions as generic placeholders
+            base_key = _expr_to_field_name(part, state_idx[0])
+            field_name = base_key
+            if field_name in used:
+                while True:
+                    state_idx[0] += 1
+                    field_name = f"{base_key}_{state_idx[0]}"
+                    if field_name not in used:
+                        break
+            used.add(field_name)
+            all_chunks.append("{" + field_name + "}")
+            all_fields.append(field_name)
+            state_idx[0] += 1
+            
+    return "".join(all_chunks), all_fields
 
 
 def _extract_msgid(node: ast.Call) -> str | None:
@@ -632,13 +538,25 @@ def _extract_marked_strings_from_file(
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call):
             continue
-        if not (isinstance(node.func, ast.Name) and node.func.id == "_"):
+        
+        is_i18n_call = isinstance(node.func, ast.Name) and node.func.id == "_"
+        is_logger_call = False
+        
+        # Detect logger.info(...) or self.logger.warning(...)
+        if isinstance(node.func, ast.Attribute) and node.func.attr in LOG_METHODS:
+            val = node.func.value
+            if isinstance(val, ast.Name) and "logger" in val.id.lower():
+                is_logger_call = True
+            elif isinstance(val, ast.Attribute) and "logger" in val.attr.lower():
+                is_logger_call = True
+
+        if not (is_i18n_call or is_logger_call):
             continue
         if not node.args:
             continue
 
-        msgid = _extract_msgid(node)
-        context = _detect_context(node, parents)
+        msgid = _extract_msgid(node) if is_i18n_call else None
+        context = _detect_context(node, parents) if is_i18n_call else "log"
         rel_path = str(path.relative_to(ROOT)).replace("\\", "/")
         callsite_key = f"{rel_path}:{node.lineno}:{node.col_offset}"
         owner = (owner_scope, owner_module)

@@ -446,15 +446,15 @@ class SettingInterface(ScrollArea, BaseInterface):
 
     def _showRestartTooltip(self):
         """ show restart tooltip """
-        from app.framework.infra.config.app_config import is_non_chinese_ui_language
-        is_english = is_non_chinese_ui_language()
+        # from app.framework.infra.config.app_config import is_non_chinese_ui_language
+        # is_english = is_non_chinese_ui_language()
 
-        title = 'Updated successfully' if is_english else '更新成功'
-        content = 'Configuration takes effect after restart' if is_english else '重启后配置生效'
+        # title = 'Updated successfully' if is_english else '更新成功'
+        # content = 'Configuration takes effect after restart' if is_english else '重启后配置生效'
 
         InfoBar.success(
-            title,
-            content,
+            _('Updated successfully'),
+            _('Configuration takes effect after restart'),
             duration=2000,
             parent=self
         )

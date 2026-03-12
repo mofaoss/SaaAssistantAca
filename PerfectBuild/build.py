@@ -112,7 +112,7 @@ class PerfectBuild:
                 self.release_dir.parent.mkdir()
             self.release_dir.mkdir()
 
-    def nbuild(self):
+    def nbuild(self, env: dict | None = None):
         """
         官方文档 : https://nuitka.net/
         使用Nuitka构建example:
@@ -139,6 +139,7 @@ class PerfectBuild:
             ("update_data.txt", "update_data.txt", "file"),
             ("asset", "asset", "dir"),
             ("app/framework/infra/vision/onnxocr/models/ppocrv5", "app/framework/infra/vision/onnxocr/models/ppocrv5", "dir"),
+            ("app/framework/i18n", "app/framework/i18n", "dir"),
         ]
 
         def _include_arg(src: str, dst: str, kind: str) -> str | None:
@@ -219,7 +220,7 @@ class PerfectBuild:
             cmd_args.extend((f"--windows-icon-from-ico={self.app_icon}", "--msvc=latest"))
         # '--windows-console-mode=disable',
         cmd_args.append(f"{self.app_dir}/{self.app_exec}.py")
-        process = subprocess.run(cmd_args, shell=True)
+        process = subprocess.run(cmd_args, shell=True, env=env)
         if process.returncode != 0:
             # print(traceback.format_exc())
             raise ChildProcessError("Nuitka building failed.")
@@ -346,9 +347,15 @@ def _run_nuitka_in_stage(app_id: str, mode: str) -> None:
 
         os.chdir(stage_dir)
         PerfectBuild.app_dir = str(stage_dir)
+        
+        # Isolation: Ensure Nuitka and subprocesses prioritize the transformed stage directory
+        # over the original project root if it was installed in the environment.
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(stage_dir) + os.pathsep + env.get("PYTHONPATH", "")
 
         pb = PerfectBuild(app_id, mode)
-        pb.nbuild()
+        # Pass the isolated env to nbuild if needed, or rely on os.chdir + PYTHONPATH
+        pb.nbuild(env=env)
         pb.create_portable()
         if pb.system == "Windows":
             pb.create_setup()

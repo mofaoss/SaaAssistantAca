@@ -89,7 +89,10 @@ def _infer_owner_hints_from_callsite() -> dict:
 
         owner_scope = "framework"
         owner_module = None
-        if lower_module_name.startswith("app.features.modules."):
+        if lower_module_name.startswith("app.features.utils") or "features.utils." in lower_module_name:
+            owner_scope = "module"
+            owner_module = "utils"
+        elif lower_module_name.startswith("app.features.modules."):
             tail = module_name[len("app.features.modules."):]
             module_id = re.split(r"[.:/\\]", tail, maxsplit=1)[0]
             if module_id:
@@ -114,12 +117,19 @@ def _infer_owner_hints_from_callsite() -> dict:
                     owner_scope = "module"
                     owner_module = match.group(1)
                 else:
-                    dotted = re.search(r"features\.modules\.([a-z0-9_]+)", lower_infer)
-                    if dotted:
+                    if re.search(r"(?:^|[./\\])features[./\\]utils(?:[./\\]|$)", lower_infer):
                         owner_scope = "module"
-                        owner_module = dotted.group(1)
-                    elif "framework" in parts or ".framework." in lower_infer or ".framework." in lower_module_name:
+                        owner_module = "utils"
+                    else:
+                        dotted = re.search(r"features\.modules\.([a-z0-9_]+)", lower_infer)
+                        if dotted:
+                            owner_scope = "module"
+                            owner_module = dotted.group(1)
+                    if owner_scope == "framework" and (
+                        "framework" in parts or ".framework." in lower_infer or ".framework." in lower_module_name
+                    ):
                         owner_scope = "framework"
+                        owner_module = None
 
         normalized_path = str(file_name).replace("\\", "/")
         callsite_anchor = normalized_path if normalized_path and normalized_path != "." else ""

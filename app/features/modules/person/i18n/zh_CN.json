@@ -4,6 +4,7 @@
   "module.person.log.刷取角色碎片超时_2": "刷取角色碎片超时",
   "module.person.log.已打开补充对话框_准备使用_2_片记忆嵌片_2": "已打开补充对话框，准备使用 2 片记忆嵌片",
   "module.person.log.找到对应的_速战_pos_min_distance_2": "找到对应的“速战”：({pos},{min_distance})",
+  "module.person.log.更新嵌片次数失败_e_2": "更新嵌片次数失败: {e}",
   "module.person.log.未找到对应速战_检查是否已刷取或是否解锁_person_name_的速战_2": "未找到对应速战，检查是否已刷取或是否解锁{person_name}的速战",
   "module.person.log.点击右上角加号补充体力_2": "点击右上角加号补充体力",
   "module.person.log.记忆嵌片已用尽_2": "记忆嵌片已用尽",

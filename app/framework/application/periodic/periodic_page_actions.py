@@ -295,7 +295,7 @@ class PeriodicRuntimeActions:
                 host.ui.PushButton_start.setText(_("Stop (F8)"))
                 host.task_coordinator.publish_state(
                     True,
-                    host._ui_text("日常任务", "Daily Tasks"),
+                    _("Daily Tasks"),
                     "framework.daily_tasks.title",
                     "daily",
                 )
@@ -530,7 +530,7 @@ class PeriodicRuntimeActions:
             return
 
         InfoBar.error(
-            title="队列为空",
+            title=_('No Tasks Selected', msgid='no_tasks_selected'),
             content=_('Please check at least one task for immediate execution'),
             parent=host,
         )
@@ -547,9 +547,7 @@ class PeriodicRuntimeActions:
             PeriodicRuntimeActions.set_checkbox_enable(host, False)
             external_name = host._state_display_name(task_name, task_name_msgid, source=source)
             btn_text = (
-                f"停止 {external_name} (F8)"
-                if not host._is_non_chinese_ui
-                else f"Stop {external_name} (F8)"
+                _("Stop {external_name} (F8)", msgid="stop_external_name_f8").format(external_name=external_name)
             )
             host.ui.PushButton_start.setText(btn_text)
             return
@@ -647,9 +645,7 @@ class PeriodicRuntimeActions:
         meta = host.task_registry.get(task_id, {})
         task_name = host._task_display_name(meta, task_id)
         fail_msg = (
-            f"⚠️ Task [{task_name}] skipped!"
-            if getattr(host, "_is_non_chinese_ui", False)
-            else f"⚠️ {task_name} 未能成功执行，已跳过！"
+            _("⚠️ Task [{task_name}] skipped!", msgid="task_skipped").format(task_name=task_name)
         )
         host.logger.warning(fail_msg)
 
@@ -673,9 +669,7 @@ class PeriodicRuntimeActions:
         host.scheduler.save_task_sequence(sequence)
 
         success_msg = (
-            f"✨ Task [{task_name}] completed!"
-            if getattr(host, "_is_non_chinese_ui", False)
-            else f"✨ {task_name} 执行完毕！"
+            _("✨ Task [{task_name}] completed!", msgid="task_completed").format(task_name=task_name)
         )
         host.logger.info(success_msg)
 

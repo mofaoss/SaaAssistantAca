@@ -76,3 +76,25 @@ def run(client_width, client_height, actual_ratio, status):
     details = dynamic_meta[owner][key]["field_details"]
     assert details["actual_ratio"]["format_spec"] == ".3f"
     assert details["status"]["conversion"] == "r"
+
+
+def test_extract_features_utils_owned_by_module_utils():
+    source = """
+from app.framework.i18n.runtime import _
+
+def run(logger):
+    logger.info(_("更新成功"))
+"""
+    tree = ast.parse(source)
+    fake_path = extractor.ROOT / "app" / "features" / "utils" / "tmp_utils_extract.py"
+
+    entries, dynamic_meta, callsite_meta = extractor._extract_marked_strings_from_file(fake_path, tree)
+    assert entries
+    owner_scope, owner_module, key, value, source_lang = entries[0]
+    assert owner_scope == "module"
+    assert owner_module == "utils"
+    assert key.startswith("module.utils.log.")
+    assert value == "更新成功"
+    assert source_lang == "zh_CN"
+    assert ("module", "utils") in callsite_meta
+    assert ("module", "utils") not in dynamic_meta

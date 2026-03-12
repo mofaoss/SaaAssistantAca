@@ -1,0 +1,14 @@
+{
+  "module.utils.log.through_cloudflare_online_update_error": "Through Cloudflare online update error: {error_msg}",
+  "module.utils.log.error_occurred_while_updating_through_cloudflare": "Error occurred while updating through Cloudflare: Incorrect data format returned",
+  "module.utils.log.error_occurred_while_processing_cloudflare_data": "Error occurred while processing Cloudflare data: {value_1}",
+  "module.utils.log.obtained_update_information_online_data": "Obtained update information: {online_data}",
+  "module.utils.log.error_occurred_while_updating_through_cloudflare_2": "Error occurred while updating through Cloudflare: Missing required field {field} in updateData",
+  "module.utils.log.error_occurred_while_parsing_api_response_data_v": "Error occurred while parsing API response data: {value_1}",
+  "module.utils.ui.new_content_detected": "New {content} detected",
+  "module.utils.log.falling_back_to_expired_config_cache_due_to_api_failure": "Falling back to expired config cache due to API failure.",
+  "module.utils.log.github_api_connection_error_e": "GitHub API Connection Error: {e}",
+  "module.utils.log.github_api_response_status_code_rate_limit_hit_using_fallback": "GitHub API {response_status_code} Rate Limit hit! Using fallback.",
+  "module.utils.log.github_api_error_response_status_code_response_text": "GitHub API Error {response_status_code}: {response_text}",
+  "module.utils.log.failed_to_remove_existing_update_package_s": "failed to remove existing update package: %s"
+}

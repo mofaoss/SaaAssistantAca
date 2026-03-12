@@ -25,7 +25,6 @@
   "framework.log.interrupt_detected_stopping_automatic_task_reaso": "检测到中断，停止自动任务：{reason}",
   "framework.log.key_pressed_key": "按下按键：{key}",
   "framework.log.key_released_key": "释放按键：{key}",
-  "framework.log.local_configuration_data_format_is_incorrect_usi": "本地配置数据格式不正确，使用在线数据",
   "framework.log.mouse_move_and_click_x_y": "鼠标移动并点击（{x}, {y}）",
   "framework.log.mouse_moved_to_x_y_and_scrolled_wheel_delta": "鼠标移动到（{x},{y}）并滚动滚轮 {delta}",
   "framework.log.new_version_detected": "检测到新版本",
@@ -67,7 +66,6 @@
   "framework.log.the_waiting_game_window_has_timed_out_and_this_automatic_task_has_been_cancelled": "等待游戏窗口超时，已取消本次自动任务",
   "framework.log.there_are_no_checked_tasks_below_to_perform": "⚠️ 下方没有已勾选的任务可执行！",
   "framework.log.there_is_currently_no_activation_schedule": "当前无激活日程。",
-  "framework.log.timeout_returning_to_home_page": "返回主页面超时",
   "framework.log.tracking_click_completed_x_y": "跟踪点击完成（{x}, {y}）",
   "framework.log.tracking_mode_scrolling_completed_x_y_delta_delt": "跟踪模式滚动完成（{x},{y}）delta={delta}",
   "framework.log.tracking_wheel_alignment_failed_abandoning_this": "跟踪滚轮对齐失败，放弃本次滚轮输入：（{x}, {y}, {delta}）",
@@ -149,8 +147,6 @@
   "framework.ui.modification_successful": "修改成功",
   "framework.ui.new": "新增",
   "framework.ui.new_preset": "新建预设",
-  "framework.ui.new_redeem_code_event_information_detected": "检测到新的兑换码活动信息",
-  "framework.ui.new_redeem_code_event_information_detected_2": "检测到新的兑换码活动信息",
   "framework.ui.new_replacement_rule_added_successfully": "已成功添加新的替换规则",
   "framework.ui.new_version_detected": "检测到新版本",
   "framework.ui.no_available_screenshot_currently_skipping_image": "当前没有可用截图，跳过图像匹配",
@@ -212,11 +208,9 @@
   "framework.ui.unable_to_write_to_configuration_file": "无法写入配置文件：",
   "framework.ui.update_now": "现在更新",
   "framework.ui.update_ready": "更新准备就绪",
-  "framework.ui.update_successful": "更新成功",
   "framework.ui.user_interrupt_game_window_has_been_closed": "用户中断：游戏窗口已关闭",
   "framework.ui.vocabulary": "词表",
   "framework.ui.wait_timeout": "等待超时",
   "framework.ui.whether_to_turn_on_physical_recovery_notifications": "是否打开体力恢复通知",
-  "framework.ui.withdraw_successful": "撤回成功",
-  "framework.ui.更新成功_2": "更新成功"
+  "framework.ui.withdraw_successful": "撤回成功"
 }

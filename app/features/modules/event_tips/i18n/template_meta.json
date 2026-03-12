@@ -27,6 +27,54 @@
     "is_runtime_visible": true,
     "mixed_source_template": false
   },
+  "module.event_tips.log.event_status_trace_raw_title_key_raw_status_text_raw_status_parsed_parsed_status": {
+    "kind": "dynamic_template",
+    "template_id": null,
+    "msgid": null,
+    "source_template": "event_status_trace raw_title={key} raw_status_text={raw_status} parsed={parsed_status} locale_used={value_4} final_display={value_5}",
+    "fields": [
+      "key",
+      "raw_status",
+      "parsed_status",
+      "value_4",
+      "value_5"
+    ],
+    "field_details": {
+      "key": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "raw_status": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "parsed_status": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "value_4": {
+        "format_spec": "",
+        "conversion": ""
+      },
+      "value_5": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "module",
+    "owner_module": "event_tips",
+    "file_path": "app/features/modules/event_tips/usecase/event_tips_usecase.py",
+    "line": 207,
+    "col": 16,
+    "function_name": "refresh_tips_panel",
+    "class_name": "EventTipsUseCase",
+    "context": "log",
+    "source_language": "en",
+    "template_hash": "9bb9c385c8d983a03513c8ca43b8d8b6ecf2d5f5",
+    "callsite_key": "app/features/modules/event_tips/usecase/event_tips_usecase.py:207:16",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
   "module.event_tips.ui.event_status_display_with_title": {
     "kind": "dynamic_template",
     "template_id": "event_status_display_with_title",

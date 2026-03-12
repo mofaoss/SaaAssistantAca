@@ -1,5 +1,6 @@
 {
   "module.event_tips.log.error_occurred_while_updating_controls_e": "en",
+  "module.event_tips.log.event_status_trace_raw_title_key_raw_status_text_raw_status_parsed_parsed_status": "en",
   "module.event_tips.log.successfully_fetched_event_schedule": "en",
   "module.event_tips.ui.event_status_display_with_title": "en",
   "module.event_tips.ui.failed_to_update_event_schedule": "en",

@@ -236,17 +236,6 @@ class PersonModule:
         direction = -1 if direction >= 0 else 1
         self.auto.mouse_scroll(int(904 / self.auto.scale_x), int(538 / self.auto.scale_y), 7000 * direction * page)
 
-    # def update_power_times(self):
-    #     """更新嵌片数量"""
-    #     # 格式化后的，并非ocr原生结果：result=[['12/12', 1.0, [[58.0, 16.0], [112.0, 40.0]]]]
-    #     result = self.auto.read_text_from_crop(crop=(1430 / 1920, 15 / 1080, 1554 / 1920, 104 / 1080))
-    #     # 取出文字送去正则匹配
-    #     times = self.detect_times(result[0][0])
-    #     if times is not None:
-    #         self.logger.info(f"记忆嵌片更新成功：{times}")
-    #     else:
-    #         self.logger.info(f"记忆嵌片更新失败：{result}")
-    #     self.power_times = times
     def update_power_times(self):
         """更新嵌片数量（健壮版）"""
         try:

@@ -23,6 +23,8 @@ def _owner_from_path(file_path: Path) -> tuple[str, str | None]:
         return "framework", None
     if len(rel) >= 5 and rel[0] == "app" and rel[1] == "features" and rel[2] == "modules":
         return "module", rel[3]
+    if len(rel) >= 4 and rel[0] == "app" and rel[1] == "features" and rel[2] == "utils":
+        return "module", "utils"
     return "framework", None
 
 

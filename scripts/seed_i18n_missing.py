@@ -149,6 +149,12 @@ def main() -> int:
     files += f
     filled += c
 
+    features_utils_dir = ROOT / "app" / "features" / "utils" / "i18n"
+    if features_utils_dir.exists():
+        f, c = _sync_owner(features_utils_dir)
+        files += f
+        filled += c
+
     modules_root = ROOT / "app" / "features" / "modules"
     for module_dir in modules_root.iterdir():
         if not module_dir.is_dir() or module_dir.name.startswith("__"):

@@ -258,6 +258,8 @@ def _infer_owner_from_frame(frame) -> tuple[str, str | None]:
 
     if module_name:
         lower_module = module_name.lower()
+        if lower_module.startswith("app.features.utils") or "features.utils." in lower_module:
+            return "module", "utils"
         if lower_module.startswith("app.features.modules."):
             tail = module_name[len("app.features.modules."):]
             module_id = re.split(r"[.:/\\]", tail, maxsplit=1)[0]
@@ -273,6 +275,8 @@ def _infer_owner_from_frame(frame) -> tuple[str, str | None]:
 
     file_name = Path(getattr(frame, "f_code", None).co_filename if frame else "")
     normalized = str(file_name).replace("\\", "/").lower()
+    if re.search(r"(?:^|[./\\])features[./\\]utils(?:[./\\]|$)", normalized):
+        return "module", "utils"
     module_match = re.search(r"(?:^|[./\\])modules[./\\]([a-z0-9_]+)(?:[./\\]|$)", normalized)
     if module_match:
         return "module", module_match.group(1)
@@ -564,6 +568,10 @@ def load_i18n_catalogs() -> None:
     for lang in SUPPORTED_LANGS:
         _merge_file(lang, framework_i18n / f"{lang}.json")
 
+    features_utils_i18n = root / "app" / "features" / "utils" / "i18n"
+    for lang in SUPPORTED_LANGS:
+        _merge_file(lang, features_utils_i18n / f"{lang}.json")
+
     modules_root = root / "app" / "features" / "modules"
     if modules_root.exists():
         for module_dir in modules_root.iterdir():
@@ -804,6 +812,7 @@ def _load_template_meta() -> None:
     _PAYLOAD_TEXT_TRANSLATION_CACHE.clear()
     root = _resolve_i18n_project_root()
     _merge_template_meta_file(root / "app" / "framework" / "i18n" / "template_meta.json")
+    _merge_template_meta_file(root / "app" / "features" / "utils" / "i18n" / "template_meta.json")
 
     modules_root = root / "app" / "features" / "modules"
     if modules_root.exists():

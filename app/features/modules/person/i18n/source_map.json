@@ -1,9 +1,11 @@
 {
   "module.person.log.ocr结果为空或结构异常_result_2": "zh_CN",
+  "module.person.log.plus_button_missed_item_details_opened_press_esc_and_retry": "en",
   "module.person.log.使用记忆嵌片超时_2": "zh_CN",
   "module.person.log.刷取角色碎片超时_2": "zh_CN",
   "module.person.log.已打开补充对话框_准备使用_2_片记忆嵌片_2": "zh_CN",
   "module.person.log.找到对应的_速战_pos_min_distance_2": "zh_CN",
+  "module.person.log.更新嵌片次数失败_e_2": "zh_CN",
   "module.person.log.未找到对应速战_检查是否已刷取或是否解锁_person_name_的速战_2": "zh_CN",
   "module.person.log.点击右上角加号补充体力_2": "zh_CN",
   "module.person.log.记忆嵌片已用尽_2": "zh_CN",

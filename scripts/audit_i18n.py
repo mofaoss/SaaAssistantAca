@@ -18,6 +18,7 @@ from app.framework.i18n.template_render import extract_template_field_details
 
 SUPPORTED_LANGS = ["en", "zh_CN", "zh_HK"]
 REQUIRED_LANGS = ["en", "zh_CN"]
+FEATURES_UTILS_I18N = ROOT / "app" / "features" / "utils" / "i18n"
 HAN_RE = re.compile(r"[\u4e00-\u9fff]")
 LATIN_RE = re.compile(r"[A-Za-z]")
 FORMAT_TOKEN_RE = re.compile(r"{([^{}]+)}")
@@ -348,6 +349,8 @@ def collect_report() -> dict:
         if module_dir.name not in registered_dirs:
             continue
         module_reports.append(_audit_owner(module_dir / "i18n", module_dir.name, module_id_map=module_id_map))
+    if FEATURES_UTILS_I18N.exists():
+        module_reports.append(_audit_owner(FEATURES_UTILS_I18N, "utils", module_id_map=module_id_map))
 
     issue_count = framework_report["issue_count"] + sum(item["issue_count"] for item in module_reports)
     translation_gap_count = framework_report["translation_gap_count"] + sum(item["translation_gap_count"] for item in module_reports)

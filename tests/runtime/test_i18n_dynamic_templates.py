@@ -140,3 +140,24 @@ def run(client_width, client_height, actual_ratio, status):
     assert "__i18n_dynamic__" in kw
     assert isinstance(kw["__i18n_template__"], ast.Constant)
     assert kw["__i18n_template__"].value == "Client area size: {client_width}x{client_height} ({actual_ratio:.3f}:1), {status!r}"
+
+
+def test_import_rewrite_marks_features_utils_owner_as_module_utils():
+    source = """
+from app.framework.i18n.runtime import _
+
+def run(logger):
+    logger.info(_("更新成功"))
+"""
+    tree = ast.parse(source)
+    rewritten = _I18nTransformer(Path("app/features/utils/tmp_utils_owner.py")).visit(tree)
+    ast.fix_missing_locations(rewritten)
+
+    call = _find_translated_call(rewritten)
+    kw = _keywords(call)
+    assert "__i18n_owner_scope__" in kw
+    assert "__i18n_owner_module__" in kw
+    assert isinstance(kw["__i18n_owner_scope__"], ast.Constant)
+    assert isinstance(kw["__i18n_owner_module__"], ast.Constant)
+    assert kw["__i18n_owner_scope__"].value == "module"
+    assert kw["__i18n_owner_module__"].value == "utils"
