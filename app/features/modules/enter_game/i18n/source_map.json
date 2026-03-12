@@ -31,5 +31,7 @@
   "module.task_login.action.select_game_directory.label": "zh_CN",
   "module.task_login.action.show_path_tutorial.label": "zh_CN",
   "module.task_login.description": "zh_CN",
+  "module.task_login.field.CheckBox_open_game_directly.label": "zh_CN",
+  "module.task_login.field.LineEdit_game_directory.label": "zh_CN",
   "module.task_login.title": "en"
 }

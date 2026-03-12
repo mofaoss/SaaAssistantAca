@@ -17,7 +17,7 @@
   "module.dummy.field.CheckBox_shutdown.label": "Checkbox Shutdown",
   "module.dummy.field.CheckBox_close_proxy.label": "Checkbox Close Proxy",
   "module.close_game.title": "Execute Exit",
-  "module.close_game.field.CheckBox_close_game.label": "Checkbox Close Game",
-  "module.close_game.field.CheckBox_shutdown.label": "Checkbox Shutdown",
-  "module.close_game.field.CheckBox_close_proxy.label": "Checkbox Close Proxy"
+  "module.close_game.field.CheckBox_close_game.label": "Close Game",
+  "module.close_game.field.CheckBox_shutdown.label": "Shutdown",
+  "module.close_game.field.CheckBox_close_proxy.label": "Close Proxy"
 }
