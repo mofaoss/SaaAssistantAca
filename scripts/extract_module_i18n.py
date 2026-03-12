@@ -633,6 +633,9 @@ def _extract_marked_strings_from_file(
 
         if isinstance(first_arg, ast.Constant) and isinstance(first_arg.value, str):
             text = first_arg.value
+            if not text.strip():
+                # Ignore intentionally empty placeholders like _("").
+                continue
             static_msgid = msgid or f"txt_{hashlib.sha1(text.encode('utf-8')).hexdigest()[:12]}"
             source_lang = classify_source_language(text)
             message = TranslatableMessage(

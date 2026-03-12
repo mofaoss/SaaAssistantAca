@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import time
 
@@ -215,7 +215,7 @@ class PeriodicRuntimeActions:
         host.periodic_controller.update_launch_pending(pending)
         if host.is_launch_pending:
             PeriodicRuntimeActions.set_checkbox_enable(host, False)
-            host.ui.PushButton_start.setText(host._ui_text("停止 (F8)", "Stop (F8)"))
+            host.ui.PushButton_start.setText(_("Stop (F8)"))
 
             for tid, task_item in host.task_widget_map.items():
                 if tid in getattr(host, "tasks_to_run", []):
@@ -228,7 +228,7 @@ class PeriodicRuntimeActions:
 
         if not host.is_running:
             PeriodicRuntimeActions.set_checkbox_enable(host, True)
-            host.ui.PushButton_start.setText(host._ui_text("立即执行 (F8)", "Execute Now (F8)"))
+            host.ui.PushButton_start.setText(_("Execute Now (F8)"))
             host._auto_adjust_after_use_action()
 
     @staticmethod
@@ -245,10 +245,7 @@ class PeriodicRuntimeActions:
                 )
                 requested_names.append(display_name)
             host.logger.info(
-                host._ui_text(
-                    f"收到执行请求任务：{', '.join(requested_names)}",
-                    f"Requested tasks: {', '.join(requested_names)}",
-                )
+                _('Requested tasks: {task_names}').format(task_names=', '.join(requested_names))
             )
 
         game_opened = host._is_game_window_open()
@@ -266,14 +263,11 @@ class PeriodicRuntimeActions:
             and plan.should_launch_game
         ):
             host.logger.info(
-                host._ui_text(
-                    "检测到游戏未运行，已自动将登录任务插入队列首位",
-                    "Game not running, auto-login task inserted at queue head",
-                )
+                _('Game not running, auto-login task inserted at queue head')
             )
 
         if not host.tasks_to_run:
-            host.logger.warning(host._ui_text("任务队列为空，未启动执行", "Task queue is empty, run not started"))
+            host.logger.warning(_('Task queue is empty, run not started'))
             return
 
         queued_names = []
@@ -286,10 +280,7 @@ class PeriodicRuntimeActions:
             )
             queued_names.append(display_name)
         host.logger.info(
-            host._ui_text(
-                f"最终入队任务：{', '.join(queued_names)}",
-                f"Final queued tasks: {', '.join(queued_names)}",
-            )
+            _('Final queued tasks: {var_0}').format(var_0=', '.join(queued_names))
         )
 
         if plan.should_launch_game:
@@ -298,10 +289,7 @@ class PeriodicRuntimeActions:
 
         if plan.should_warn_game_not_open:
             host.logger.warning(
-                host._ui_text(
-                    "[计划] 检测到游戏未运行，且未开启【自动打开游戏】！若稍后报错未找到句柄，请勾选该功能或手动启动游戏。",
-                    "[Schedule] Game is not running and 'Auto open game' is OFF. This may cause handle errors!",
-                )
+                _("[Schedule] Game is not running and 'Auto open game' is OFF. This may cause handle errors!")
             )
         host.after_start_button_click(host.tasks_to_run)
 
@@ -312,7 +300,7 @@ class PeriodicRuntimeActions:
 
             if transition.started:
                 host._set_launch_pending_state(False)
-                host.ui.PushButton_start.setText(host._ui_text("停止 (F8)", "Stop (F8)"))
+                host.ui.PushButton_start.setText(_("Stop (F8)"))
                 host.task_coordinator.publish_state(True, "日常任务", "Daily Tasks", "daily")
 
                 for tid, task_item in host.task_widget_map.items():
@@ -331,7 +319,7 @@ class PeriodicRuntimeActions:
                 host._set_launch_pending_state(False)
                 host.running_game_guard_timer.stop()
                 PeriodicRuntimeActions.set_checkbox_enable(host, True)
-                host.ui.PushButton_start.setText(host._ui_text("立即执行 (F8)", "Execute Now (F8)"))
+                host.ui.PushButton_start.setText(_("Execute Now (F8)"))
                 host._is_running_solo_flag = False
                 host._is_scheduled_run_flag = False
                 host._auto_adjust_after_use_action()
@@ -341,10 +329,7 @@ class PeriodicRuntimeActions:
                     host.after_finish()
         except Exception as e:
             host.logger.error(
-                host._ui_text(
-                    f"处理任务状态变更时出现异常：{e}",
-                    f"Error occurred while handling task state change: {e}",
-                )
+                _('Error occurred while handling task state change: {e}').format(e=e)
             )
             host.is_running = False
             PeriodicRuntimeActions.set_checkbox_enable(host, True)
@@ -354,13 +339,13 @@ class PeriodicRuntimeActions:
     @staticmethod
     def on_task_play_clicked(host, task_id: str):
         def _stop_local():
-            host.logger.info(host._ui_text("已手动中止当前任务", "Task manually stopped"))
+            host.logger.info(_("Task manually stopped"))
             if host.is_launch_pending:
                 host._clear_launch_watch_state()
                 host._set_launch_pending_state(False)
 
             host.periodic_controller.stop_running_thread(
-                reason=host._ui_text("用户点击了手动终止按钮", "User clicked stop button")
+                reason=_("User clicked stop button")
             )
 
         def _start_local(selected_task_id: str):
@@ -371,10 +356,7 @@ class PeriodicRuntimeActions:
                 else meta.get("zh_name", selected_task_id)
             )
             host.logger.info(
-                host._ui_text(
-                    f"开始单独重跑任务: {task_name}",
-                    f"Force running task: {task_name}",
-                )
+                _('Force running task: {task_name}').format(task_name=task_name)
             )
             host._is_running_solo_flag = True
             host._initiate_task_run([selected_task_id])
@@ -395,11 +377,8 @@ class PeriodicRuntimeActions:
             return
 
         host.logger.info(
-            host._ui_text(
-                "开始从指定位置向下批量执行已勾选任务",
-                "Force running checked tasks from here",
+            _("Force running checked tasks from here")
             )
-        )
 
         ordered_task_ids = host.ui.taskListWidget.get_task_order()
         tasks_to_run = collect_checked_tasks_from(
@@ -411,7 +390,7 @@ class PeriodicRuntimeActions:
         )
 
         if not tasks_to_run:
-            host.logger.warning(host._ui_text("⚠️ 下方没有已勾选的任务可执行！", "⚠️ No checked tasks found below!"))
+            host.logger.warning(_("⚠️ No checked tasks found below!"))
             return
         host._initiate_task_run(tasks_to_run)
 
@@ -424,7 +403,7 @@ class PeriodicRuntimeActions:
             if launch_state == "detected":
                 host._clear_launch_watch_state()
                 host._set_launch_pending_state(False)
-                host.logger.info(host._ui_text(f"已检测到游戏窗口：{hwnd}", f"Game window detected: {hwnd}"))
+                host.logger.info(_('Game window detected: {hwnd}').format(hwnd=hwnd))
                 host.after_start_button_click(getattr(host, "tasks_to_run", []))
                 return
 
@@ -432,14 +411,11 @@ class PeriodicRuntimeActions:
                 host._clear_launch_watch_state()
                 host._set_launch_pending_state(False)
                 host.logger.warning(
-                    host._ui_text(
-                        "启动流程已中断：检测到游戏进程退出，已取消本次自动任务",
-                        "Launch process interrupted: Game process exited, pending tasks cancelled.",
-                    )
+                    _('Launch process interrupted: Game process exited, pending tasks cancelled.')
                 )
                 InfoBar.warning(
-                    title=host._ui_text("游戏启动已中断", "Game launch interrupted"),
-                    content=host._ui_text("已停止后续任务", "Pending tasks cancelled."),
+                    title=_('Game launch interrupted'),
+                    content=_('Pending tasks cancelled.'),
                     orient=Qt.Orientation.Horizontal,
                     isClosable=True,
                     position=InfoBarPosition.TOP_RIGHT,
@@ -452,14 +428,11 @@ class PeriodicRuntimeActions:
                 host._clear_launch_watch_state()
                 host._set_launch_pending_state(False)
                 host.logger.warning(
-                    host._ui_text(
-                        "等待游戏窗口超时，已取消本次自动任务",
-                        "Waiting for game window timed out, pending tasks cancelled.",
-                    )
+                    _('Waiting for game window timed out, pending tasks cancelled.')
                 )
                 InfoBar.warning(
-                    title=host._ui_text("等待超时", "Launch timeout"),
-                    content=host._ui_text("已停止后续任务", "Pending tasks cancelled."),
+                    title=_('Launch timeout'),
+                    content=_('Pending tasks cancelled.'),
                     orient=Qt.Orientation.Horizontal,
                     isClosable=True,
                     position=InfoBarPosition.TOP_RIGHT,
@@ -468,10 +441,7 @@ class PeriodicRuntimeActions:
                 )
         except Exception as e:
             host.logger.error(
-                host._ui_text(
-                    f"检测游戏启动状态时出现异常：{e}",
-                    f"Error occurred while checking game launch status: {e}",
-                )
+                _('Error occurred while checking game launch status: {e}').format(e=e)
             )
             host._clear_launch_watch_state()
             host._set_launch_pending_state(False)
@@ -499,8 +469,8 @@ class PeriodicRuntimeActions:
             return
 
         InfoBar.error(
-            title=host._ui_text("无任务", "No task"),
-            content=host._ui_text("未选择任务或不在生效周期", "No task selected or not in active period"),
+            title=_('No task'),
+            content=_('No task selected or not in active period'),
             orient=Qt.Orientation.Horizontal,
             isClosable=False,
             position=InfoBarPosition.TOP_RIGHT,
@@ -534,20 +504,14 @@ class PeriodicRuntimeActions:
 
             host._stop_running_guard()
             host.logger.warning(
-                host._ui_text(
-                    "检测到游戏窗口已关闭，正在停止当前自动任务",
-                    "Game window closed, stopping current automatic task",
-                )
+                _('Game window closed, stopping current automatic task')
             )
             host.periodic_controller.stop_running_thread(
-                reason=host._ui_text("用户中断：游戏窗口已关闭", "Interrupted by user: game window closed")
+                reason=_('Interrupted by user: game window closed')
             )
         except Exception as e:
             host.logger.error(
-                host._ui_text(
-                    f"运行中窗口守护检测异常：{e}",
-                    f"Error occurred while monitoring running game window: {e}",
-                )
+                _('Error occurred while monitoring running game window: {e}').format(e=e)
             )
             host._stop_running_guard()
 
@@ -574,10 +538,10 @@ class PeriodicRuntimeActions:
 
         InfoBar.error(
             title="队列为空",
-            content=host._ui_text("请至少勾选一个任务进行立即执行", "Please select at least one task to run immediately"),
+            content=_('Please select at least one task to run immediately'),
             parent=host,
         )
-        host.logger.warning(host._ui_text("未勾选可执行任务，执行请求已取消", "No runnable task selected, execution cancelled"))
+        host.logger.warning(_('No runnable task selected, execution cancelled'))
 
     @staticmethod
     def on_global_state_changed(host, is_running: bool, zh_name: str, en_name: str, source: str):
@@ -597,7 +561,7 @@ class PeriodicRuntimeActions:
             return
 
         PeriodicRuntimeActions.set_checkbox_enable(host, True)
-        host.ui.PushButton_start.setText(host._ui_text("立即执行 (F8)", "Execute Now (F8)"))
+        host.ui.PushButton_start.setText(_('Execute Now (F8)'))
         pending_tasks = host.periodic_controller.consume_pending_queue_on_external_release()
         if pending_tasks:
             host.logger.info(
@@ -675,19 +639,13 @@ class PeriodicRuntimeActions:
     def after_finish(host):
         if getattr(host, "_is_running_solo_flag", False):
             host.logger.info(
-                host._ui_text(
-                    "单独重跑完毕，已返回空闲状态...",
-                    "Solo execution completed, returned to idle state...",
-                )
+                _('Solo execution completed, returned to idle state...')
             )
             return
 
         host._auto_adjust_after_use_action()
         host.logger.info(
-            host._ui_text(
-                "所有任务执行完毕，助手已进入挂机监控模式...",
-                "All tasks completed, assistant entered monitoring mode...",
-            )
+            _('All tasks completed, assistant entered monitoring mode...')
         )
 
     @staticmethod
@@ -741,4 +699,3 @@ class PeriodicRuntimeActions:
             if getattr(host, "is_running", False) or getattr(host, "is_launch_pending", False):
                 if hasattr(task_item, "lock_ui_for_execution"):
                     task_item.lock_ui_for_execution()
-

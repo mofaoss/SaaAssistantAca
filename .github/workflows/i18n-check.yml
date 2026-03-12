@@ -27,4 +27,4 @@ jobs:
 
       - name: Run i18n pipeline check
         run: |
-          python scripts/i18n_check.py
+          python scripts/i18n_check.py --all

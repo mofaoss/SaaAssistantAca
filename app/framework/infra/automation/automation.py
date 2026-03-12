@@ -133,7 +133,7 @@ class Automation:
 
         except Exception as e:
             if hasattr(self, "logger") and self.logger:
-                self.logger.error(f"刷新窗口句柄失败: {e}")
+                self.logger.error(_(f'Failed to refresh window handles: {e}', msgid='failed_to_refresh_window_handles_e'))
 
     def _resolve_ui_click(self, ref_or_id, **kwargs):
         if isinstance(ref_or_id, UIReference):

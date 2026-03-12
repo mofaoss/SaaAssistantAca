@@ -63,7 +63,7 @@ class OnDemandTasksPage(QFrame, BaseInterface):
 
         self._load_config()
         self._connect_to_slot()
-        self.ui.sharedLogTitle.setText(self._ui_text("鍏变韩鏃ュ織", "Shared Log"))
+        self.ui.sharedLogTitle.setText(_('Shared Log'))
         if self.stackedWidget.count() > 0:
             first_page = self.stackedWidget.widget(0)
             self.SegmentedWidget.setCurrentItem(first_page.objectName())
@@ -139,7 +139,7 @@ class OnDemandTasksPage(QFrame, BaseInterface):
             self.ui.add_page(
                 page,
                 page_name,
-                self._ui_text(spec.zh_name, spec.en_name),
+                _(spec.en_name),
             )
 
             bindings = spec.ui_bindings
@@ -303,10 +303,7 @@ class OnDemandTasksPage(QFrame, BaseInterface):
             module_class,
             logger_instance=logger,
             task_id=task_id,
-            task_name=self._ui_text(
-                meta.get("zh_name", task_id),
-                meta.get("en_name", task_id),
-            ),
+            task_name=_(meta.get('en_name', task_id)),
         )
 
     def _is_background_task_running(self, task_id: str) -> bool:
@@ -451,11 +448,11 @@ class OnDemandTasksPage(QFrame, BaseInterface):
             policy = self._execution_policy(meta)
             if policy == "background":
                 if self._is_background_task_running(task_id):
-                    btn.setText(self._ui_text(f"停止 {meta['zh_name']} (F8)", f"Stop {meta['en_name']} (F8)"))
+                    btn.setText(_('Stop {var_0} (F8)').format(var_0=meta['en_name']))
                     if card is not None:
                         self.set_simple_card_enable(card, False)
                 else:
-                    btn.setText(self._ui_text(f"开始 {meta['zh_name']}", f"Start {meta['en_name']}"))
+                    btn.setText(_('Start {var_0}').format(var_0=meta['en_name']))
                     if card is not None:
                         self.set_simple_card_enable(card, True)
                 continue
@@ -463,7 +460,7 @@ class OnDemandTasksPage(QFrame, BaseInterface):
             if external_running:
                 stop_zh = external_zh or meta["zh_name"]
                 stop_en = external_en or meta["en_name"]
-                btn.setText(self._ui_text(f"停止 {stop_zh} (F8)", f"Stop {stop_en} (F8)"))
+                btn.setText(_('Stop {stop_en} (F8)').format(stop_en=stop_en))
                 if card is not None:
                     self.set_simple_card_enable(card, False)
                 continue
@@ -472,12 +469,12 @@ class OnDemandTasksPage(QFrame, BaseInterface):
                 running_meta = meta_dict.get(running_task_id, {})
                 running_zh = running_meta.get("zh_name", running_task_id)
                 running_en = running_meta.get("en_name", running_task_id)
-                btn.setText(self._ui_text(f"停止 {running_zh} (F8)", f"Stop {running_en} (F8)"))
+                btn.setText(_('Stop {running_en} (F8)').format(running_en=running_en))
                 if card is not None:
                     self.set_simple_card_enable(card, False)
                 continue
 
-            btn.setText(self._ui_text(f"开始 {meta['zh_name']}", f"Start {meta['en_name']}"))
+            btn.setText(_('Start {var_0}').format(var_0=meta['en_name']))
             if card is not None:
                 self.set_simple_card_enable(card, True)
 

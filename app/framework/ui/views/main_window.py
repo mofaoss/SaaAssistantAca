@@ -1,4 +1,4 @@
-﻿# coding: utf-8
+# coding: utf-8
 import os.path
 import re
 import sys
@@ -161,20 +161,20 @@ class MainWindow(FluentWindow, BaseInterface):
         if icon.isNull():
             logger.warning(_("system tray icon is null; tray may be invisible"))
         self.tray_icon.setIcon(icon)
-        self.tray_icon.setToolTip(self._ui_text("安卡小助手", "SaaAssistantAca"))
+        self.tray_icon.setToolTip(_('SaaAssistantAca'))
 
         # 创建托盘菜单
         tray_menu = QMenu(self)
 
         # 显示主窗口动作
-        show_action = QAction(self._ui_text("显示主窗口", "Show Window"), self)
+        show_action = QAction(_('Show Window'), self)
         show_action.triggered.connect(self.show_from_tray)
         tray_menu.addAction(show_action)
 
         tray_menu.addSeparator()
 
         # 彻底退出动作
-        quit_action = QAction(self._ui_text("彻底退出", "Quit"), self)
+        quit_action = QAction(_('Quit'), self)
         quit_action.triggered.connect(self.quit_app)
         tray_menu.addAction(quit_action)
 
@@ -407,19 +407,19 @@ class MainWindow(FluentWindow, BaseInterface):
         if key == "display":
             if self.displayInterface is None:
                 self._create_display_interface()
-            self._register_nav_item("display", self.displayInterface, FIF.HOME, self._ui_text('首页', 'Home'))
+            self._register_nav_item("display", self.displayInterface, FIF.HOME, _('Home'))
             return
 
         if key == "home":
             if self.homeInterface is None:
                 self._create_home_interface()
-            self._register_nav_item("home", self.homeInterface, FIF.PLAY, self._ui_text('日常', 'Daily'))
+            self._register_nav_item("home", self.homeInterface, FIF.PLAY, _('Daily'))
             return
 
         if key == "additional":
             if self.additionalInterface is None:
                 self._create_additional_interface()
-            self._register_nav_item("additional", self.additionalInterface, FIF.DEVELOPER_TOOLS, self._ui_text('工具', 'Tools'))
+            self._register_nav_item("additional", self.additionalInterface, FIF.DEVELOPER_TOOLS, _('Tools'))
             return
 
         if key == "table":
@@ -429,7 +429,7 @@ class MainWindow(FluentWindow, BaseInterface):
                 "table",
                 self.tableInterface,
                 FIF.BOOK_SHELF,
-                self._ui_text('词表', 'OCR'),
+                _('OCR'),
                 position=NavigationItemPosition.BOTTOM,
             )
             return
@@ -441,7 +441,7 @@ class MainWindow(FluentWindow, BaseInterface):
                 "help",
                 self.helpInterface,
                 FIF.HELP,
-                self._ui_text('帮助', 'Help'),
+                _('Help'),
                 position=NavigationItemPosition.BOTTOM,
             )
             return
@@ -494,7 +494,7 @@ class MainWindow(FluentWindow, BaseInterface):
         if not best:
             InfoBar.success(
                 title=_("Up to date"),
-                content=self._ui_text("", ""),
+                content="",
                 orient=Qt.Orientation.Horizontal,
                 isClosable=True,
                 position=InfoBarPosition.TOP,
@@ -505,10 +505,7 @@ class MainWindow(FluentWindow, BaseInterface):
 
         download_url = str((best or {}).get("download_url") or "").strip()
         download_link_text = _("Update now")
-        content_html = self._ui_text(
-            f"<a href=\"#\">{download_link_text}</a>",
-            f"<a href=\"#\">{download_link_text}</a>"
-        )
+        content_html = _('<a href="#">{download_link_text}</a>').format(download_link_text=download_link_text)
         info_bar = InfoBar.warning(
             # title=self._ui_text("检测到新版本", "New version available"),
             title=_("New version available"),

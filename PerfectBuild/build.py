@@ -340,7 +340,8 @@ def _run_nuitka_in_stage(app_id: str, mode: str) -> None:
         print(
             "[build] nuitka stage ready: "
             f"{stage_dir} "
-            f"(changed {stage_result.py_files_changed}/{stage_result.py_files_scanned} .py files)"
+            f"(changed {stage_result.py_files_changed}/{stage_result.py_files_scanned} .py files, "
+            f"remaining dynamic _(fstring) calls: {stage_result.remaining_dynamic_fstring_calls})"
         )
 
         os.chdir(stage_dir)

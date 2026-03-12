@@ -28,10 +28,7 @@ class PeriodicDispatcher:
         current_time_str = datetime.now().strftime("%H:%M")
         if is_self_running or is_external_running:
             self.logger.info(
-                self._ui_text(
-                    f"⏰ 到点触发计划: {current_time_str}，系统正忙，已加入队列排队: {task_ids}",
-                    f"⏰ Scheduled task triggered at {current_time_str}, system is busy, added to queue: {task_ids}",
-                )
+                _('⏰ Scheduled task triggered at {current_time_str}, system is busy, added to queue: {task_ids}').format(current_time_str=current_time_str, task_ids=task_ids)
             )
             queue_tasks(task_ids)
             for task_id in task_ids:
@@ -42,9 +39,6 @@ class PeriodicDispatcher:
             return
 
         self.logger.info(
-            self._ui_text(
-                f"⏰ 到点触发计划: {current_time_str}，执行列表: {task_ids}",
-                f"⏰ Scheduled task triggered at {current_time_str}, executing tasks: {task_ids}",
-            )
+            _('⏰ Scheduled task triggered at {current_time_str}, executing tasks: {task_ids}').format(current_time_str=current_time_str, task_ids=task_ids)
         )
         run_now(task_ids)

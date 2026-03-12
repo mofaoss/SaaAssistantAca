@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import fnmatch
 import shutil
 from dataclasses import dataclass
@@ -56,6 +57,7 @@ class StageResult:
     stage_dir: Path
     py_files_scanned: int
     py_files_changed: int
+    remaining_dynamic_fstring_calls: int
 
 
 def _project_root_from_this_file() -> Path:
@@ -101,7 +103,29 @@ def copy_project_to_stage(project_root: Path, stage_dir: Path) -> None:
     )
 
 
-def transform_stage_python_files(stage_dir: Path) -> tuple[int, int]:
+def _count_remaining_dynamic_fstring_calls(stage_dir: Path) -> int:
+    count = 0
+    for py_file in stage_dir.rglob("*.py"):
+        try:
+            tree = ast.parse(py_file.read_text(encoding="utf-8-sig"), filename=str(py_file))
+        except Exception:
+            continue
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            if not isinstance(node.func, ast.Name) or node.func.id != "_":
+                continue
+            if not node.args:
+                continue
+            first_arg = node.args[0]
+            if not isinstance(first_arg, ast.JoinedStr):
+                continue
+            if any(isinstance(item, ast.FormattedValue) for item in first_arg.values):
+                count += 1
+    return count
+
+
+def transform_stage_python_files(stage_dir: Path) -> tuple[int, int, int]:
     scanned = 0
     changed = 0
 
@@ -110,11 +134,13 @@ def transform_stage_python_files(stage_dir: Path) -> tuple[int, int]:
         if process_file(py_file):
             changed += 1
 
+    remaining_dynamic = _count_remaining_dynamic_fstring_calls(stage_dir)
     print(
         "[prepare_build] ast transform done: "
-        f"changed {changed}/{scanned} python files"
+        f"changed {changed}/{scanned} python files, "
+        f"remaining dynamic _(fstring) calls: {remaining_dynamic}"
     )
-    return scanned, changed
+    return scanned, changed, remaining_dynamic
 
 
 def prepare_nuitka_stage(
@@ -125,9 +151,14 @@ def prepare_nuitka_stage(
     stage_dir = root / stage_dir_name
 
     copy_project_to_stage(root, stage_dir)
-    scanned, changed = transform_stage_python_files(stage_dir)
+    scanned, changed, remaining_dynamic = transform_stage_python_files(stage_dir)
 
-    return StageResult(stage_dir=stage_dir, py_files_scanned=scanned, py_files_changed=changed)
+    return StageResult(
+        stage_dir=stage_dir,
+        py_files_scanned=scanned,
+        py_files_changed=changed,
+        remaining_dynamic_fstring_calls=remaining_dynamic,
+    )
 
 
 def merge_release_from_stage(project_root: str | Path, stage_dir: str | Path) -> int:

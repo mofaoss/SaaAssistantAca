@@ -217,6 +217,15 @@ def _is_translated_call(node: ast.AST | None) -> bool:
     return False
 
 
+def _is_legacy_ui_text_call(node: ast.Call) -> bool:
+    func = node.func
+    if isinstance(func, ast.Name):
+        return func.id in {"ui_text", "_ui_text"}
+    if isinstance(func, ast.Attribute):
+        return func.attr in {"ui_text", "_ui_text"}
+    return False
+
+
 def _is_raw_text_node(node: ast.AST | None) -> bool:
     if _is_translated_call(node):
         return False
@@ -248,6 +257,17 @@ def _scan_file(path: Path, *, allowed_lines: set[int] | None = None) -> list[Fin
                 findings.append(Finding("error", str(path.relative_to(ROOT)), node.lineno, f"Banned public helper '{node.name}'"))
 
         if isinstance(node, ast.Call):
+            if _is_legacy_ui_text_call(node):
+                if allowed_lines is None or node.lineno in allowed_lines:
+                    findings.append(
+                        Finding(
+                            "warning",
+                            str(path.relative_to(ROOT)),
+                            node.lineno,
+                            "Legacy ui_text/_ui_text call detected. Prefer _('English') and use .format(...) for dynamic values.",
+                        )
+                    )
+
             if _is_logger_call(node.func):
                 msg_node = _extract_msg_arg(node)
                 if _is_raw_text_node(msg_node):

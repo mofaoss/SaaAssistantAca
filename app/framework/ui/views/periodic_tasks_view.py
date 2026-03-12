@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from PySide6.QtCore import QSize, Qt, Signal
 from PySide6.QtWidgets import (
@@ -886,18 +886,18 @@ class PeriodicTasksView(ScrollArea):
 
     def _apply_ui_settings(self):
         self.BodyLabel_preset.setText(
-            self._ui_text("任务勾选记录：", "Task Preset:"))
-        self.PushButton_add_preset.setToolTip(self._ui_text("新建预设", "Create New Preset"))
-        self.PushButton_save_preset.setToolTip(self._ui_text("保存当前勾选到预设", "Save current selection to preset"))
-        self.PushButton_delete_preset.setToolTip(self._ui_text("删除当前预设", "Delete current preset"))
-        self.PushButton_start.setText(self._ui_text("立即执行 (F8)", "Execute Now (F8)"))
+            _('Task Preset:'))
+        self.PushButton_add_preset.setToolTip(_('Create New Preset'))
+        self.PushButton_save_preset.setToolTip(_('Save current selection to preset'))
+        self.PushButton_delete_preset.setToolTip(_('Delete current preset'))
+        self.PushButton_start.setText(_('Execute Now (F8)'))
         self.PushButton_start.setToolTip(
-            self._ui_text("快捷键：F8", "Shortcut: F8"))
+            _('Shortcut: F8'))
 
-        self.TitleLabel.setText(self._ui_text("日志", "Log"))
-        self.PushButton_select_all.setText(self._ui_text("全选", "All"))
-        self.PushButton_no_select.setText(self._ui_text("清空", "Clear"))
-        self.hint_label.setText(self._ui_text("拖动调整顺序", "Drag to sort"))
-        self.TitleLabel_3.setText(self._ui_text("日程提醒", "Event Reminder"))
+        self.TitleLabel.setText(_('Log'))
+        self.PushButton_select_all.setText(_('All'))
+        self.PushButton_no_select.setText(_('Clear'))
+        self.hint_label.setText(_('Drag to sort'))
+        self.TitleLabel_3.setText(_('Event Reminder'))
 
 

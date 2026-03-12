@@ -232,7 +232,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
             key=lambda item: item.get("ui_page_index", 0),
         )
         return [
-            self._ui_text(meta.get("zh_name", ""), meta.get("en_name", ""))
+            _(meta.get('en_name', ''))
             for meta in ordered_metas
         ]
 
@@ -357,7 +357,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
 
         self.ui.PopUpAniStackedWidget.setCurrentIndex(0)
         self.ui.TitleLabel_setting.setText(
-            self._ui_text("设置", "Settings") + "-" + self.setting_name_list[
+            _('Settings') + "-" + self.setting_name_list[
                 self.ui.PopUpAniStackedWidget.currentIndex()])
 
         self._load_config()
@@ -393,7 +393,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
             header = "<b>当前已激活的自动执行日程表：</b>" if not self._is_non_chinese_ui else "<b>Active Schedules:</b>"
             self.logger.info(_(f"{header}<br/>" + "<br/>".join(schedule_logs), msgid="periodic_active_schedule_output"))
         else:
-            self.logger.info(self._ui_text("当前无激活日程。", "No active schedules."))
+            self.logger.info(_('No active schedules.'))
 
     def _auto_adjust_after_use_action(self, sequence=None):
         # 检查当前是否在全局执行状态
@@ -534,7 +534,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
             self.check_game_window_timer.start(500)
             self._set_launch_pending_state(True)
         except Exception as e:
-            self.logger.error(self._ui_text(f'出现报错: {e}', f'Error occurred: {e}'))
+            self.logger.error(_('Error occurred: {e}').format(e=e))
             self._set_launch_pending_state(False)
 
     def _is_game_window_open(self):
@@ -737,7 +737,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
     def start_from_homepage(self):
         """专供首页快捷卡片调用：如果已经在运行，则什么都不做，绝不终止任务"""
         if self.is_running or self.is_launch_pending:
-            self.logger.info(self._ui_text("任务已在运行，忽略首页启动请求。", "Task is already running, ignoring homepage launch request."))
+            self.logger.info(_('Task is already running, ignoring homepage launch request.'))
             return
 
         # 如果空闲，则复用普通的立即执行逻辑
@@ -754,7 +754,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
             if index < 0 or index >= len(self.setting_name_list):
                 return
             self.ui.TitleLabel_setting.setText(
-                self._ui_text("设置", "Settings") + "-" +
+                _('Settings') + "-" +
                 self.setting_name_list[index])
             self.ui.PopUpAniStackedWidget.setCurrentIndex(index)
         except Exception as e:

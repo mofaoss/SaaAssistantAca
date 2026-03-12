@@ -14,7 +14,7 @@ class _TemplateState:
 
 
 class I18nFStringTransformer(ast.NodeTransformer):
-    """Transform _(f"...") into _("...").format(...)."""
+    """Transform dynamic _(...) payloads into _("...").format(...)."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -32,16 +32,23 @@ class I18nFStringTransformer(ast.NodeTransformer):
             return node
 
         first_arg = node.args[0]
-        if not isinstance(first_arg, ast.JoinedStr):
+        if not isinstance(first_arg, (ast.JoinedStr, ast.BinOp)):
             return node
 
-        transformed = self._rewrite_i18n_fstring_call(node, first_arg)
+        transformed = self._rewrite_i18n_dynamic_call(node, first_arg)
+        if transformed is node:
+            return node
         self.changed = True
         return ast.copy_location(transformed, node)
 
-    def _rewrite_i18n_fstring_call(self, call_node: ast.Call, joined: ast.JoinedStr) -> ast.Call:
+    def _rewrite_i18n_dynamic_call(self, call_node: ast.Call, expr: ast.AST) -> ast.Call:
         state = _TemplateState()
-        template = self._joined_str_to_template(joined, state)
+        parsed = self._expr_to_template(expr, state)
+        if parsed is None:
+            return call_node
+        template, has_dynamic = parsed
+        if not has_dynamic:
+            return call_node
 
         new_i18n_call = ast.Call(
             func=call_node.func,
@@ -61,6 +68,28 @@ class I18nFStringTransformer(ast.NodeTransformer):
             args=[],
             keywords=kwargs,
         )
+
+    def _expr_to_template(self, expr: ast.AST, state: _TemplateState) -> tuple[str, bool] | None:
+        if isinstance(expr, ast.JoinedStr):
+            template = self._joined_str_to_template(expr, state)
+            has_dynamic = any(isinstance(item, ast.FormattedValue) for item in expr.values)
+            return template, has_dynamic
+
+        if isinstance(expr, ast.BinOp):
+            if not isinstance(expr.op, ast.Add):
+                return None
+            left = self._expr_to_template(expr.left, state)
+            right = self._expr_to_template(expr.right, state)
+            if left is None or right is None:
+                return None
+            return left[0] + right[0], left[1] or right[1]
+
+        if isinstance(expr, ast.Constant) and isinstance(expr.value, str):
+            return self._escape_braces(expr.value), False
+
+        # Treat non-literal nodes as dynamic placeholders.
+        key = self._bind_expression(expr, state)
+        return "{" + key + "}", True
 
     def _joined_str_to_template(self, joined: ast.JoinedStr, state: _TemplateState) -> str:
         result: list[str] = []

@@ -441,6 +441,34 @@
     "is_runtime_visible": true,
     "mixed_source_template": false
   },
+  "framework.log.failed_to_refresh_window_handles_e": {
+    "kind": "dynamic_template",
+    "template_id": "failed_to_refresh_window_handles_e",
+    "msgid": "failed_to_refresh_window_handles_e",
+    "source_template": "Failed to refresh window handles: {e}",
+    "fields": [
+      "e"
+    ],
+    "field_details": {
+      "e": {
+        "format_spec": "",
+        "conversion": ""
+      }
+    },
+    "owner_scope": "framework",
+    "owner_module": null,
+    "file_path": "app/framework/infra/automation/automation.py",
+    "line": 136,
+    "col": 34,
+    "function_name": "_refresh_hwnds",
+    "class_name": "Automation",
+    "context": "log",
+    "source_language": "en",
+    "template_hash": "061ceb8623f0f2b0b75217fe79884167028ecca6",
+    "callsite_key": "app/framework/infra/automation/automation.py:136:34",
+    "is_runtime_visible": true,
+    "mixed_source_template": false
+  },
   "framework.log.found_handle_for_window_value_hwnd": {
     "kind": "dynamic_template",
     "template_id": "found_handle_for_window_value_hwnd",
@@ -2533,14 +2561,14 @@
     "owner_scope": "framework",
     "owner_module": null,
     "file_path": "app/framework/ui/views/main_window.py",
-    "line": 850,
+    "line": 847,
     "col": 14,
     "function_name": "handle_exception",
     "class_name": null,
     "context": "ui",
     "source_language": "en",
     "template_hash": "1f50b0e8dda5eb351e8d85b85303239e144f63e5",
-    "callsite_key": "app/framework/ui/views/main_window.py:850:14",
+    "callsite_key": "app/framework/ui/views/main_window.py:847:14",
     "is_runtime_visible": true,
     "mixed_source_template": false
   },
@@ -2561,14 +2589,14 @@
     "owner_scope": "framework",
     "owner_module": null,
     "file_path": "app/framework/ui/views/main_window.py",
-    "line": 865,
+    "line": 862,
     "col": 57,
     "function_name": "handle_exception",
     "class_name": null,
     "context": "ui",
     "source_language": "en",
     "template_hash": "6238eeb8fbf4f99840d47fdcb2d618ee89b98536",
-    "callsite_key": "app/framework/ui/views/main_window.py:865:57",
+    "callsite_key": "app/framework/ui/views/main_window.py:862:57",
     "is_runtime_visible": true,
     "mixed_source_template": false
   },

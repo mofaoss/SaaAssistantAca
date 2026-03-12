@@ -1,4 +1,4 @@
-﻿from PySide6.QtCore import QSize
+from PySide6.QtCore import QSize
 from PySide6.QtWidgets import QGridLayout, QWidget
 from qfluentwidgets import CheckBox, ScrollArea, StrongBodyLabel
 
@@ -98,6 +98,6 @@ class ShopPage(ModulePageBase):
         for attr, zh, en in shop_items:
             checkbox = getattr(self, attr, None)
             if checkbox is not None:
-                checkbox.setText(self._ui_text(zh, en))
+                checkbox.setText(_(en))
 
 

@@ -36,22 +36,19 @@ class OcrReplacementTable(QFrame, BaseInterface):
         raise AttributeError(f"{self.__class__.__name__} object has no attribute '{name}'")
 
     def _initWidget(self):
-        self.BodyLabel.setText(self._ui_text("替换类型", "Replacement Type"))
-        self.BodyLabel_2.setText(self._ui_text("替换前", "Before"))
-        self.BodyLabel_3.setText(self._ui_text("替换后", "After"))
-        self.PushButton_delete.setText(self._ui_text("删除选中行", "Delete Selected Row"))
-        self.PrimaryPushButton_add.setText(self._ui_text("新增", "Add"))
+        self.BodyLabel.setText(_('Replacement Type'))
+        self.BodyLabel_2.setText(_('Before'))
+        self.BodyLabel_3.setText(_('After'))
+        self.PushButton_delete.setText(_('Delete Selected Row'))
+        self.PrimaryPushButton_add.setText(_('Add'))
 
         self.BodyLabel_tips.setText(
-            self._ui_text(
-                "### 提示\n* ocr识别问题的替换字表 \n* 双击单元格可修改\n* 填好上面对应的内容后点击“新增”按钮可以添加新的替换规则\n* 错误文本：ocr识别出来的错误内容，如果看不到去设置那开启显示ocr识别结果\n* 正确文本：游戏中对应的正确文字\n* 删除需要先选中你需要删除的行，然后再点删除按钮",
-                "### Tips\n* This is a replacement table for OCR recognition issues\n* Double-click a cell to edit\n* Fill the fields above and click Add to create a new replacement rule\n* Wrong Text: OCR-recognized incorrect text. If missing, enable OCR result display in Settings\n* Correct Text: expected in-game text\n* To delete, select a row first and then click Delete"
-            ))
+            _('### Tips\n* This is a replacement table for OCR recognition issues\n* Double-click a cell to edit\n* Fill the fields above and click Add to create a new replacement rule\n* Wrong Text: OCR-recognized incorrect text. If missing, enable OCR result display in Settings\n* Correct Text: expected in-game text\n* To delete, select a row first and then click Delete'))
 
-        power_usage_items = [self._ui_text('直接替换', 'Direct Replace'), self._ui_text('条件替换', 'Conditional Replace')]
+        power_usage_items = [_('Direct Replace'), _('Conditional Replace')]
         self.ComboBox_type.addItems(power_usage_items)
-        self.LineEdit_before.setPlaceholderText(self._ui_text("错误文本", "Wrong Text"))
-        self.LineEdit_after.setPlaceholderText(self._ui_text("正确文本", "Correct Text"))
+        self.LineEdit_before.setPlaceholderText(_('Wrong Text'))
+        self.LineEdit_after.setPlaceholderText(_('Correct Text'))
 
         # 新增路径属性
         self.json_path = self.get_json_path()
@@ -61,9 +58,9 @@ class OcrReplacementTable(QFrame, BaseInterface):
         self.TableWidget_ocr_table.verticalHeader().hide()
         self.TableWidget_ocr_table.horizontalHeader().show()
         self.TableWidget_ocr_table.setHorizontalHeaderLabels([
-            self._ui_text('类型', 'Type'),
-            self._ui_text('替换前', 'Before'),
-            self._ui_text('替换后', 'After')
+            _('Type'),
+            _('Before'),
+            _('After')
         ])
 
         self.load_table()
@@ -103,8 +100,8 @@ class OcrReplacementTable(QFrame, BaseInterface):
                 print(item.text())
                 if item.text() not in ["直接替换", "条件替换", "Direct Replace", "Conditional Replace"]:
                     InfoBar.error(
-                        title=self._ui_text('类型错误', 'Type Error'),
-                        content=self._ui_text("类型值支持“直接替换”或“条件替换”", "Type supports only 'Direct Replace' or 'Conditional Replace'"),
+                        title=_('Type Error'),
+                        content=_("Type supports only 'Direct Replace' or 'Conditional Replace'"),
                         orient=Qt.Orientation.Horizontal,
                         isClosable=True,  # disable close button
                         position=InfoBarPosition.TOP_RIGHT,
@@ -134,8 +131,8 @@ class OcrReplacementTable(QFrame, BaseInterface):
             self.save_data(data)
             self.load_table()
             InfoBar.info(
-                title=self._ui_text('修改成功', 'Updated'),
-                content=self._ui_text("已成功修改对应的替换规则", "Replacement rule updated successfully"),
+                title=_('Updated'),
+                content=_('Replacement rule updated successfully'),
                 orient=Qt.Orientation.Horizontal,
                 isClosable=True,  # disable close button
                 position=InfoBarPosition.TOP_RIGHT,
@@ -158,8 +155,8 @@ class OcrReplacementTable(QFrame, BaseInterface):
 
             if original_text == '' or replacement_text == '':
                 InfoBar.error(
-                    title=self._ui_text('替换文本不能为空', 'Text cannot be empty'),
-                    content=self._ui_text("输入需要替换的前后文本", "Please input both before and after text"),
+                    title=_('Text cannot be empty'),
+                    content=_('Please input both before and after text'),
                     orient=Qt.Orientation.Horizontal,
                     isClosable=True,  # disable close button
                     position=InfoBarPosition.TOP_RIGHT,
@@ -176,8 +173,8 @@ class OcrReplacementTable(QFrame, BaseInterface):
             self.save_data(data)
             self.load_table()
             InfoBar.info(
-                title=self._ui_text('添加成功', 'Added'),
-                content=self._ui_text("已成功添加新的替换规则", "New replacement rule added successfully"),
+                title=_('Added'),
+                content=_('New replacement rule added successfully'),
                 orient=Qt.Orientation.Horizontal,
                 isClosable=True,  # disable close button
                 position=InfoBarPosition.TOP_RIGHT,
@@ -209,16 +206,16 @@ class OcrReplacementTable(QFrame, BaseInterface):
             # 检查文件是否可写
             if os.path.exists(self.json_path):
                 if not os.access(self.json_path, os.W_OK):
-                    print(self._ui_text("错误：文件不可写！", "Error: file is not writable!"))
-                    raise PermissionError(self._ui_text("文件不可写", "File is not writable"))
-            print(self._ui_text("文件可写！", "File is writable!"))
+                    print(_('Error: file is not writable!'))
+                    raise PermissionError(_('File is not writable'))
+            print(_('File is writable!'))
             with open(self.json_path, 'w', encoding='utf-8') as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
         except Exception as e:
             print(f"Error saving JSON: {str(e)}, path:{self.json_path}")
             InfoBar.error(
-                title=self._ui_text('保存失败', 'Save Failed'),
-                content=self._ui_text("无法写入配置文件：", "Unable to write config file: ") + f"{str(e)}",
+                title=_('Save Failed'),
+                content=_('Unable to write config file: ') + f"{str(e)}",
                 isClosable=True,  # disable close button
                 position=InfoBarPosition.TOP_RIGHT,
                 duration=2000,
@@ -240,8 +237,8 @@ class OcrReplacementTable(QFrame, BaseInterface):
                 data = self.load_json()
                 if key_type not in data:
                     InfoBar.error(
-                        title=self._ui_text('删除失败', 'Delete Failed'),
-                        content=self._ui_text(f"{key_type} 不在 JSON 中！", f"{key_type} is not in JSON!"),
+                        title=_('Delete Failed'),
+                        content=_('{key_type} is not in JSON!').format(key_type=key_type),
                         orient=Qt.Orientation.Horizontal,
                         isClosable=True,  # disable close button
                         position=InfoBarPosition.TOP_RIGHT,
@@ -251,9 +248,8 @@ class OcrReplacementTable(QFrame, BaseInterface):
                     return
                 if key_to_delete not in data[key_type]:
                     InfoBar.error(
-                        title=self._ui_text('删除失败', 'Delete Failed'),
-                        content=self._ui_text(f"键 '{key_to_delete}' 不存在于 {key_type} 中！",
-                                              f"Key '{key_to_delete}' does not exist in {key_type}!"),
+                        title=_('Delete Failed'),
+                        content=_("Key '{key_to_delete}' does not exist in {key_type}!").format(key_to_delete=key_to_delete, key_type=key_type),
                         orient=Qt.Orientation.Horizontal,
                         isClosable=True,  # disable close button
                         position=InfoBarPosition.TOP_RIGHT,
@@ -265,8 +261,8 @@ class OcrReplacementTable(QFrame, BaseInterface):
                 self.save_data(data)
                 self.load_table()
                 InfoBar.info(
-                    title=self._ui_text('删除成功', 'Deleted'),
-                    content=self._ui_text("已删除对应行", "Selected row deleted"),
+                    title=_('Deleted'),
+                    content=_('Selected row deleted'),
                     orient=Qt.Orientation.Horizontal,
                     isClosable=True,  # disable close button
                     position=InfoBarPosition.TOP_RIGHT,
@@ -275,8 +271,8 @@ class OcrReplacementTable(QFrame, BaseInterface):
                 )
             else:
                 InfoBar.error(
-                    title=self._ui_text('未选中需要删除的行', 'No row selected'),
-                    content=self._ui_text("选中需要删除的行之后再点击删除", "Select a row to delete first, then click Delete"),
+                    title=_('No row selected'),
+                    content=_('Select a row to delete first, then click Delete'),
                     orient=Qt.Orientation.Horizontal,
                     isClosable=True,  # disable close button
                     position=InfoBarPosition.TOP_RIGHT,
@@ -300,19 +296,19 @@ class OcrReplacementTable(QFrame, BaseInterface):
 
         row_index = 0
         for key, value in direct_dic.items():
-            self.TableWidget_ocr_table.setItem(row_index, 0, QTableWidgetItem(self._ui_text('直接替换', 'Direct Replace')))
+            self.TableWidget_ocr_table.setItem(row_index, 0, QTableWidgetItem(_('Direct Replace')))
             self.TableWidget_ocr_table.setItem(row_index, 1, QTableWidgetItem(key))
             self.TableWidget_ocr_table.setItem(row_index, 2, QTableWidgetItem(value))
             row_index += 1
         for key, value in conditional_dic.items():
-            self.TableWidget_ocr_table.setItem(row_index, 0, QTableWidgetItem(self._ui_text('条件替换', 'Conditional Replace')))
+            self.TableWidget_ocr_table.setItem(row_index, 0, QTableWidgetItem(_('Conditional Replace')))
             self.TableWidget_ocr_table.setItem(row_index, 1, QTableWidgetItem(key))
             self.TableWidget_ocr_table.setItem(row_index, 2, QTableWidgetItem(value))
             row_index += 1
 
         if total_rows == 0:
             self.TableWidget_ocr_table.setRowCount(1)
-            empty_item = QTableWidgetItem(self._ui_text("暂无替换规则", "No replacement rules yet"))
+            empty_item = QTableWidgetItem(_('No replacement rules yet'))
             empty_item.setFlags(empty_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
             self.TableWidget_ocr_table.setItem(0, 0, empty_item)
             self.TableWidget_ocr_table.setSpan(0, 0, 1, 3)

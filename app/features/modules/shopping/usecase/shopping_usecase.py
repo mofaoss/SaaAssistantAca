@@ -105,8 +105,7 @@ class ShoppingModule:
                         is_selected = True
                         continue
                     else:
-                        self.logger.warning(self._ui_text(f'商店没有{self._display_name(text)}',
-                                                      f'{self._display_name(text)} not found in shop'))
+                        self.logger.warning(_('{var_0} not found in shop').format(var_0=self._display_name(text)))
                         finish_list.append(text)
                         # 更新text
                         if len(temp_list) != 0:
@@ -188,9 +187,7 @@ class ShoppingModule:
             if self.auto.click_element(text, 'text', crop=(302 / 1920, 194 / 1080, 1, 1), is_log=self.is_log):
                 return True
             if attempt < max_attempts - 1:
-                self.logger.info(self._ui_text(
-                    f'未找到{self._display_name(text)}，尝试滑动商店后重试({attempt + 1}/{max_attempts - 1})',
-                    f'{self._display_name(text)} not found, retry after scrolling ({attempt + 1}/{max_attempts - 1})'))
+                self.logger.info(_('{var_0} not found, retry after scrolling ({var_1}/{var_2})').format(var_0=self._display_name(text), var_1=attempt + 1, var_2=max_attempts - 1))
                 self.scroll_to_bottom(scroll_times=1)
         return False
 
