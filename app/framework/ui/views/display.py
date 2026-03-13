@@ -311,7 +311,7 @@ class DisplayInterface(ScrollArea, BaseInterface):
         )
 
         # 4. 隐身模式开关卡片
-        stealth_on = bool(config.windowTrackingInput.value) and int(config.windowTrackingAlpha.value) == 1
+        stealth_on = int(config.windowTrackingAlpha.value) == 1
         self.windowTrackingQuickSwitchCard = quick_jump.addSampleCard_Switch(
             icon=os.path.join(self.icondir, "electronics.svg"),
             title="Stealth Mode" if self._is_non_chinese_ui else "隐身模式",
@@ -325,7 +325,7 @@ class DisplayInterface(ScrollArea, BaseInterface):
     def _sync_window_tracking_quick_switch(self):
         """业务状态同步逻辑"""
         if self.windowTrackingQuickSwitchCard is not None:
-            stealth_on = bool(config.windowTrackingInput.value) and int(config.windowTrackingAlpha.value) == 1
+            stealth_on = int(config.windowTrackingAlpha.value) == 1
             self.windowTrackingQuickSwitchCard.setChecked(stealth_on, emit=False)
 
     def _toggle_stealth_mode(self, checked: bool):

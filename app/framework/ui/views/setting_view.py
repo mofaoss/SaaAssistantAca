@@ -464,6 +464,9 @@ class SettingInterface(ScrollArea, BaseInterface):
         config.appRestartSig.connect(self._showRestartTooltip)
         signalBus.windowTrackingStealthChanged.connect(self._sync_stealth_controls)
         self.stealthModeCard.checkedChanged.connect(self._on_stealth_mode_toggled)
+        if hasattr(self, "windowTrackingAlphaCard") and self.windowTrackingAlphaCard is not None:
+            self.windowTrackingAlphaCard.slider.valueChanged.connect(self._on_window_tracking_alpha_changed)
+            self._on_window_tracking_alpha_changed(int(config.windowTrackingAlpha.value))
 
         # personalization
         config.themeChanged.connect(setTheme)
@@ -525,11 +528,30 @@ class SettingInterface(ScrollArea, BaseInterface):
 
     def _on_stealth_mode_toggled(self, checked: bool):
         alpha = 1 if checked else 255
+        config.set(config.windowTrackingInput, bool(checked))
         config.set(config.windowTrackingAlpha, alpha)
         signalBus.windowTrackingStealthChanged.emit(bool(checked), int(alpha))
 
+    def _on_window_tracking_alpha_changed(self, alpha: int):
+        try:
+            alpha_value = int(alpha)
+        except Exception:
+            alpha_value = int(config.windowTrackingAlpha.value)
+        signalBus.windowTrackingStealthChanged.emit(alpha_value == 1, alpha_value)
+
+    def _set_stealth_switch_visual_state(self, checked: bool):
+        switch_button = getattr(getattr(self, "stealthModeCard", None), "switchButton", None)
+        if switch_button is None:
+            return
+        old_state = switch_button.blockSignals(True)
+        switch_button.setChecked(bool(checked))
+        switch_button.setText(self.tr('On') if checked else self.tr('Off'))
+        switch_button.blockSignals(old_state)
+
     def _sync_stealth_controls(self, checked: bool, alpha: int):
         try:
+            stealth_on = int(alpha) == 1
+            self._set_stealth_switch_visual_state(stealth_on)
             if hasattr(self, "windowTrackingAlphaCard") and self.windowTrackingAlphaCard is not None:
                 self.windowTrackingAlphaCard.sync_from_config()
         except Exception:
