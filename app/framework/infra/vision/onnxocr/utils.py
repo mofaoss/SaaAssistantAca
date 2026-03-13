@@ -5,8 +5,9 @@ import math
 from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
 
-# 获取当前文件所在的目录
-module_dir = Path(__file__).resolve().parent
+# 获取项目根目录 (app/framework/infra/vision/onnxocr/ -> app/)
+project_root = Path(__file__).resolve().parent.parent.parent.parent.parent.parent
+models_dir = project_root / "resources" / "models" / "ppocrv5"
 
 
 def get_rotate_crop_image(img, points):
@@ -268,7 +269,7 @@ def infer_args():
     parser.add_argument(
         "--det_model_dir",
         type=str,
-        default=str(module_dir / "models/ppocrv5/det/det.onnx"),
+        default=str(models_dir / "det/det.onnx"),
     )
     parser.add_argument("--det_limit_side_len", type=float, default=960)
     parser.add_argument("--det_limit_type", type=str, default="max")
@@ -308,7 +309,7 @@ def infer_args():
     parser.add_argument(
         "--rec_model_dir",
         type=str,
-        default=str(module_dir / "models/ppocrv5/rec/rec.onnx"),
+        default=str(models_dir / "rec/rec.onnx"),
     )
     parser.add_argument("--rec_image_inverse", type=str2bool, default=True)
     parser.add_argument("--rec_image_shape", type=str, default="3, 48, 320")
@@ -317,7 +318,7 @@ def infer_args():
     parser.add_argument(
         "--rec_char_dict_path",
         type=str,
-        default=str(module_dir / "models/ppocrv5/ppocrv5_dict.txt"),
+        default=str(models_dir / "ppocrv5_dict.txt"),
     )
     parser.add_argument("--use_space_char", type=str2bool, default=True)
     parser.add_argument(
@@ -346,7 +347,7 @@ def infer_args():
     parser.add_argument(
         "--cls_model_dir",
         type=str,
-        default=str(module_dir / "models/ppocrv5/cls/cls.onnx"),
+        default=str(models_dir / "cls/cls.onnx"),
     )
     parser.add_argument("--cls_image_shape", type=str, default="3, 48, 192")
     parser.add_argument("--label_list", type=list, default=["0", "180"])

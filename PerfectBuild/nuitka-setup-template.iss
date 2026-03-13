@@ -37,7 +37,8 @@ LicenseFile={#MyProjectDir}\LICENSE
 OutputDir={#MyReleaseDir}
 OutputBaseFilename={#MyAppName}-{#MyAppVersion}-{#MyAppMode}-Setup-Windows-{#MyArch}
 SetupIconFile={#MyBuildDir}\\{#MySystem}-{#MyArch}\\{#MyDist}\\{#MyAppIcon}
-Compression=lzma
+Compression=lzma2/ultra64
+InternalCompressLevel=ultra64
 SolidCompression=yes
 WizardStyle=modern
 %%ARCH_MODE%%

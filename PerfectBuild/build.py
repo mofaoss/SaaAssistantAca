@@ -138,7 +138,6 @@ class PerfectBuild:
             ("docs/help_en.md", "docs/help_en.md", "file"),
             ("update_data.txt", "update_data.txt", "file"),
             ("asset", "asset", "dir"),
-            ("app/framework/infra/vision/onnxocr/models/ppocrv5", "app/framework/infra/vision/onnxocr/models/ppocrv5", "dir"),
             ("app/framework/i18n", "app/framework/i18n", "dir"),
         ]
 
@@ -209,15 +208,24 @@ class PerfectBuild:
             # 精简 Qt 插件
             "--noinclude-qt-plugins=qml,webengine,network,multimedia,sql,test,sensorkit,position,location,bluetooth,nfc,serialport,websockets,printsupport,dbus,xml,pdf",
 
-            # # 精简 OpenCV / onnxruntime 相关 DLL
-            # "--noinclude-dlls=opencv_videoio_ffmpeg*",
-            # "--noinclude-dlls=opencv_video*",
-            # "--noinclude-dlls=onnxruntime_providers_cuda*",
-            # "--noinclude-dlls=cudart*",
-            # "--noinclude-dlls=cublas*",
-            # "--noinclude-dlls=cudnn*",
-            # "--noinclude-dlls=cufft*",
-        ]
+            # 精简 OpenCV / onnxruntime 相关 DLL
+            "--noinclude-dlls=opencv_videoio_ffmpeg*",
+            "--noinclude-dlls=opencv_video*",
+            "--noinclude-dlls=onnxruntime_providers_cuda*",
+            "--noinclude-dlls=cudart*",
+            "--noinclude-dlls=cublas*",
+            "--noinclude-dlls=cudnn*",
+            "--noinclude-dlls=cufft*",
+
+            # 阻断无用模块的 Python 追踪
+            "--nofollow-import-to=cv2.videoio",
+            "--nofollow-import-to=cv2.video",
+            "--nofollow-import-to=cv2.samples",
+            "--nofollow-import-to=cv2.data",
+            "--nofollow-import-to=numpy.tests",
+            "--nofollow-import-to=numpy.distutils",
+            ]
+
 
         for module_name in _collect_dynamic_python_modules():
             cmd_args.append(f"--include-module={module_name}")
