@@ -49,6 +49,7 @@ CASE_IDS = [
     "T19",
     "T20",
     "T21",
+    "T22",
 ]
 
 SAMPLE_SOURCE = """from __future__ import annotations
@@ -100,6 +101,7 @@ def run_cases() -> None:
     detail = "retry=3,mode=safe"
     current_time_str = "00:58"
     scheduled_task_ids = ["task_get_reward"]
+    requested_names = ["task_get_reward"]
     w = 640
     h = 360
     new_w = 960
@@ -194,6 +196,10 @@ def run_cases() -> None:
             task_ids=scheduled_task_ids,
         ),
         extra={"cid": "T21"},
+    )
+    logger.warning(
+        _("Requested tasks: {task_names}").format(task_names=", ".join(requested_names)),
+        extra={"cid": "T22"},
     )
 
 
@@ -311,6 +317,7 @@ def _expected_outputs() -> tuple[list[str], list[str]]:
     detail = "retry=3,mode=safe"
     current_time_str = "00:58"
     scheduled_task_ids = ["task_get_reward"]
+    requested_names = ["task_get_reward"]
     w = 640
     h = 360
     new_w = 960
@@ -413,6 +420,11 @@ def _expected_outputs() -> tuple[list[str], list[str]]:
             "framework.ui.scheduled_task_triggered_at_current_time_str_executing_tasks_task_ids",
             current_time_str=current_time_str,
             task_ids=scheduled_task_ids,
+        ),
+        "T22": _fmt(
+            zh,
+            "framework.ui.requested_tasks_task_names",
+            task_names=", ".join(requested_names),
         ),
     }
 

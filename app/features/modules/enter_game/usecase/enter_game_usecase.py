@@ -300,7 +300,7 @@ def launch_game_with_guard(
     is_game_running: Callable[[], Any] | None = None,
     app_config=None,
     logger=None,
-    cooldown_seconds: int = 15,
+    cooldown_seconds: int = 1,
 ) -> dict[str, Any]:
     global _last_game_process
     global _last_launch_ts
