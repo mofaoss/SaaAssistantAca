@@ -253,6 +253,7 @@
   "framework.ui.such_as_7890": "Such as '7890'",
   "framework.ui.if_you_choose_to_enable_a_proxy_you_need_to_fill_in_the_proxy_port_if_you_do_not": "If you choose to enable a proxy, you need to fill in the proxy port. If you do not enable a proxy, leave it blank.",
   "framework.ui.developer_options": "Developer options",
+  "framework.ui.advanced_options_for_diagnostics": "Advanced options for diagnostics",
   "framework.ui.display_image_recognition_log": "Display image recognition log",
   "framework.ui.show_ocr_results_and_opencv_errors_in_logs_for_detailed_diagnostics": "Show OCR results and OpenCV errors in logs for detailed diagnostics",
   "framework.ui.screenshot_of_window_showing_runtime": "Screenshot of window showing runtime",

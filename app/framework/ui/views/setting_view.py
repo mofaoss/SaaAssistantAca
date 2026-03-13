@@ -11,6 +11,7 @@ from PySide6.QtWidgets import QWidget, QLabel, QHBoxLayout, QVBoxLayout, QApplic
 from qfluentwidgets import (
     BodyLabel,
     ComboBoxSettingCard,
+    ExpandGroupSettingCard,
     ExpandLayout,
     FluentIcon as FIF,
     HyperlinkButton,
@@ -312,7 +313,7 @@ class SettingInterface(ScrollArea, BaseInterface):
             icon=FIF.HIDE,
             title=_('Incognito mode visibility'),
             content=_('The lower the value, the more invisible it is: 1=extremely hidden, 255=normal display, it is recommended to set 1'),
-            parent=self.aboutSoftwareGroup,
+            parent=self.scrollWidget,
             min_value=1,
             max_value=255,
         )
@@ -354,29 +355,33 @@ class SettingInterface(ScrollArea, BaseInterface):
         )
 
         # Developer Options (开发者选项)
-        self.developerOptionsGroup = SettingCardGroup(
-            _('Developer options'), self.scrollWidget)
+        self.developerOptionsExpandCard = ExpandGroupSettingCard(
+            FIF.DEVELOPER_TOOLS,
+            _('Developer options'),
+            _('Advanced options for diagnostics'),
+            self.scrollWidget
+        )
 
         self.isLogCard = SwitchSettingCard(
             FIF.DEVELOPER_TOOLS,
             _('Display image recognition log'),
             _('Show OCR results and OpenCV errors in logs for detailed diagnostics'),
             configItem=config.isLog,
-            parent=self.developerOptionsGroup
+            parent=self.scrollWidget
         )
         self.showScreenshotCard = SwitchSettingCard(
             FIF.PHOTO,
             _('Screenshot of window showing runtime'),
             _('Used for troubleshooting capture regions. Screenshots are saved in SaaAssistantAca/temp and should be deleted manually'),
             configItem=config.showScreenshot,
-            parent=self.developerOptionsGroup
+            parent=self.scrollWidget
         )
         self.isInputLogCard = SwitchSettingCard(
             FIF.COMMAND_PROMPT,
             _('Display simulation input log'),
             _('Opening will display detailed information on simulated input operations such as mouse movements, clicks, key presses, etc. in the log.'),
             configItem=config.isInputLog,
-            parent=self.developerOptionsGroup
+            parent=self.scrollWidget
         )
 
         self.__initWidget()
@@ -417,7 +422,6 @@ class SettingInterface(ScrollArea, BaseInterface):
         self.coreSettingsGroup.addSettingCard(self.serverCard)
         self.coreSettingsGroup.addSettingCard(self.gameLanguageCard)
 
-        self.aboutSoftwareGroup.addSettingCard(self.windowTrackingAlphaCard)
         self.aboutSoftwareGroup.addSettingCard(self.updateOnStartUpCard)
         self.aboutSoftwareGroup.addSettingCard(self.checkPrereleaseForStableCard)
         self.aboutSoftwareGroup.addSettingCard(self.saveScaleCacheCard)
@@ -427,9 +431,11 @@ class SettingInterface(ScrollArea, BaseInterface):
         self.aboutSoftwareGroup.addSettingCard(self.proxyCard)
 
         # Add Developer Options cards
-        self.developerOptionsGroup.addSettingCard(self.isLogCard)
-        self.developerOptionsGroup.addSettingCard(self.showScreenshotCard)
-        self.developerOptionsGroup.addSettingCard(self.isInputLogCard)
+        self.developerOptionsExpandCard.addGroupWidget(self.windowTrackingAlphaCard)
+        self.developerOptionsExpandCard.addGroupWidget(self.isLogCard)
+        self.developerOptionsExpandCard.addGroupWidget(self.showScreenshotCard)
+        self.developerOptionsExpandCard.addGroupWidget(self.isInputLogCard)
+        self.developerOptionsExpandCard.setExpand(False)
 
         # add setting card group to layout
         self.expandLayout.setSpacing(28)
@@ -442,7 +448,7 @@ class SettingInterface(ScrollArea, BaseInterface):
         self.expandLayout.addWidget(self.coreSettingsGroup)
         self.expandLayout.addWidget(self.personalGroup)
         self.expandLayout.addWidget(self.aboutSoftwareGroup)
-        self.expandLayout.addWidget(self.developerOptionsGroup)
+        self.expandLayout.addWidget(self.developerOptionsExpandCard)
 
     def _showRestartTooltip(self):
         """ show restart tooltip """
@@ -464,9 +470,6 @@ class SettingInterface(ScrollArea, BaseInterface):
         config.appRestartSig.connect(self._showRestartTooltip)
         signalBus.windowTrackingStealthChanged.connect(self._sync_stealth_controls)
         self.stealthModeCard.checkedChanged.connect(self._on_stealth_mode_toggled)
-        if hasattr(self, "windowTrackingAlphaCard") and self.windowTrackingAlphaCard is not None:
-            self.windowTrackingAlphaCard.slider.valueChanged.connect(self._on_window_tracking_alpha_changed)
-            self._on_window_tracking_alpha_changed(int(config.windowTrackingAlpha.value))
 
         # personalization
         config.themeChanged.connect(setTheme)
@@ -532,13 +535,6 @@ class SettingInterface(ScrollArea, BaseInterface):
         config.set(config.windowTrackingAlpha, alpha)
         signalBus.windowTrackingStealthChanged.emit(bool(checked), int(alpha))
 
-    def _on_window_tracking_alpha_changed(self, alpha: int):
-        try:
-            alpha_value = int(alpha)
-        except Exception:
-            alpha_value = int(config.windowTrackingAlpha.value)
-        signalBus.windowTrackingStealthChanged.emit(alpha_value == 1, alpha_value)
-
     def _set_stealth_switch_visual_state(self, checked: bool):
         switch_button = getattr(getattr(self, "stealthModeCard", None), "switchButton", None)
         if switch_button is None:
@@ -550,8 +546,7 @@ class SettingInterface(ScrollArea, BaseInterface):
 
     def _sync_stealth_controls(self, checked: bool, alpha: int):
         try:
-            stealth_on = int(alpha) == 1
-            self._set_stealth_switch_visual_state(stealth_on)
+            self._set_stealth_switch_visual_state(bool(checked))
             if hasattr(self, "windowTrackingAlphaCard") and self.windowTrackingAlphaCard is not None:
                 self.windowTrackingAlphaCard.sync_from_config()
         except Exception:
@@ -739,7 +734,7 @@ class SettingInterface(ScrollArea, BaseInterface):
 
                 with open(batch_path, "w", encoding="gbk") as f:
                     f.write('@echo off\n')
-                    f.write('echo 正在等待主程序关闭 (Waiting for app to close)...\n')
+                    f.write('echo Waiting for app to close...\n')
                     f.write('timeout /t 2 /nobreak > nul\n')
 
                     if is_exe:

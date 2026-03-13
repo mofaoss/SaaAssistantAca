@@ -19,6 +19,7 @@
   "framework.log.external_task_finished_waking_up_queued_daily_ta": "外部任务已结束，正在唤醒积压的日常排队任务...",
   "framework.log.failed_to_initialize_auto_e": "自动初始化失败：{e}",
   "framework.log.failed_to_perform_mouse_click_x_y_because_mouse": "无法执行鼠标点击（{x}, {y}），因为鼠标操作正在进行中",
+  "framework.ui.advanced_options_for_diagnostics": "诊断高级选项",
   "framework.log.failed_to_read_template_image_template_path": "读取模板图像失败：{template_path}",
   "framework.log.failed_to_recognize_stamina_e": "体力识别失败：{e}",
   "framework.log.failed_to_refresh_window_handles_e": "刷新窗口句柄失败：{e}",

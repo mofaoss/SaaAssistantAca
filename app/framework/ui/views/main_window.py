@@ -419,7 +419,7 @@ class MainWindow(FluentWindow, BaseInterface):
         if key == "additional":
             if self.additionalInterface is None:
                 self._create_additional_interface()
-            self._register_nav_item("additional", self.additionalInterface, FIF.DEVELOPER_TOOLS, _('tool'))
+            self._register_nav_item("additional", self.additionalInterface, FIF.APPLICATION, _('tool'))
             return
 
         if key == "table":
