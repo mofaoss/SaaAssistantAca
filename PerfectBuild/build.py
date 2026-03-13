@@ -200,13 +200,24 @@ class PerfectBuild:
             "--standalone",
             "--assume-yes-for-downloads",
             "--plugin-enable=pyside6",
+            "--plugin-enable=numpy",
+            "--plugin-enable=opencv",
             f"--output-dir={output_dir}",
             "--windows-uac-admin",
             "--windows-console-mode=disable",
             # Ensure dynamically discovered modules under app.features.modules are bundled.
             "--include-package=app.features.modules",
-            # 添加文件
+            # 精简 Qt 插件以减小体积
             "--noinclude-qt-plugins=qml,webengine,network,multimedia,sql,test,sensorkit,position,location,bluetooth,nfc,serialport,websockets,printsupport,dbus,xml,pdf",
+            # 精简 OpenCV: 排除不必要的视频编解码和视频流处理 (headless 已精简 GUI)
+            "--noinclude-dll-pattern=opencv_videoio_ffmpeg*",
+            "--noinclude-dll-pattern=opencv_video*",
+            # 精简 onnxruntime: 排除 CUDA 相关的加速库 (如果已安装则会被打包)
+            "--noinclude-dll-pattern=onnxruntime_providers_cuda*",
+            "--noinclude-dll-pattern=cudart*",
+            "--noinclude-dll-pattern=cublas*",
+            "--noinclude-dll-pattern=cudnn*",
+            "--noinclude-dll-pattern=cufft*",
         ]
         for src, dst, kind in optional_data_mappings:
             include = _include_arg(src, dst, kind)
