@@ -509,19 +509,26 @@ class WindowTracker:
             with self._per_monitor_dpi_context():
                 root_hwnd = self._resolve_root_hwnd()
                 if root_hwnd and win32gui.IsWindow(root_hwnd):
+                    target_width, target_height = self._target_window_size(root_hwnd)
+
+                    # Ensure we restore to at least the configured restore size.
+                    # This handles cases where logical pixels were captured instead of physical
+                    # and honors the fixed window tracking mode requirement.
+                    if target_width < self._restore_width:
+                        target_width = self._restore_width
+                    if target_height < self._restore_height:
+                        target_height = self._restore_height
+
                     if self._origin_rect and self._is_reasonable_size(
                         self._origin_rect[2] - self._origin_rect[0],
                         self._origin_rect[3] - self._origin_rect[1],
                     ):
                         target_left = self._origin_rect[0]
                         target_top = self._origin_rect[1]
-                        target_width = self._origin_rect[2] - self._origin_rect[0]
-                        target_height = self._origin_rect[3] - self._origin_rect[1]
                     else:
                         monitor_left, monitor_top, monitor_right, monitor_bottom = self._get_primary_monitor_rect()
                         monitor_width = monitor_right - monitor_left
                         monitor_height = monitor_bottom - monitor_top
-                        target_width, target_height = self._target_window_size(root_hwnd)
                         target_left = monitor_left + (monitor_width - target_width) // 2
                         target_top = monitor_top + (monitor_height - target_height) // 2
 
