@@ -213,9 +213,11 @@ class PerfectBuild:
             "--noinclude-dlls=cv2/opencv_video*.dll",
             "--noinclude-data-files=cv2/opencv_videoio_ffmpeg*.dll",
             "--noinclude-data-files=cv2/opencv_video*.dll",
+            "--noinclude-data-files=resources/models/backup_ppocrv5/*", # 排除 OCR 模型不需要的 cls 模型文件
 
             # 排除加载动画相关的 GIF 文件
             "--noinclude-data-files=resources/logo/*.gif",
+
             ]
 
 

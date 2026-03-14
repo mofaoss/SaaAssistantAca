@@ -218,6 +218,37 @@ def test_log_context_can_render_from_translatable_string_payload():
     assert rendered == "任务队列已解析：自动登录, 精神拟境"
 
 
+def test_debug_log_uses_current_language_for_explicit_dynamic_msgid():
+    runtime._CATALOGS["en"]["framework.log.target_image_template_name_similarity_conf_below"] = (
+        "Target image: {template_name} Similarity: {conf:.2f}, below {threshold}"
+    )
+    runtime._CATALOGS["zh_CN"]["framework.log.target_image_template_name_similarity_conf_below"] = (
+        "目标图像：{template_name} 相似度：{conf:.2f}，低于 {threshold}"
+    )
+    runtime._resolve_lang = lambda: "zh_CN"  # type: ignore[assignment]
+
+    msg = runtime._(
+        "Target image: btn.start Similarity: 0.88, below 0.9",
+        msgid="target_image_template_name_similarity_conf_below",
+        __i18n_owner_scope__="framework",
+        __i18n_context_hint__="log",
+    )
+
+    rendered = runtime.render_message(msg, context="log", levelno=logging.DEBUG)
+    assert rendered == "目标图像：btn.start 相似度：0.88，低于 0.9"
+
+
+def test_debug_log_uses_current_language_for_static_format_without_msgid():
+    runtime._CATALOGS["en"]["framework.ui.requested_tasks_task_names"] = "Requested tasks: {task_names}"
+    runtime._CATALOGS["zh_CN"]["framework.ui.requested_tasks_task_names"] = "请求的任务：{task_names}"
+    runtime._resolve_lang = lambda: "zh_CN"  # type: ignore[assignment]
+
+    msg = runtime._("Requested tasks: {task_names}").format(task_names="领取奖励")
+
+    rendered = runtime.render_message(msg, context="log", levelno=logging.DEBUG)
+    assert rendered == "请求的任务：领取奖励"
+
+
 def test_owner_inference_prefers_module_name_when_filename_is_not_path():
     class _Code:
         co_filename = "<frozen app.features.modules.fishing.usecase.fishing_usecase>"

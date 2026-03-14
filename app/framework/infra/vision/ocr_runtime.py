@@ -190,7 +190,7 @@ class OCR:
         return w < self._low_res_width or h < self._low_res_height
 
     def _ocr_raw(self, image):
-        result = self.ocr.ocr(image)
+        result = self.ocr.ocr(image, det=True, rec=True, cls=False)
         if not result:
             return None
         return result[0]
@@ -354,7 +354,10 @@ class OCR:
             try:
                 self.logger.debug(_('Starting to initialize OCR...', msgid='starting_to_initialize_ocr'))
                 if config.cpu_support_avx2.value:
-                    self.ocr = ONNXPaddleOcr(use_angle_cls=True, use_gpu=False)
+                    # if config.isLog.value:
+                    #     self.ocr = ONNXPaddleOcr(use_angle_cls=False, use_gpu=False, logger=self.logger)
+                    # else:
+                    self.ocr = ONNXPaddleOcr(use_angle_cls=False, use_gpu=False)
                     self.logger.info(_('OCR initialization completed', msgid='ocr_initialization_completed'))
                     self._is_initialized = True
                 else:

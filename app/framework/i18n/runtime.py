@@ -23,7 +23,7 @@ from app.framework.i18n.template_render import (
 DEFAULT_SOURCE_LANG = "en"
 SUPPORTED_LANGS = ["en", "zh_CN", "zh_HK"]
 
-DEBUG_LOG_I18N_MODE = "source"
+DEBUG_LOG_I18N_MODE = "current"
 INFO_LOG_I18N_MODE = "current"
 WARNING_LOG_I18N_MODE = "current"
 ERROR_LOG_I18N_MODE = "current"

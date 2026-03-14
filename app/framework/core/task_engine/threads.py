@@ -453,4 +453,3 @@ class ModuleTaskThread(QThread):
                     )
                 )
             self.is_running.emit(False)
-

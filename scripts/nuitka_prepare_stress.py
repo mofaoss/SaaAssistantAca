@@ -163,13 +163,13 @@ def run_cases() -> None:
         extra={"cid": "T10"},
     )
     logger.warning(
-        _("Periodic diagnostic: event={event} ({event_code}) task_id={task_id} task_name={task_name} detail={detail}".format(
+        _("Periodic diagnostic: event={event} ({event_code}) task_id={task_id} task_name={task_name} detail={detail}", msgid="periodic_diagnostic_event_event_code_task_id_task_name_detail").format(
             event=event,
             event_code=event_code,
             task_id=task_id,
             task_name=task_name,
             detail=detail,
-        ), msgid="periodic_diagnostic_event_event_code_task_id_task_name_detail"),
+        ),
         extra={"cid": "T11"},
     )
     logger.warning(
