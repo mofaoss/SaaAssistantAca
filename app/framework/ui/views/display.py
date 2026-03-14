@@ -337,7 +337,7 @@ class DisplayInterface(ScrollArea, BaseInterface):
 
         quick_jump.addSampleCard(
             icon=os.path.join(self.icondir, "tutorial.png"),
-            title=_("Tutorial"), # if self._is_non_chinese_ui else "使用教程",
+            title=_("Use Tutorial", msgid="tutorial"), # if self._is_non_chinese_ui else "使用教程",
             content=_("Read the guide to get started quickly"), # if self._is_non_chinese_ui else self.tr("查看教程，答疑解惑"),
             routeKey="Help-Interface",
             index=0,
