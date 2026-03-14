@@ -285,7 +285,7 @@
   "framework.ui.the_rows_that_need_to_be_deleted_are_not_selected": "未选中需要删除的行",
   "framework.ui.the_user_clicked_the_manual_kill_button": "用户点击了手动终止按钮",
   "framework.ui.tips_this_is_a_replacement_table_for_ocr_recognition_issues_double_click_a_cell_": "### 提示\n* 这是一个针对 OCR 识别问题的替换表\n* 双击单元格进行编辑\n* 填写上方字段并点击“新增”以创建新的替换规则\n* 错误文本：OCR 识别出的错误文本。如果缺失，请在设置中开启 OCR 结果显示\n* 正确文本：游戏中的预期文本\n* 如需删除，请先选中一行，然后点击“删除”",
-  "framework.ui.tool": "工具",
+  "framework.ui.tool": "功能",
   "framework.ui.tutorial": "使用教程",
   "framework.ui.type": "类型",
   "framework.ui.type_error": "类型错误",
