@@ -3,14 +3,18 @@
       <img src="./docs/asset/logo_head.png" width="200"/>
       <br/>
       安卡小助手
+      <br/> SaaAssistantAca
+      <br/>
     </h1>
 
 <a href="https://github.com/mofaoss/SaaAssistantAca" target="_blank">
-  <b style="color: #ff9800;">点个star再走呗~</b>
+  <b style="color: #ff9800;">点个⭐再走呗~</b>
   <img src="https://img.shields.io/github/stars/mofaoss/SaaAssistantAca?style=social" alt="Star on GitHub" style="vertical-align: middle; margin-left: 6px;"/>
 </a>
-
 <br/>
+<br/>
+<br/>
+
 
 简体中文 | <a href="docs/README_en.md">English</a>
 
