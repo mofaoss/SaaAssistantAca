@@ -21,13 +21,14 @@ _FISHING_FIELDS = {
         "鱼饵类型",
         group="基础设置",
         options=(
-            (0, "万能"),
-            (1, "普通"),
-            (2, "豪华"),
-            (3, "至尊"),
-            (4, "重量级"),
-            (5, "巨型"),
-            (6, "重量级"),
+            #  '万能鱼饵', '普通鱼饵', '豪华鱼饵', '至尊鱼饵', '重量级鱼类虫饵', '巨型鱼类虫饵', '重量级鱼类夜钓虫饵'
+            (0, "万能鱼饵"),
+            (1, "普通鱼饵"),
+            (2, "豪华鱼饵"),
+            (3, "至尊鱼饵"),
+            (4, "重量级鱼类虫饵"),
+            (5, "巨型鱼类虫饵"),
+            (6, "重量级鱼类夜钓虫饵"),
         ),
     ),
     "ComboBox_fishing_mode": Field("判定模式", group="基础设置", options=((0, "颜色检测 (高精度推荐)"), (1, "时间判定"))),
@@ -161,7 +162,7 @@ class FishingModule:
         timeout = Timer(15).start()
         enter_flag = False
         lure_type_index = self.lure_type_index
-        lure_type_list = ['万能', '普通', '豪华', '至尊', '重量级', '巨型', '重量级']
+        lure_type_list = ['万能鱼饵', '普通鱼饵', '豪华鱼饵', '至尊鱼饵', '重量级鱼类虫饵', '巨型鱼类虫饵', '重量级鱼类夜钓虫饵']
         while True:
             self.auto.take_screenshot()
 
@@ -214,7 +215,7 @@ class FishingModule:
 
     def select_lure(self):
         open_lure = False
-        lure_type_list = ['万能', '普通', '豪华', '至尊', '重量级', '巨型', '重量级', '巨型']
+        lure_type_list = ['万能', '普通', '豪华', '至尊', '重量级', '巨型', '重量级']
         lure_type_index = self.lure_type_index
         timeout = Timer(20).start()
         while True:
