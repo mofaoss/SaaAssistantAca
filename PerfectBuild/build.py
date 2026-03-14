@@ -211,6 +211,7 @@ class PerfectBuild:
             "--noinclude-dlls=*qt6network*.dll",
             "--noinclude-dlls=*qt6pdf*.dll",
             "--noinclude-dlls=*qt6webengine*.dll",
+            "--noinclude-dlls=*qpdf*.dll",
 
             # 精简 OpenCV / onnxruntime 相关 DLL
             "--noinclude-dlls=cv2/opencv_videoio_ffmpeg*.dll",
