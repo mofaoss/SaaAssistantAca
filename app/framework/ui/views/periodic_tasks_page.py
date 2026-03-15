@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QFrame, QWidget, QVBoxLayout
 from qfluentwidgets import CheckBox
 
 from app.framework.infra.config.app_config import is_non_chinese_ui_language
+from app.framework.infra.events.signal_bus import signalBus
 from app.framework.ui.shared.style_sheet import StyleSheet
 
 from app.framework.core.task_engine.scheduler import Scheduler
@@ -681,6 +682,7 @@ class PeriodicTasksPage(QFrame, BaseInterface):
 
         self.task_coordinator.state_changed.connect(self._on_global_state_changed)
         self.task_coordinator.stop_requested.connect(self._on_global_stop_request)
+        signalBus.taskConfigChanged.connect(self._auto_save_current_preset)
         self._connect_to_save_changed()
 
     def _on_global_state_changed(self, is_running: bool, task_name: str, task_name_msgid: str, source: str):

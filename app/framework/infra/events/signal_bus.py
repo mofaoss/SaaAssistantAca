@@ -17,6 +17,7 @@ class SignalBus(QObject):
     windowTrackingStealthChanged = Signal(bool, int)
 
     requestExitApp = Signal()
+    taskConfigChanged = Signal()
 
 
 

@@ -623,6 +623,9 @@ class OnDemandTasksPage(QFrame, BaseInterface):
             meta = self._get_task_metadata().get(task_id, {})
             if self._execution_policy(meta) == "background":
                 self._sync_background_task(task_id)
+        
+        # Notify that a task config item has changed so PeriodicTasksPage can snapshot it to the current preset
+        signalBus.taskConfigChanged.emit()
 
     def onCurrentIndexChanged(self, index):
         widget = self.stackedWidget.widget(index)

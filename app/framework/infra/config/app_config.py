@@ -276,8 +276,8 @@ class Config(QConfig):
     fish_key_list          = ConfigItem("add_fish", "fish_key_list", ['shift', 'space', 'ctrl'])
 
     # --- Trigger helpers ---
-    CheckBox_trigger_auto_f = ConfigItem("add_trigger", "CheckBox_trigger_auto_f", True, BoolValidator())
-    CheckBox_trigger_auto_e = ConfigItem("add_trigger", "CheckBox_trigger_auto_e", True, BoolValidator())
+    CheckBox_trigger_auto_f = ConfigItem("add_trigger", "CheckBox_trigger_auto_f", False, BoolValidator())
+    CheckBox_trigger_auto_e = ConfigItem("add_trigger", "CheckBox_trigger_auto_e", False, BoolValidator())
 
     # --- 异星守护 / 迷宫 / 按摩 / 猜心对局 ---
     ComboBox_mode        = OptionsConfigItem("add_alien", "ComboBox_mode", 0, OptionsValidator([0, 1]))
@@ -307,7 +307,7 @@ class Config(QConfig):
     LineEdit_jigsaw_piece_11 = ConfigItem("pieces_num", "LineEdit_jigsaw_piece_11", "0")
 
     # --- 抓帕鲁 ---
-    CheckBox_capture_pals_partner   = ConfigItem("add_capture_pals", "CheckBox_capture_pals_partner", True, BoolValidator())
+    CheckBox_capture_pals_partner   = ConfigItem("add_capture_pals", "CheckBox_capture_pals_partner", False, BoolValidator())
     CheckBox_capture_pals_adventure = ConfigItem("add_capture_pals", "CheckBox_capture_pals_adventure", False, BoolValidator())
     CheckBox_capture_pals_sync      = ConfigItem("add_capture_pals", "CheckBox_capture_pals_sync", False, BoolValidator())
 
