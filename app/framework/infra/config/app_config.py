@@ -9,8 +9,7 @@ from qfluentwidgets import (qconfig, QConfig, ConfigItem, OptionsConfigItem, Boo
                             OptionsValidator, Theme, ConfigSerializer, RangeConfigItem, RangeValidator)
 
 from app.framework.infra.config.sequence_serializer import TaskSequenceSerializer
-from app.framework.infra.runtime.paths import copy_user_data
-from .setting import CONFIG_FILE, CONFIG_FILE_OLD
+from .setting import CONFIG_FILE
 
 
 class Language(Enum):

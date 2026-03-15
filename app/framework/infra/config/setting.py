@@ -1,6 +1,6 @@
 # coding: utf-8
 from pathlib import Path
-from app.framework.infra.runtime.paths import APPDATA_DIR, ensure_runtime_dirs, APPDATA_OLD_DIR
+from app.framework.infra.runtime.paths import APPDATA_DIR, ensure_runtime_dirs
 
 # change DEBUG to False if you want to compile the code to exe
 DEBUG = "__compiled__" not in globals()
@@ -34,12 +34,6 @@ import shutil
 ensure_runtime_dirs()
 CONFIG_FOLDER = APPDATA_DIR
 CONFIG_FILE = CONFIG_FOLDER / "config.json"
-CONFIG_FILE_OLD = APPDATA_OLD_DIR / "config.json"  # 旧版本的配置文件路径，兼容迁移
 
-if CONFIG_FILE_OLD.exists() and not CONFIG_FILE.exists():
-    # 兼容旧版本配置迁移
+if not CONFIG_FILE.exists():
     CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        shutil.copy2(CONFIG_FILE_OLD, CONFIG_FILE)
-    except Exception:
-        pass
